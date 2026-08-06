@@ -6,6 +6,7 @@ import type { Chunk, Khassida } from "@/types/database";
 
 type Result = { kind: "khassida" | "chunk"; khassida: Khassida; chunk?: Chunk };
 type Source = { id: string; title: string; slug: string; quote: string; reference: string };
+const popularOrder = ["masaalikul-jinaan", "tazawwudush-shubban", "jawharul-maani", "al-hikam", "safinatul-aman"];
 
 const themes = [
   ["spark", "Tawhid"], ["school", "Éducation"], ["leaf", "Spiritualité"], ["message", "Le Prophète (sws)"],
@@ -66,7 +67,7 @@ export function HomeExperience() {
         <header><h2><Icon name="spark" size={18}/> <span>Khassaïdes populaires</span></h2><a href="#library">Voir tout →</a></header>
         {searchError && <p className="notice">{searchError}</p>}
         <div id="library" className="reference-works">
-          {results.slice(0, 5).map((result, index) => <a href={`/khassidas/${result.khassida.slug}`} className="reference-work" key={`${result.khassida.id}-${index}`}>
+          {[...results].sort((a,b) => { const ai=popularOrder.indexOf(a.khassida.slug),bi=popularOrder.indexOf(b.khassida.slug); return (ai<0?99:ai)-(bi<0?99:bi); }).slice(0, 5).map((result, index) => <a href={`/khassidas/${result.khassida.slug}`} className="reference-work" key={`${result.khassida.id}-${index}`}>
             <p>{result.khassida.arabic_title || "قصيدة"}</p><h3>{result.khassida.title}</h3><small>{result.chunk?.arabic_text?.slice(0, 32) || result.khassida.arabic_title || "نص قيد المراجعة"}</small><footer>PDF · Audio · Texte</footer>
           </a>)}
         </div>

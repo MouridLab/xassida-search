@@ -3,5 +3,8 @@ insert into public.khassidas(slug,title,arabic_title,aliases,themes,description,
 ('masaalikul-jinaan','Masaalikul Jinaan','مسالك الجنان',array['Masaalik','Masalikoul Jinaan','Masalik'],array['spiritualité','éducation'],'Œuvre à documenter et faire valider.',false),
 ('matlaboul-fawzayni','Matlaboul Fawzayni','مطلب الفوزين',array['Matlabul Fawzayni','Matlaboul Fawzaini'],array['prière','Touba'],'Œuvre à documenter et faire valider.',false),
 ('jazbul-qulub','Jazbul Qulub','جذب القلوب',array['Jazboul Khouloub','Jazboul Qulub'],array['éloge prophétique'],'Œuvre à documenter et faire valider.',false),
-('tazawwudush-shubban','Tazawwudush Shubbān','تزود الشبان',array['Tazawwudush Shubban'],array['jeunesse','éducation'],'Œuvre à documenter et faire valider.',false)
+('tazawwudush-shubban','Tazawwudush Shubbān','تزود الشبان',array['Tazawwudush Shubban'],array['jeunesse','éducation'],'Œuvre à documenter et faire valider.',false),
+('jawharul-maani','Jawharul Ma’āni','جوهرة المعاني',array['Jawharul Maani','Jawharoul Ma’ani'],array['spiritualité'],'Œuvre à documenter et faire valider.',false),
+('al-hikam','Al Hikam','الحكم',array['Al-Hikam','Hikam'],array['sagesse'],'Œuvre à documenter et faire valider.',false),
+('safinatul-aman','Safinatul Amān','سفينة الأمان',array['Safinatoul Aman','Safīnatul Amān'],array['spiritualité','protection'],'Œuvre à documenter et faire valider.',false)
 on conflict(slug) do nothing;
