@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lire et écouter un khassida.">
+  <title>Lecture — Xassida Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="reader.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="brand"><span class="brand-mark">خ</span><span><strong>Xassida</strong><small>Search</small></span></a>
+    <a class="back-link" href="index.html#bibliotheque">← Bibliothèque</a>
+  </header>
+  <main id="reader" class="reader-page">
+    <section class="reader-heading">
+      <div>
+        <span id="validationBadge" class="validation-badge"></span>
+        <p id="readerTheme" class="eyebrow"></p>
+        <h1 id="readerTitle"></h1>
+        <p id="readerArabicTitle" class="reader-arabic-title" dir="rtl"></p>
+        <p id="readerDescription" class="reader-description"></p>
+      </div>
+      <dl id="readerMeta" class="reader-meta"></dl>
+    </section>
+
+    <section class="source-panel">
+      <div><span>Provenance</span><strong id="readerSource"></strong></div>
+      <div><span>Validation</span><strong id="readerValidation"></strong></div>
+    </section>
+
+    <section class="media-panel">
+      <div class="media-head"><div><span class="eyebrow">Audio</span><h2>Écouter</h2></div><span id="audioDuration"></span></div>
+      <audio id="audioPlayer" controls></audio>
+      <p id="audioEmpty" class="content-empty"></p>
+      <a id="pdfLink" class="primary-action" target="_blank" rel="noopener">Ouvrir le PDF</a>
+    </section>
+
+    <section class="reading-panel">
+      <div class="reading-tabs" role="tablist" aria-label="Version du texte">
+        <button class="reading-tab active" data-content="arabic" role="tab">Texte arabe</button>
+        <button class="reading-tab" data-content="transcription" role="tab">Transcription</button>
+        <button class="reading-tab" data-content="translation" role="tab">Traduction</button>
+      </div>
+      <article id="readingContent" class="reading-content"></article>
+    </section>
+  </main>
+  <section id="notFound" class="reader-not-found hidden"><h1>Œuvre introuvable</h1><p>Cette fiche n’existe pas dans la bibliothèque.</p><a href="index.html">Retour à l’accueil</a></section>
+  <script src="data.js"></script>
+  <script src="reader.js"></script>
+</body>
+</html>

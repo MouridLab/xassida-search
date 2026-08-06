@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Xassida Search — rechercher, lire et écouter les khassaïdes de Cheikh Ahmadou Bamba." />
+  <title>Xassida Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="brand" aria-label="Accueil Xassida Search">
+      <span class="brand-mark">خ</span>
+      <span>
+        <strong>Xassida</strong>
+        <small>Search</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#bibliotheque">Bibliothèque</a>
+      <a href="#apropos">À propos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge">Bibliothèque numérique mouride</div>
+      <h1>Retrouvez les écrits de<br><span>Serigne Touba</span>, simplement.</h1>
+      <p>Recherchez un khassida par titre, mot, vers, thème ou transcription.</p>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m21 21-4.35-4.35m2.35-5.65A8 8 0 1 1 3 11a8 8 0 0 1 16 0Z"/>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Ex. Masalikoul Jinaan, Matlaboul Fawzayni…" autocomplete="off" />
+        <button id="searchButton">Rechercher</button>
+      </div>
+
+      <div class="quick-links">
+        <button data-query="Masaalik">Masaalik</button>
+        <button data-query="Matlaboul Fawzayni">Matlaboul Fawzayni</button>
+        <button data-query="Quran">Coran</button>
+        <button data-query="Prophète">Prophète ﷺ</button>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Statistiques">
+      <div><strong id="countWorks">6</strong><span>Khassaïdes</span></div>
+      <div><strong>3</strong><span>Formats</span></div>
+      <div><strong>2</strong><span>Langues</span></div>
+    </section>
+
+    <section id="bibliotheque" class="library">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Explorer</span>
+          <h2>Bibliothèque</h2>
+        </div>
+        <p id="resultCount">6 résultats</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filtres">
+        <button class="filter active" data-filter="all">Tous</button>
+        <button class="filter" data-filter="pdf">PDF</button>
+        <button class="filter" data-filter="audio">Audio</button>
+        <button class="filter" data-filter="arabe">Texte arabe</button>
+      </div>
+
+      <div id="results" class="results"></div>
+
+      <div id="emptyState" class="empty hidden">
+        <div>⌕</div>
+        <h3>Aucun résultat</h3>
+        <p>Essayez une autre orthographe ou un mot plus court.</p>
+      </div>
+    </section>
+
+    <section id="apropos" class="about">
+      <div>
+        <span class="eyebrow">Notre mission</span>
+        <h2>Préserver, transmettre et faciliter l’accès.</h2>
+      </div>
+      <p>
+        Xassida Search est un prototype de moteur de recherche dédié aux œuvres de
+        Cheikh Ahmadou Bamba. Les textes, traductions et fichiers définitifs devront
+        être vérifiés et validés par des personnes compétentes avant publication.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand footer-brand">
+      <span class="brand-mark">خ</span>
+      <span><strong>Xassida</strong><small>Search</small></span>
+    </div>
+    <p>Prototype V1 — contenu de démonstration.</p>
+  </footer>
+
+  <template id="cardTemplate">
+    <article class="card">
+      <div class="card-top">
+        <span class="category"></span>
+        <span class="formats"></span>
+      </div>
+      <h3 class="title"></h3>
+      <p class="arabic" dir="rtl"></p>
+      <p class="description"></p>
+      <div class="tags"></div>
+      <div class="card-actions">
+        <button class="primary-action">Lire</button>
+        <button class="secondary-action">Détails</button>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="detailDialog">
+    <button class="dialog-close" aria-label="Fermer">×</button>
+    <span class="eyebrow">Fiche du khassida</span>
+    <h2 id="dialogTitle"></h2>
+    <p id="dialogArabic" class="dialog-arabic" dir="rtl"></p>
+    <p id="dialogDescription"></p>
+    <div id="dialogMeta" class="dialog-meta"></div>
+    <div class="notice">
+      Les liens PDF et audio seront ajoutés après validation des sources et des droits.
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
