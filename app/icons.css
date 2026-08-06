@@ -1,0 +1,40 @@
+.reference-chips > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.popular-panel h2,
+.reference-ai h2 {
+  display: inline-flex;
+  align-items: center;
+}
+
+.popular-panel h2 span,
+.reference-ai h2 span { margin-left: 2px; }
+
+.reference-search > span,
+.reference-search button,
+.reference-bubble,
+.reference-trust b,
+.reference-themes button b {
+  display: grid;
+  place-items: center;
+}
+
+.header-actions button:nth-child(2) {
+  display: flex;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.reference-bubble { letter-spacing: normal; }
+
+.brand-symbol {
+  display: grid;
+  place-items: center;
+  font-family: Georgia, serif;
+}
+
+.brand-symbol:not(:empty) { line-height: 1; }
