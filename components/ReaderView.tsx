@@ -211,76 +211,107 @@ export function ReaderView({
         </div>
       </section>
       {tab === "lecture" || tab === "audio" ? (
-        <section className="mx-auto grid max-w-[1500px] gap-5 px-4 py-6 xl:grid-cols-[250px_minmax(0,1fr)_300px] xl:px-6">
-          <aside className="hidden xl:block">
-            <div className="sticky top-24 rounded-2xl border border-line bg-surface p-4 shadow-card">
-              <div className="flex items-center gap-2 border-b border-line pb-3 text-xs font-semibold uppercase tracking-wider text-brand">
-                <List size={16} /> Sommaire
+        <section
+          className={cn(
+            "mx-auto grid max-w-[1500px] gap-5 px-4 py-6 xl:px-6",
+            chunks.length
+              ? "xl:grid-cols-[250px_minmax(0,1fr)_300px]"
+              : "xl:grid-cols-[minmax(0,1fr)_300px]",
+          )}
+        >
+          {chunks.length > 0 && (
+            <aside className="hidden xl:block">
+              <div className="sticky top-24 rounded-2xl border border-line bg-surface p-4 shadow-card">
+                <div className="flex items-center gap-2 border-b border-line pb-3 text-xs font-semibold uppercase tracking-wider text-brand">
+                  <List size={16} /> Sommaire
+                </div>
+                <div className="mt-3 max-h-[65vh] space-y-1 overflow-y-auto">
+                  <p className="px-2 py-2 text-xs font-semibold text-ink">
+                    Chapitre {chunk?.chapter_number || 1}
+                  </p>
+                  {pages.map((item) => (
+                    <button
+                      onClick={() => setActive(item.index)}
+                      key={item.index}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-muted hover:bg-brand/5",
+                        active === item.index &&
+                          "bg-brand/10 font-semibold text-brand",
+                      )}
+                    >
+                      <span>Passage {item.index + 1}</span>
+                      <small>p. {item.page}</small>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="mt-3 max-h-[65vh] space-y-1 overflow-y-auto">
-                <p className="px-2 py-2 text-xs font-semibold text-ink">
-                  Chapitre {chunk?.chapter_number || 1}
-                </p>
-                {pages.map((item) => (
-                  <button
-                    onClick={() => setActive(item.index)}
-                    key={item.index}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-muted hover:bg-brand/5",
-                      active === item.index &&
-                        "bg-brand/10 font-semibold text-brand",
-                    )}
-                  >
-                    <span>Passage {item.index + 1}</span>
-                    <small>p. {item.page}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </aside>
+            </aside>
+          )}
           <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
             <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-3">
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setFontSize((s) => Math.max(20, s - 2))}
-                  className="grid size-9 place-items-center rounded-lg text-muted hover:bg-canvas"
-                  aria-label="Réduire le texte"
-                >
-                  <Minus size={15} />
-                </button>
-                <span className="px-1 text-xs text-muted">A</span>
-                <button
-                  onClick={() => setFontSize((s) => Math.min(42, s + 2))}
-                  className="grid size-9 place-items-center rounded-lg text-muted hover:bg-canvas"
-                  aria-label="Agrandir le texte"
-                >
-                  <Plus size={15} />
-                </button>
-              </div>
-              <div className="flex rounded-xl bg-canvas p-1">
-                {[
-                  ["arabic", "Arabe"],
-                  ["translation", "Traduction"],
-                  ["parallel", "Parallèle"],
-                ].map(([id, label]) => (
+              {chunks.length ? (
+                <>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setFontSize((s) => Math.max(20, s - 2))}
+                      className="grid size-9 place-items-center rounded-lg text-muted hover:bg-canvas"
+                      aria-label="Réduire le texte"
+                    >
+                      <Minus size={15} />
+                    </button>
+                    <span className="px-1 text-xs text-muted">A</span>
+                    <button
+                      onClick={() => setFontSize((s) => Math.min(42, s + 2))}
+                      className="grid size-9 place-items-center rounded-lg text-muted hover:bg-canvas"
+                      aria-label="Agrandir le texte"
+                    >
+                      <Plus size={15} />
+                    </button>
+                  </div>
+                  <div className="flex rounded-xl bg-canvas p-1">
+                    {[
+                      ["arabic", "Arabe"],
+                      ["translation", "Traduction"],
+                      ["parallel", "Parallèle"],
+                    ].map(([id, label]) => (
+                      <button
+                        key={id}
+                        onClick={() => setView(id as View)}
+                        className={cn(
+                          "rounded-lg px-3 py-2 text-[11px] font-semibold text-muted",
+                          view === id && "bg-surface text-brand shadow-sm",
+                        )}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
                   <button
-                    key={id}
-                    onClick={() => setView(id as View)}
-                    className={cn(
-                      "rounded-lg px-3 py-2 text-[11px] font-semibold text-muted",
-                      view === id && "bg-surface text-brand shadow-sm",
-                    )}
+                    className="grid size-9 place-items-center rounded-lg text-muted"
+                    aria-label="Plein écran"
                   >
-                    {label}
+                    <Maximize2 size={16} />
                   </button>
-                ))}
-              </div>
-              <button
-                className="grid size-9 place-items-center rounded-lg text-muted"
-                aria-label="Plein écran"
-              >
-                <Maximize2 size={16} />
-              </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 px-2 text-sm font-semibold text-ink">
+                    <FileText size={17} className="text-brand" /> Document
+                    original
+                  </div>
+                  {work.pdf_url && (
+                    <a
+                      href={work.pdf_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-semibold text-brand"
+                    >
+                      <Maximize2 size={14} />
+                      Ouvrir en plein écran
+                    </a>
+                  )}
+                </>
+              )}
             </header>
             {chunks.length ? (
               <article
@@ -336,15 +367,23 @@ export function ReaderView({
                   <span className="text-brand">Cliquer pour écouter</span>
                 </div>
               </article>
+            ) : work.pdf_url ? (
+              <div className="bg-slate-100 dark:bg-slate-950">
+                <iframe
+                  src={`${work.pdf_url}#toolbar=1&navpanes=0&view=FitH`}
+                  title={`Lire ${work.title}`}
+                  className="h-[72vh] min-h-[620px] w-full"
+                />
+              </div>
             ) : (
               <div className="grid min-h-[440px] place-items-center p-10 text-center">
                 <div>
                   <BookOpen className="mx-auto text-brand" size={34} />
                   <h2 className="mt-4 font-semibold text-ink">
-                    Texte en cours d’intégration
+                    Document indisponible
                   </h2>
                   <p className="mt-2 text-sm text-muted">
-                    Le PDF original reste accessible depuis la fiche.
+                    Aucun PDF n’est encore associé à cette fiche.
                   </p>
                 </div>
               </div>
