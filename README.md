@@ -56,6 +56,16 @@ npm run typecheck
 npm run build
 ```
 
+## Import du catalogue PDF Xassaid
+
+L’importeur associe les PDF publics de Xassaid aux fiches correspondantes et extrait les éditions françaises page par page pour la recherche textuelle :
+
+```bash
+bun --env-file=.env.local scripts/import-xassaid.ts
+```
+
+Il est idempotent : un nouvel import remplace uniquement les passages provenant du même PDF. Chaque passage conserve l’URL source et le numéro de page. Les scans arabes sont liés aux fiches mais nécessitent un traitement OCR séparé.
+
 ## Limites explicites de cette livraison
 
 - Le premier corpus de 10 à 20 khassaïdes doit être fourni et validé par le comité compétent.
