@@ -1,0 +1,2 @@
+import { PageHero } from "@/components/site/PageHero";import { AskInterface } from "@/components/ai/AskInterface";
+export const metadata={title:"Recherche IA"};export default function AskPage(){return <main><PageHero eyebrow="Assistant documentaire" title="Interroger le corpus, sans perdre les sources" description="Chaque réponse associe les passages utilisés, le khassida et les références disponibles."/><AskInterface/></main>}
