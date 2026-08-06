@@ -1,0 +1,30 @@
+.hero {
+  height: 410px;
+  background:
+    linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, .98) 28%, rgba(232, 243, 255, .86) 49%, rgba(12, 57, 120, .05) 76%),
+    url("https://laviesenegalaise.com/wp-content/uploads/2023/09/Touba.jpeg") center 43% / cover no-repeat;
+}
+
+.hero h1 { font-size: clamp(48px, 5vw, 66px); }
+
+.photo-credit {
+  position: absolute;
+  right: 14px;
+  bottom: 45px;
+  z-index: 5;
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: rgba(5, 21, 44, .62);
+  color: #fff;
+  font-size: 9px;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    height: 390px;
+    background-position: 56% center;
+  }
+
+  .photo-credit { bottom: 35px; }
+}

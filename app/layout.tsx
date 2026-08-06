@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./reference.css";
 export const metadata:Metadata={title:{default:"Xassida Search",template:"%s · Xassida Search"},description:"Rechercher, lire et écouter les khassaïdes de Cheikh Ahmadou Bamba."};
 export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="fr"><body><header className="topbar"><a className="brand" href="/"><span className="brand-symbol">✥</span><strong>Xassida Search</strong></a><nav><a className="active" href="/">Accueil</a><a href="/#bibliotheque">Khassaïdes</a><a href="/#assistant">Recherche IA</a><a href="/#themes">Thèmes</a><a href="/#bibliotheque">Bibliothèque</a></nav><div className="header-actions"><a href="/#bibliotheque" aria-label="Rechercher">⌕</a><a href="/admin" aria-label="Compte administrateur">♙</a></div></header>{children}<footer><div><span>◉</span> Contenu vérifié</div><div><span>▣</span> Sources authentiques</div><div><span>✣</span> Transmission fidèle</div></footer></body></html>}
