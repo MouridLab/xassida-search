@@ -91,8 +91,9 @@ export function ReaderView({
   ];
   return (
     <main className="pb-14">
-      <section className="border-b border-line bg-surface">
-        <div className="mx-auto max-w-[1400px] px-5 py-8 lg:px-8">
+      <section className="relative overflow-hidden border-b border-line bg-surface">
+        <div className="pointer-events-none absolute -right-24 -top-28 size-80 rounded-full bg-brand/[.06] blur-3xl" />
+        <div className="relative mx-auto max-w-[1400px] px-4 py-5 sm:px-5 sm:py-8 lg:px-8">
           <nav className="flex items-center gap-2 text-xs text-muted">
             <Link href="/">Accueil</Link>
             <span>›</span>
@@ -100,16 +101,17 @@ export function ReaderView({
             <span>›</span>
             <strong className="truncate text-ink">{work.title}</strong>
           </nav>
-          <div className="mt-7 grid gap-7 lg:grid-cols-[150px_1fr_auto]">
-            <div className="relative grid h-52 w-36 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-emerald-950 to-emerald-800 p-4 text-center text-gold shadow-xl">
-              <span className="absolute inset-2 rounded border border-gold/30" />
-              <span className="font-arabic text-2xl leading-10">
+          <div className="mt-5 grid grid-cols-[96px_minmax(0,1fr)] items-start gap-x-4 gap-y-5 sm:mt-7 sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-x-6 lg:grid-cols-[150px_1fr_auto] lg:gap-7">
+            <div className="relative grid h-36 w-24 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 p-3 text-center text-gold shadow-[0_16px_35px_rgba(6,78,59,.22)] sm:h-48 sm:w-32 lg:h-52 lg:w-36">
+              <span className="absolute inset-1.5 rounded-lg border border-gold/35 sm:inset-2" />
+              <span className="absolute left-1/2 top-3 h-px w-10 -translate-x-1/2 bg-gold/30" />
+              <span className="font-arabic text-lg leading-8 sm:text-2xl sm:leading-10">
                 {work.arabic_title || "خَصَائِد"}
               </span>
             </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            <div className="min-w-0 pt-1 sm:pt-2">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                <h1 className="text-[26px] font-bold leading-[1.08] tracking-[-.035em] text-ink sm:text-4xl">
                   {work.title}
                 </h1>
                 {work.is_verified && (
@@ -118,25 +120,32 @@ export function ReaderView({
                   </Badge>
                 )}
               </div>
-              <p dir="rtl" className="mt-2 w-fit font-arabic text-3xl text-ink">
+              <p
+                dir="rtl"
+                className="mt-2 w-fit font-arabic text-2xl text-ink sm:text-3xl"
+              >
                 {work.arabic_title}
               </p>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted">
+              <p className="mt-3 line-clamp-3 max-w-2xl text-xs leading-5 text-muted sm:mt-4 sm:text-sm sm:leading-7 lg:line-clamp-none">
                 {work.description ||
                   "Œuvre de Cheikh Ahmadou Bamba disponible dans la bibliothèque Xassida Search."}
               </p>
-              <div className="mt-5 flex flex-wrap gap-4 text-xs text-muted">
-                <span>
-                  <strong className="text-ink">{chunks.length || "—"}</strong>{" "}
-                  passages
-                </span>
-                <span>
-                  <strong className="text-ink">
-                    {Math.max(0, ...chunks.map((c) => c.page_number || 0)) ||
-                      "—"}
-                  </strong>{" "}
-                  pages
-                </span>
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted sm:mt-5 sm:text-xs">
+                {chunks.length > 0 && (
+                  <span>
+                    <strong className="text-ink">{chunks.length || "—"}</strong>{" "}
+                    passages
+                  </span>
+                )}
+                {chunks.length > 0 && (
+                  <span>
+                    <strong className="text-ink">
+                      {Math.max(0, ...chunks.map((c) => c.page_number || 0)) ||
+                        "—"}
+                    </strong>{" "}
+                    pages
+                  </span>
+                )}
                 <span>
                   <strong className="text-ink">
                     {audioUrl ? "Disponible" : "—"}
@@ -148,7 +157,7 @@ export function ReaderView({
                 </span>
               </div>
             </div>
-            <div className="flex flex-wrap content-start gap-2 lg:max-w-[340px]">
+            <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:col-span-1 lg:max-w-[340px] lg:content-start">
               {[
                 [BookOpen, "Lire", "primary"],
                 [Headphones, "Écouter", "success"],
@@ -162,7 +171,7 @@ export function ReaderView({
                       ? "/recherche-ia"
                       : undefined;
                 const cls = cn(
-                  "flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition",
+                  "flex h-11 items-center justify-center gap-2 rounded-xl px-3 text-xs font-semibold transition hover:-translate-y-0.5 sm:px-4 sm:text-sm",
                   kind === "primary" && "bg-brand text-white",
                   kind === "success" && "bg-emerald-700 text-white",
                   kind === "secondary" &&
@@ -193,7 +202,7 @@ export function ReaderView({
               })}
             </div>
           </div>
-          <nav className="mt-8 flex gap-1 overflow-x-auto border-b border-line">
+          <nav className="mt-6 flex gap-1 overflow-x-auto border-b border-line sm:mt-8">
             {tabs.map(([id, label]) => (
               <button
                 onClick={() => setTab(id)}
