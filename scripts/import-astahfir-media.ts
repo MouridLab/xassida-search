@@ -26,9 +26,9 @@ const files = [
   },
   {
     kind: "audio",
-    path: join(root, "astahfiroulahabihi.webm"),
-    name: "astahfiroulahabihi.webm",
-    mime: "audio/webm",
+    path: join(root, "astahfiroulahabihi.m4a"),
+    name: "astahfiroulahabihi.m4a",
+    mime: "audio/mp4",
     source: "https://www.youtube.com/watch?v=QCFRsqiqaZU",
   },
 ] as const;
