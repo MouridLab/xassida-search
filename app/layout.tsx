@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Icon } from "@/components/Icon";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/amiri/400.css";
+import "@fontsource/amiri/700.css";
 import "./globals.css";
-import "./shell.css";
-import "./icons.css";
-import "./reader.css";
-import "./showcase.css";
 export const metadata:Metadata={title:{default:"Xassida Search",template:"%s · Xassida Search"},description:"Rechercher, lire et écouter les khassaïdes de Cheikh Ahmadou Bamba."};
-export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="fr"><body><header className="topbar"><a className="brand" href="/"><span className="brand-symbol">خ</span><span><strong>Xassida Search</strong><small>Les écrits de Cheikh Ahmadou Bamba</small></span></a><nav><a className="active" href="/">Accueil</a><a href="/#popular">Bibliothèque</a><a href="/#popular">Thèmes</a><a href="/#popular">Collections</a><a href="/#assistant">Recherche IA</a><a href="/#popular">Favoris</a></nav><div className="header-actions"><button aria-label="Mode sombre"><Icon name="moon" size={18}/></button><button aria-label="Langue"><Icon name="globe" size={16}/> FR⌄</button><a href="/admin" aria-label="Compte administrateur"><Icon name="user" size={18}/></a></div></header>{children}<footer id="site-footer" className="site-footer"><div className="footer-brand"><span className="brand-symbol">خ</span><p>Xassida Search est une plateforme dédiée à la préservation<br/>et à la transmission des khassaïdes de Cheikh Ahmadou Bamba.</p></div><div className="socials"><a href="#" aria-label="Facebook"><Icon name="message" size={17}/></a><a href="#" aria-label="Vidéo"><Icon name="play" size={17}/></a><a href="#" aria-label="Telegram"><Icon name="send" size={17}/></a></div><nav><a href="#site-footer">À propos</a><a href="#site-footer">Contact</a><a href="#site-footer">Mentions légales</a></nav></footer></body></html>}
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="fr" suppressHydrationWarning><body><SiteHeader/><div className="min-h-screen pt-[72px]">{children}</div><SiteFooter/></body></html>}
