@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Icon } from "@/components/Icon";
 import "./globals.css";
-import "./reference.css";
+import "./shell.css";
 import "./icons.css";
 import "./reader.css";
 import "./showcase.css";
