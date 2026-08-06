@@ -1,0 +1,2 @@
+import {SearchExperience} from "@/components/SearchExperience";import {AskExperience} from "@/components/AskExperience";
+export default function Home(){return <main><section className="hero"><span className="eyebrow">Bibliothèque numérique mouride</span><h1>Retrouvez les écrits de Serigne Touba, simplement.</h1><p>Recherche exacte, arabe et sémantique dans un corpus validé et traçable.</p><a className="button" href="#bibliotheque">Explorer le corpus</a></section><SearchExperience/><AskExperience/></main>}
