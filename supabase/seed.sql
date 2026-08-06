@@ -6,5 +6,6 @@ insert into public.khassidas(slug,title,arabic_title,aliases,themes,description,
 ('tazawwudush-shubban','Tazawwudush Shubbān','تزود الشبان',array['Tazawwudush Shubban'],array['jeunesse','éducation'],'Œuvre à documenter et faire valider.',false),
 ('jawharul-maani','Jawharul Ma’āni','جوهرة المعاني',array['Jawharul Maani','Jawharoul Ma’ani'],array['spiritualité'],'Œuvre à documenter et faire valider.',false),
 ('al-hikam','Al Hikam','الحكم',array['Al-Hikam','Hikam'],array['sagesse'],'Œuvre à documenter et faire valider.',false),
-('safinatul-aman','Safinatul Amān','سفينة الأمان',array['Safinatoul Aman','Safīnatul Amān'],array['spiritualité','protection'],'Œuvre à documenter et faire valider.',false)
+('safinatul-aman','Safinatul Amān','سفينة الأمان',array['Safinatoul Aman','Safīnatul Amān'],array['spiritualité','protection'],'Œuvre à documenter et faire valider.',false),
+('astahfirul-laha-bihi','Astahfirul Laha Bihi','أستغفر الله به',array['Astakhfirullah Bihi','Astaghfirullaha Bihi'],array['invocation','repentir'],'Feuillet d’invocation attribué à Cheikh Ahmadou Bamba.',false)
 on conflict(slug) do nothing;

@@ -38,3 +38,15 @@
 }
 
 .brand-symbol:not(:empty) { line-height: 1; }
+
+.reader-audio .audio-play {
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  background: #1957b7;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
