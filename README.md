@@ -66,6 +66,16 @@ bun --env-file=.env.local scripts/import-xassaid.ts
 
 Il est idempotent : un nouvel import remplace uniquement les passages provenant du même PDF. Chaque passage conserve l’URL source et le numéro de page. Les scans arabes sont liés aux fiches mais nécessitent un traitement OCR séparé.
 
+## Stockage MinIO
+
+Les nouveaux PDF et fichiers audio sont stockés dans un bucket MinIO privé. Configurez les variables `MINIO_*` de `.env.example`, exécutez `003_minio_media.sql`, puis migrez les médias déjà référencés :
+
+```bash
+bun --env-file=.env.local scripts/migrate-media-to-minio.ts
+```
+
+L’application ne révèle jamais les identifiants MinIO. Elle produit une URL de lecture signée valable 15 minutes via `/api/media/[id]`. Les vidéos YouTube restent référencées comme médias externes : fournissez un fichier audio autorisé depuis l’administration pour le stocker réellement dans MinIO.
+
 ## Limites explicites de cette livraison
 
 - Le premier corpus de 10 à 20 khassaïdes doit être fourni et validé par le comité compétent.
