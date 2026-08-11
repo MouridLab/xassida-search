@@ -14,7 +14,7 @@ const trust=[ [ShieldCheck,"Contenu vérifié","Chaque texte publié est rattach
 export function HomeExperience(){
  const [query,setQuery]=useState("");const [results,setResults]=useState<Result[]>([]);const [loading,setLoading]=useState(false);const [error,setError]=useState("");
  async function search(event?:FormEvent){event?.preventDefault();setLoading(true);setError("");try{const res=await fetch(`/api/search?q=${encodeURIComponent(query)}`);const body=await res.json();if(!res.ok)throw new Error(body.error);setResults(body.results)}catch(reason){setError(reason instanceof Error?reason.message:"Recherche impossible")}finally{setLoading(false)}}
- useEffect(()=>{void search()},[]);// eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(()=>{let cancelled=false;async function load(){setLoading(true);setError("");try{const res=await fetch("/api/search?q=");const body=await res.json();if(!res.ok)throw new Error(body.error);if(!cancelled)setResults(body.results)}catch(reason){if(!cancelled)setError(reason instanceof Error?reason.message:"Recherche impossible")}finally{if(!cancelled)setLoading(false)}}void load();return()=>{cancelled=true}},[]);
  const works=useMemo(()=>{const unique=new Map<string,Result>();results.forEach(r=>unique.set(r.khassida.id,r));return [...unique.values()].slice(0,8)},[results]);
  return <main>
   <section className="relative overflow-hidden border-b border-line bg-surface"><div className="soft-grid absolute inset-0 [mask-image:linear-gradient(to_right,black,transparent_58%)]"/><div className="absolute -right-32 -top-32 size-[550px] rounded-full bg-brand/10 blur-3xl"/><div className="relative mx-auto grid min-h-[620px] max-w-[1400px] items-center gap-12 px-5 py-16 lg:grid-cols-[1.05fr_.95fr] lg:px-8">

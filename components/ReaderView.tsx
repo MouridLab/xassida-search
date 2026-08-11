@@ -3,13 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   Bell,
   BookMarked,
   BookOpen,
   Bot,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
   CircleHelp,
   Clock3,
@@ -23,7 +21,6 @@ import {
   Home,
   Info,
   Library,
-  List,
   Menu,
   MessageSquare,
   Minus,
@@ -104,19 +101,12 @@ export function ReaderView({
       })),
     [chunks],
   );
-  const chapterGroups = useMemo(
-    () => [...new Set(pages.map((p) => p.chapter))],
-    [pages],
-  );
   const tabs: [Tab, string][] = [
     ["lecture", "Lecture"],
     ["audio", "Audio"],
     ["information", "Informations"],
     ["chapitres", "Chapitres"],
-    [
-      "commentaires",
-      `Commentaires${chunks.some((c) => c.commentary) ? "" : ""}`,
-    ],
+    ["commentaires", "Commentaires"],
     ["sources", "Sources"],
   ];
   useEffect(() => {
