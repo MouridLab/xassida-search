@@ -84,6 +84,8 @@ export function ReaderView({
     [fontSize, setFontSize] = useState(29),
     [menu, setMenu] = useState(false),
     [playing, setPlaying] = useState(false),
+    [audioOpen, setAudioOpen] = useState(false),
+    [audioError, setAudioError] = useState(""),
     [progress, setProgress] = useState(0),
     [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -113,7 +115,7 @@ export function ReaderView({
     setProgress(0);
     setPlaying(false);
   }, [audioUrl]);
-  function toggleAudio() {
+  async function toggleAudio() {
     if (youtubeId) {
       document
         .getElementById("youtube-player")
@@ -122,7 +124,11 @@ export function ReaderView({
     }
     const el = audioRef.current;
     if (!el) return;
-    if (el.paused) void el.play();
+    if (el.paused) {
+      setAudioError("");
+      try { await el.play(); }
+      catch { setAudioError("Ce fichier audio est indisponible ou son format n’est pas pris en charge."); }
+    }
     else el.pause();
   }
   function seek(value: number) {
@@ -130,6 +136,11 @@ export function ReaderView({
     if (!el || !duration) return;
     el.currentTime = value;
     setProgress(value);
+  }
+  function openAudio() {
+    setTab("audio");
+    if (youtubeId) void toggleAudio();
+    else setAudioOpen(true);
   }
   return (
     <div className="relative z-[60] -mt-[72px] min-h-screen bg-canvas pb-24 text-ink">
@@ -208,7 +219,7 @@ export function ReaderView({
                     icon={Headphones}
                     label="Écouter"
                     green
-                    onClick={toggleAudio}
+                    onClick={openAudio}
                   />
                   {work.pdf_url && (
                     <a
@@ -291,6 +302,7 @@ export function ReaderView({
             onPause={() => setPlaying(false)}
             onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
             onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
+            onError={() => setAudioError("Impossible de charger ce fichier audio. Vérifiez le stockage et son format.")}
           />
         )
       )}
@@ -303,6 +315,7 @@ export function ReaderView({
         onSeek={seek}
         disabled={!audioUrl}
       />
+      {audioOpen&&audioUrl&&!youtubeId&&<MobileAudioPlayer work={work} playing={playing} progress={progress} duration={duration} error={audioError} onClose={()=>setAudioOpen(false)} onToggle={toggleAudio} onSeek={seek}/>}
     </div>
   );
 }
@@ -815,6 +828,20 @@ function TabContent({
       </div>
     </div>
   );
+}
+
+function MobileAudioPlayer({work,playing,progress,duration,error,onClose,onToggle,onSeek}:{work:Khassida;playing:boolean;progress:number;duration:number;error:string;onClose:()=>void;onToggle:()=>void;onSeek:(value:number)=>void}){
+  const bars=[18,24,16,28,20,34,23,18,27,38,22,16,31,25,42,28,20,35,48,30,24,39,54,31,22,44,65,38,28,58,80,54,38,68,92,72,48,63,82,55,35,46];
+  const percent=duration?Math.min(100,(progress/duration)*100):0;
+  return <section className="fixed inset-0 z-[200] flex flex-col overflow-hidden bg-[#f7f7f5] px-6 pb-8 pt-[max(24px,env(safe-area-inset-top))] text-slate-950">
+    <header className="flex items-center justify-between"><button onClick={onClose} className="grid size-12 place-items-center rounded-full bg-white shadow-lg" aria-label="Fermer"><X size={22}/></button><div className="text-center"><span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">Lecture audio</span><p className="mt-1 max-w-[190px] truncate text-sm font-semibold">{work.title}</p></div><button className="grid size-12 place-items-center rounded-full bg-white shadow-lg" aria-label="Plus d’options"><MoreHorizontal size={23}/></button></header>
+    <div className="mt-10 text-center"><p dir="rtl" className="font-arabic text-3xl leading-relaxed">{work.arabic_title||"خَصَائِد"}</p><p className="mt-1 text-xs text-slate-500">Récitation · Cheikh Ahmadou Bamba</p></div>
+    <div className="relative mt-10 flex min-h-0 flex-1 items-center"><div className="absolute inset-x-0 flex h-56 items-center justify-center gap-[3px] overflow-hidden rounded-3xl bg-white px-5 shadow-sm">{bars.map((height,index)=><span key={index} className="w-[3px] shrink-0 rounded-full bg-slate-900 transition-colors" style={{height:`${height}%`,opacity:index/bars.length*100<=percent?1:.2}}/>)}</div><div className="pointer-events-none absolute inset-y-[20%] w-0.5 bg-emerald-500" style={{left:`${percent}%`}}><span className="absolute -left-1 -top-1 size-2.5 rounded-full bg-emerald-500"/></div><input aria-label="Progression audio" type="range" min={0} max={duration||1} value={progress} onChange={e=>onSeek(Number(e.target.value))} className="absolute inset-x-0 z-10 h-56 w-full cursor-pointer opacity-0"/></div>
+    <div className="mt-6 flex justify-between text-xs font-medium text-slate-400"><span>{formatTime(progress)}</span><span>-{formatTime(Math.max(0,duration-progress))}</span></div>
+    <strong className="mt-4 text-center text-5xl tabular-nums tracking-tight">{formatTime(progress)}</strong>{error&&<p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-red-600">{error}</p>}
+    <div className="mt-8 flex items-center justify-center gap-10"><button onClick={()=>onSeek(Math.max(0,progress-15))} className="relative grid size-14 place-items-center" aria-label="Reculer de 15 secondes"><RotateCcw size={36}/><span className="absolute text-[10px] font-bold">15</span></button><button onClick={onToggle} className="grid size-20 place-items-center rounded-full bg-slate-950 text-white shadow-xl" aria-label={playing?"Pause":"Lecture"}>{playing?<Pause size={32} fill="currentColor"/>:<Play className="ml-1" size={34} fill="currentColor"/>}</button><button onClick={()=>onSeek(Math.min(duration,progress+15))} className="relative grid size-14 -scale-x-100 place-items-center" aria-label="Avancer de 15 secondes"><RotateCcw size={36}/><span className="absolute scale-x-[-1] text-[10px] font-bold">15</span></button></div>
+    <button onClick={onClose} className="mt-9 h-14 rounded-2xl bg-emerald-700 text-sm font-bold text-white shadow-lg">Retour au texte</button>
+  </section>
 }
 
 function BottomPlayer({
