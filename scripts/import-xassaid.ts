@@ -35,12 +35,12 @@ for(const source of sources){
   const frenchUrl=sourceUrl(source.french);
   const file=await download(source.french);
   const pages=await extractPages(file);
-  await db.from("khassida_chunks").delete().eq("khassida_id",work.id).eq("source_pdf_url",frenchUrl);
-  const rows=pages.flatMap((page,pageIndex)=>page.length<30?[]:split(page,5500).map(part=>({khassida_id:work.id,french_translation:part,page_number:pageIndex+1,source_pdf_url:frenchUrl,validation_status:"verified"})));
+  await db.from("khassida_chunks").delete().eq("khassida_id",work.id).eq("source_pdf_url",frenchUrl).neq("validation_status","verified");
+  const rows=pages.flatMap((page,pageIndex)=>page.length<30?[]:split(page,5500).map(part=>({khassida_id:work.id,french_translation:part,page_number:pageIndex+1,source_pdf_url:frenchUrl,validation_status:"review"})));
   for(let index=0;index<rows.length;index+=100){const {error}=await db.from("khassida_chunks").insert(rows.slice(index,index+100));if(error)throw error}
   imported+=rows.length;console.log(`${work.title}: ${rows.length} passages extraits de ${pages.length} pages`);
 }
 await rm(temp,{recursive:true,force:true});
-console.log(`Import terminé: ${imported} passages recherchables.`);
+console.log(`Import terminé: ${imported} passages placés en validation.`);
 
 function split(value:string,max:number){const parts:string[]=[];let rest=value;while(rest.length>max){let cut=rest.lastIndexOf("\n",max);if(cut<max*.6)cut=max;parts.push(rest.slice(0,cut).trim());rest=rest.slice(cut).trim()}if(rest)parts.push(rest);return parts}

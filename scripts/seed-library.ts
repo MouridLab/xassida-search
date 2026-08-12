@@ -20,7 +20,6 @@ const items = [
     resource_url: null,
     source_name: "Laval théologique et philosophique, vol. 61, no 2",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "dahira-urbain-pouvoir-mouridisme",
@@ -36,7 +35,6 @@ const items = [
     resource_url: null,
     source_name: "Les Annales de la recherche urbaine, no 96",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "mouridisme-economie-traite-surplus-accumulation",
@@ -52,7 +50,6 @@ const items = [
     resource_url: null,
     source_name: "Cahiers ORSTOM, série Sciences humaines",
     is_featured: false,
-    is_verified: true,
   },
   {
     slug: "histoire-hizbut-tarqiyyah",
@@ -68,7 +65,6 @@ const items = [
     resource_url: null,
     source_name: "Khadimu-r-Rasul — Hizbut-Tarqiyyah",
     is_featured: false,
-    is_verified: true,
   },
   {
     slug: "origines-sens-grand-magal-touba",
@@ -82,7 +78,6 @@ const items = [
     resource_url: "https://magal-touba.org/2026/01/02/origines-et-sens-dun-pelerinage/",
     source_name: "Site officiel du Grand Magal de Touba",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "mouridiyya-en-marche-introduction",
@@ -97,7 +92,6 @@ const items = [
     resource_url: "https://books.openedition.org/editionsmsh/79014",
     source_name: "OpenEdition Books",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "muslim-politics-development-senegal",
@@ -112,7 +106,6 @@ const items = [
       "https://www.cambridge.org/core/journals/journal-of-modern-african-studies/article/abs/muslim-politics-and-development-in-senegal/5725BD907CBBB3A8F0270BC008632EB5",
     source_name: "The Journal of Modern African Studies",
     is_featured: false,
-    is_verified: true,
   },
   {
     slug: "turuq-sufiyya-senegal-ar",
@@ -126,7 +119,6 @@ const items = [
     resource_url: "https://studies.aljazeera.net/ar/reports/2018/08/180805121751184.html",
     source_name: "مركز الجزيرة للدراسات",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "bassirou-khelcom-vie-oeuvre-serigne-saliou",
@@ -142,7 +134,6 @@ const items = [
     resource_url: "https://www.youtube.com/watch?v=gi50IC2xIGE",
     source_name: "Mourides de France",
     is_featured: true,
-    is_verified: true,
   },
   {
     slug: "conferences-serigne-sam-mbaye",
@@ -156,7 +147,6 @@ const items = [
     resource_url: "https://www.mourides.com/ecouter-et-telecharger-les-conferences-de-serigne",
     source_name: "Mourides.com",
     is_featured: true,
-    is_verified: true,
   },
 ] as const;
 
@@ -165,5 +155,5 @@ const { data, error } = await db
   .upsert(items, { onConflict: "slug" })
   .select("slug,title,language,item_type");
 if (error) throw error;
-console.log(`${data.length} ressources validées enregistrées`);
+console.log(`${data.length} ressources enregistrées sans validation automatique`);
 for (const item of data) console.log(`- [${item.language}] ${item.title}`);
