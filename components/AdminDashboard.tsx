@@ -3,16 +3,34 @@
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  BookOpen,
   CheckCircle2,
   Edit3,
   ImageIcon,
+  Languages,
   LogOut,
+  Eye,
+  XCircle,
   Plus,
   UploadCloud,
 } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
 import type { Khassida } from "@/types/database";
+
+type AdminEdition = {
+  id: string;
+  language: string;
+  edition_kind: "original" | "translation" | "transcription";
+  title: string | null;
+  translator: string | null;
+  publisher: string | null;
+  publication_year: number | null;
+  page_count: number | null;
+  source_name: string | null;
+  file_name: string;
+  file_size: number | null;
+  validation_status: "review" | "verified" | "disabled";
+  khassidas: { title: string; slug: string };
+};
 
 async function api(url: string, options: RequestInit = {}) {
   const { data, error } = await browserClient().auth.getSession();
@@ -30,7 +48,7 @@ async function api(url: string, options: RequestInit = {}) {
 export function AdminDashboard() {
   const router = useRouter();
   const [works, setWorks] = useState<Khassida[]>([]);
-  const [selected, setSelected] = useState("");
+  const [editions, setEditions] = useState<AdminEdition[]>([]);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -38,6 +56,8 @@ export function AdminDashboard() {
   const [role, setRole] = useState("");
   const [editingId, setEditingId] = useState("");
   const [coverPreview, setCoverPreview] = useState("");
+  const [previewEdition, setPreviewEdition] = useState<AdminEdition | null>(null);
+  const [editionPreviewUrl, setEditionPreviewUrl] = useState("");
 
   const handleError = useCallback(
     (reason: unknown) => {
@@ -53,9 +73,13 @@ export function AdminDashboard() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const body = await api("/api/admin/khassidas");
-      setWorks(body.items || []);
-      setRole(body.role || "");
+      const [worksBody, editionsBody] = await Promise.all([
+        api("/api/admin/khassidas"),
+        api("/api/admin/editions"),
+      ]);
+      setWorks(worksBody.items || []);
+      setRole(worksBody.role || "");
+      setEditions(editionsBody.items || []);
     } catch (reason) {
       handleError(reason);
     } finally {
@@ -66,6 +90,10 @@ export function AdminDashboard() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => () => {
+    if (editionPreviewUrl.startsWith("blob:")) URL.revokeObjectURL(editionPreviewUrl);
+  }, [editionPreviewUrl]);
 
   async function submit(
     key: string,
@@ -112,25 +140,6 @@ export function AdminDashboard() {
     );
   }
 
-  async function addChunk(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const values = new FormData(form);
-    await submit(
-      "chunk",
-      async () => {
-        await api("/api/admin/chunks", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(Object.fromEntries(values)),
-        });
-        form.reset();
-        setSelected("");
-      },
-      "Passage ajouté. L’embedding a été calculé si OpenAI est configuré.",
-    );
-  }
-
   async function upload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -143,6 +152,52 @@ export function AdminDashboard() {
       },
       "Fichier stocké dans MinIO et défini comme média principal.",
     );
+  }
+
+  async function uploadEdition(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = new FormData(form);
+    await submit("edition", async () => {
+      await api("/api/admin/editions", { method: "POST", body: values });
+      form.reset();
+      await load();
+    }, "Édition PDF enregistrée dans MinIO.");
+  }
+
+  async function reviewEdition(edition: AdminEdition, status: "verified" | "disabled") {
+    await submit(`review-${edition.id}`, async () => {
+      await api("/api/admin/editions", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: edition.id, validation_status: status }),
+      });
+      if (previewEdition?.id === edition.id) setPreviewEdition(null);
+      await load();
+    }, status === "verified" ? "Édition validée et publiée." : "Édition rejetée.");
+  }
+
+  async function openEditionPreview(edition: AdminEdition) {
+    await submit(`preview-${edition.id}`, async () => {
+      const { data, error: sessionError } = await browserClient().auth.getSession();
+      if (sessionError || !data.session) throw new Error("SESSION_EXPIRED");
+      const response = await fetch(`/api/admin/editions?id=${encodeURIComponent(edition.id)}`, {
+        headers: { authorization: `Bearer ${data.session.access_token}` },
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || "Impossible de charger l’aperçu PDF.");
+      }
+      const blob = await response.blob();
+      if (blob.type !== "application/pdf") throw new Error("Le fichier reçu n’est pas un PDF valide.");
+      setEditionPreviewUrl(URL.createObjectURL(blob));
+      setPreviewEdition(edition);
+    }, "");
+  }
+
+  function closeEditionPreview() {
+    setPreviewEdition(null);
+    setEditionPreviewUrl("");
   }
 
   function previewCover(event: ChangeEvent<HTMLInputElement>) {
@@ -200,7 +255,7 @@ export function AdminDashboard() {
               Gestion du corpus
             </span>
             <h1 className="mt-2 text-3xl font-bold tracking-tight">Administration</h1>
-            <p className="mt-2 text-sm text-slate-500">Khassaïdes, passages et médias privés.</p>
+            <p className="mt-2 text-sm text-slate-500">Khassaïdes, éditions et médias privés.</p>
           </div>
           <button
             onClick={signOut}
@@ -209,6 +264,7 @@ export function AdminDashboard() {
             <LogOut size={15} /> Déconnexion
           </button>
         </div>
+
       </header>
 
       <div className="mx-auto max-w-[1320px] px-5 py-8 lg:px-8">
@@ -223,7 +279,7 @@ export function AdminDashboard() {
           </div>
         )}
 
-        <div className="grid items-start gap-5 xl:grid-cols-3">
+        <div className="grid items-start gap-5 lg:grid-cols-2">
           <AdminCard icon={Plus} title="Ajouter un khassaïde" description="Créer sa fiche bibliographique en brouillon.">
             <form onSubmit={addWork} className="space-y-4">
               <Field name="title" label="Titre officiel" required />
@@ -233,31 +289,6 @@ export function AdminDashboard() {
               <Field name="description" label="Description" area />
               <div className="grid grid-cols-2 gap-3"><Field name="page_count" label="Nombre de pages" type="number" /><Field name="verse_count" label="Nombre de vers" type="number" /></div>
               <SubmitButton busy={pending === "work"}>Enregistrer le brouillon</SubmitButton>
-            </form>
-          </AdminCard>
-
-          <AdminCard icon={BookOpen} title="Ajouter un passage" description="Séparer original, transcription, traduction et commentaire.">
-            <form onSubmit={addChunk} className="space-y-4">
-              <SelectWork works={works} value={selected} onChange={setSelected} />
-              <Field name="arabic_text" label="Texte arabe original" area dir="rtl" />
-              <Field name="transcription" label="Transcription" area />
-              <Field name="french_translation" label="Traduction validée" area />
-              <Field name="commentary" label="Commentaire" area />
-              <div className="grid grid-cols-2 gap-3">
-                <Field name="chapter_number" label="Chapitre" type="number" />
-                <Field name="page_number" label="Page" type="number" />
-                <Field name="verse_start" label="Premier vers" type="number" />
-                <Field name="verse_end" label="Dernier vers" type="number" />
-              </div>
-              <label className="grid gap-1.5 text-xs font-semibold text-slate-700">
-                Statut
-                <select name="validation_status" className={controlClass}>
-                  <option value="draft">Brouillon</option>
-                  <option value="review">À valider</option>
-                  <option value="verified">Validé — validateur ou admin</option>
-                </select>
-              </label>
-              <SubmitButton busy={pending === "chunk"}>Ajouter le passage</SubmitButton>
             </form>
           </AdminCard>
 
@@ -279,6 +310,31 @@ export function AdminDashboard() {
             </form>
           </AdminCard>
         </div>
+
+        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+          <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-violet-50 text-violet-700"><Languages size={20} /></span><div><h2 className="font-bold">Ajouter une édition ou une traduction</h2><p className="mt-1 text-xs text-slate-500">Plusieurs PDF peuvent appartenir au même khassaïde sans remplacer l’original.</p></div></div>
+          <form onSubmit={uploadEdition} className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <SelectWork works={works} />
+            <label className="grid gap-1.5 text-xs font-semibold text-slate-700">Type d’édition<select name="edition_kind" className={controlClass}><option value="translation">Traduction</option><option value="original">Original</option><option value="transcription">Transcription</option></select></label>
+            <label className="grid gap-1.5 text-xs font-semibold text-slate-700">Langue<select name="language" className={controlClass}><option value="fr">Français</option><option value="ar">Arabe</option><option value="wo">Wolof</option><option value="en">Anglais</option></select></label>
+            <Field name="title" label="Titre de cette édition" />
+            <Field name="translator" label="Traducteur" />
+            <Field name="publisher" label="Éditeur" />
+            <Field name="publication_year" label="Année" type="number" />
+            <Field name="page_count" label="Nombre de pages" type="number" />
+            <Field name="source_name" label="Source" />
+            <label className="grid gap-1.5 text-xs font-semibold text-slate-700">Statut<select name="validation_status" className={controlClass}><option value="review">À valider</option>{['validator','admin'].includes(role) && <option value="verified">Validée et publiée</option>}</select></label>
+            <label className="grid gap-1.5 text-xs font-semibold text-slate-700 md:col-span-2">PDF traduit<input name="file" type="file" accept="application/pdf" required className={controlClass} /></label>
+            <div className="md:col-span-2 lg:col-span-3"><SubmitButton busy={pending === "edition"}>Ajouter cette édition</SubmitButton></div>
+          </form>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+          <div className="flex items-center justify-between gap-4"><div><span className="text-[10px] font-bold uppercase tracking-[.18em] text-violet-700">Validation éditoriale</span><h2 className="mt-1 text-xl font-bold">Éditions à valider</h2></div><span className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700">{editions.filter((item) => item.validation_status === 'review').length} en attente</span></div>
+          <div className="mt-5 space-y-3">{editions.filter((item) => item.validation_status === 'review').map((edition) => <article key={edition.id} className="grid gap-4 rounded-2xl border border-slate-200 p-4 lg:grid-cols-[minmax(0,1fr)_auto]"><div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-amber-50 px-2 py-1 text-[9px] font-bold text-amber-700">À valider</span><span className="rounded-full bg-slate-100 px-2 py-1 text-[9px] font-bold uppercase text-slate-600">{edition.language}</span><span className="text-[10px] text-slate-400">{edition.edition_kind}</span></div><h3 className="mt-2 font-bold">{edition.title || edition.khassidas.title}</h3><p className="mt-1 text-xs text-slate-500">{edition.khassidas.title}{edition.translator ? ` · Traducteur : ${edition.translator}` : ''}{edition.page_count ? ` · ${edition.page_count} pages` : ''}</p><p className="mt-1 text-[10px] text-slate-400">{edition.source_name || edition.publisher || edition.file_name}</p></div><div className="flex flex-wrap items-center gap-2"><button disabled={pending === `preview-${edition.id}`} onClick={() => void openEditionPreview(edition)} className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-semibold disabled:opacity-50"><Eye size={14} /> {pending === `preview-${edition.id}` ? "Chargement…" : "Prévisualiser"}</button>{['validator','admin'].includes(role) && <><button disabled={pending === `review-${edition.id}`} onClick={() => void reviewEdition(edition,'verified')} className="flex h-10 items-center gap-2 rounded-xl bg-emerald-800 px-3 text-xs font-bold text-white"><CheckCircle2 size={14} /> Valider</button><button disabled={pending === `review-${edition.id}`} onClick={() => void reviewEdition(edition,'disabled')} className="flex h-10 items-center gap-2 rounded-xl bg-red-50 px-3 text-xs font-bold text-red-700"><XCircle size={14} /> Rejeter</button></>}</div></article>)}{!editions.some((item) => item.validation_status === 'review') && <p className="rounded-2xl bg-slate-50 p-8 text-center text-sm text-slate-500">Aucune édition en attente.</p>}</div>
+        </section>
+
+        {previewEdition && editionPreviewUrl && <div className="fixed inset-0 z-[200] grid place-items-center bg-slate-950/70 p-4" onClick={closeEditionPreview}><section className="flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}><header className="flex items-center justify-between border-b border-slate-200 px-5 py-4"><div><strong>{previewEdition.title || previewEdition.khassidas.title}</strong><p className="mt-1 text-xs text-slate-500">{previewEdition.file_name}</p></div><button onClick={closeEditionPreview} className="grid size-10 place-items-center rounded-full bg-slate-100"><XCircle size={20} /></button></header><iframe src={`${editionPreviewUrl}#view=FitH`} title={`Prévisualiser ${previewEdition.title || previewEdition.khassidas.title}`} className="min-h-0 flex-1 bg-slate-100" /></section></div>}
 
         <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
           <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-700"><Edit3 size={19} /></span><div><h2 className="font-bold">Modifier une fiche</h2><p className="mt-1 text-xs text-slate-500">Titres, description, thèmes, nombre de pages et nombre de vers.</p></div></div>
@@ -324,7 +380,7 @@ function splitList(value: FormDataEntryValue | null) {
   return String(value || "").split(",").map((item) => item.trim()).filter(Boolean);
 }
 function optionalNumber(value: FormDataEntryValue | null) { const parsed=Number(value); return value && Number.isInteger(parsed) && parsed>0 ? parsed : null; }
-function AdminCard({ icon: Icon, title, description, children }: { icon: typeof BookOpen; title: string; description: string; children: React.ReactNode }) {
+function AdminCard({ icon: Icon, title, description, children }: { icon: typeof Plus; title: string; description: string; children: React.ReactNode }) {
   return <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><header className="mb-6 flex gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><Icon size={20} /></span><div><h2 className="font-bold">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{description}</p></div></header>{children}</section>;
 }
 function Field({ name, label, area, type = "text", required, dir, defaultValue }: { name: string; label: string; area?: boolean; type?: string; required?: boolean; dir?: "rtl"; defaultValue?: string|number }) {

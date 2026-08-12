@@ -1,6 +1,6 @@
 # Ajouter un nouveau khassida
 
-Ce document décrit le workflow éditorial actuel de Xassida Search pour ajouter une fiche, un PDF, un audio, une couverture et des passages validés.
+Ce document décrit le workflow éditorial actuel de Xassida Search pour ajouter une fiche, ses éditions PDF, un audio et une couverture.
 
 ## Vue d’ensemble
 
@@ -12,13 +12,9 @@ flowchart TD
     D --> E[Importer le PDF dans MinIO]
     D --> F[Importer l’audio dans MinIO]
     D --> G[Importer la couverture dans MinIO]
-    D --> H[Ajouter les passages]
-    H --> I[Contrôler les textes et les références]
-    I --> J[Passer les passages à verified]
     E --> K[Publier la fiche avec is_verified = true]
     F --> K
     G --> K
-    J --> K
     K --> L[Khassida visible sur le site]
 ```
 
@@ -30,7 +26,6 @@ flowchart TD
 | PDF | `/admin`, panneau « Importer dans MinIO » | MinIO + table `media_assets` |
 | Audio | `/admin`, panneau « Importer dans MinIO » | MinIO + table `media_assets` |
 | Couverture | `/admin`, panneau « Importer un média » | MinIO + table `media_assets` |
-| Texte et traduction | `/admin`, formulaire « Ajouter un passage » | Table `khassida_chunks` |
 | Publication | Supabase SQL Editor | Colonne `khassidas.is_verified` |
 
 ## 1. Préparer les fichiers
@@ -42,7 +37,7 @@ Préparer de préférence :
 - une couverture PNG ou WebP nette ;
 - le titre officiel et le titre arabe ;
 - les variantes du titre et les thèmes ;
-- les textes, traductions et références de pages vérifiés ;
+- les différentes éditions et traductions disponibles ;
 - le nom et la provenance de la source.
 
 Utiliser des noms de fichiers simples, sans caractères spéciaux :
@@ -135,33 +130,15 @@ Dans « Importer un média », choisir `Couverture`, puis sélectionner une imag
 
 Dans « Modifier une fiche », renseigner ou corriger les thèmes abordés, la description, le nombre de pages et le nombre de vers. Ces nombres alimentent les badges du catalogue même si les passages n’ont pas encore été saisis un à un.
 
-## 7. Ajouter les passages
+## 7. Ajouter une traduction
 
-Dans « Ajouter un passage » :
+Une traduction ne doit pas devenir un nouveau khassaïde et ne doit pas remplacer le PDF arabe. Le modèle cible est une liste d’éditions rattachées à la même œuvre : original arabe, traduction française, anglaise ou wolof. Chaque édition conserve sa langue, son type, son traducteur, sa source, son année, son nombre de pages et son fichier MinIO.
 
-1. sélectionner le khassida ;
-2. saisir le texte arabe original ;
-3. saisir la transcription, si elle existe ;
-4. saisir la traduction validée ;
-5. saisir le commentaire sans le mélanger à la traduction ;
-6. indiquer le chapitre, les vers et la page ;
-7. enregistrer d’abord en `draft` ou `review` ;
-8. passer à `verified` après contrôle humain.
-
-```mermaid
-stateDiagram-v2
-    [*] --> draft: saisie initiale
-    draft --> review: prêt à contrôler
-    review --> draft: corrections demandées
-    review --> verified: validation humaine
-    verified --> disabled: retrait exceptionnel
-```
-
-Seuls les passages `verified` sont visibles publiquement.
+Dans `/admin`, utiliser « Ajouter une édition ou une traduction » : sélectionner le khassaïde, le type, la langue, le traducteur, l’éditeur, l’année, le nombre de pages et la source, puis importer le PDF. Un éditeur l’enregistre « À valider »; un validateur ou administrateur peut la publier directement. Les éditions validées apparaissent dans le sélecteur du lecteur sans remplacer le PDF arabe principal.
 
 ## 8. Publier la fiche
 
-Après vérification du PDF, de l’audio, des textes et de la source, publier la fiche depuis le SQL Editor de Supabase :
+Après vérification du PDF, de l’audio et de la source, publier la fiche depuis l’administration avec un compte validateur ou administrateur.
 
 ```sql
 update public.khassidas

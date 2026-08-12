@@ -55,6 +55,9 @@ xassida-media/
 │       │   └── {uuid}-{nom-nettoye}.mp3
 │       └── cover/
 │           └── {uuid}-{nom-nettoye}.png
+│       └── editions/
+│           └── {langue}/
+│               └── {uuid}-{nom-nettoye}.pdf
 └── library/
     └── {slug}/
         └── {slug}.pdf
@@ -225,4 +228,3 @@ Les anciens objets non principaux ne sont pas supprimés automatiquement. Avant 
 - validation par signature réelle du fichier en plus du MIME déclaré;
 - métriques sur les erreurs de lecture et les signatures;
 - sauvegarde automatisée et test périodique de restauration.
-

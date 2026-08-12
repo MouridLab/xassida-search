@@ -20,7 +20,7 @@ export default async function WorkPage({
     .eq("is_verified", true)
     .single();
   if (!k) notFound();
-  const [{ data: chunks }, { data: related }, { data: media }, { data: relatedCovers }] = await Promise.all([
+  const [{ data: chunks }, { data: related }, { data: media }, { data: relatedCovers }, { data: editions }] = await Promise.all([
     db
       .from("khassida_chunks")
       .select("*")
@@ -45,6 +45,12 @@ export default async function WorkPage({
       .eq("kind", "cover")
       .eq("is_primary", true)
       .eq("khassidas.is_verified", true),
+    db
+      .from("khassida_editions")
+      .select("id,khassida_id,language,edition_kind,title,translator,publisher,publication_year,page_count,source_name,file_name,validation_status")
+      .eq("khassida_id", k.id)
+      .eq("validation_status", "verified")
+      .order("language"),
   ]);
   const mediaUrl = (kind: "pdf" | "audio" | "cover", fallback: string | null) => {
     const item = media?.find((candidate) => candidate.kind === kind);
@@ -58,7 +64,7 @@ export default async function WorkPage({
     cover_url: mediaUrl("cover", null),
   };
   const currentTerms = searchableTerms(k);
-  const rankedRelated = (related || [])
+  const rankedCandidates = (related || [])
     .map((item) => {
       const sharedThemes = item.themes.filter((theme: string) =>
         k.themes.some((current: string) => normalizeSearch(current) === normalizeSearch(theme)),
@@ -71,9 +77,10 @@ export default async function WorkPage({
       (a, b) =>
         b.relevance - a.relevance ||
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-    )
-    .slice(0, 3);
-  const hasRelevantRelated = rankedRelated.some((item) => item.relevance > 0);
+    );
+  const relevantRelated = rankedCandidates.filter((item) => item.sharedThemes.length > 0);
+  const hasRelevantRelated = relevantRelated.length > 0;
+  const rankedRelated = (hasRelevantRelated ? relevantRelated : rankedCandidates).slice(0, 3);
   const resolvedRelated = rankedRelated.map((item) => {
     const cover = relatedCovers?.find((candidate) => candidate.khassida_id === item.id);
     return {
@@ -89,8 +96,12 @@ export default async function WorkPage({
       relevance: item.relevance,
     };
   });
+  const resolvedEditions = (editions || []).map((edition) => ({
+    ...edition,
+    url: `/api/edition-media/${edition.id}`,
+  }));
   return (
-    <ReaderView work={resolved} chunks={chunks || []} related={resolvedRelated} relatedMode={hasRelevantRelated ? "related" : "discover"} initialTab={tab} />
+    <ReaderView work={resolved} chunks={chunks || []} editions={resolvedEditions} related={resolvedRelated} relatedMode={hasRelevantRelated ? "related" : "discover"} initialTab={tab} />
   );
 }
 

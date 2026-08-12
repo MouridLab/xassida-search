@@ -19,6 +19,7 @@ import {
   Home,
   Info,
   Library,
+  Languages,
   Menu,
   MessageSquare,
   Minus,
@@ -37,7 +38,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import type { Chunk, Khassida } from "@/types/database";
+import type { Chunk, Khassida, KhassidaEdition } from "@/types/database";
 import { cn } from "@/lib/utils";
 
 type Tab = "lecture" | "audio" | "information";
@@ -58,12 +59,14 @@ const mainLinks = [
 export function ReaderView({
   work,
   chunks,
+  editions,
   related,
   relatedMode,
   initialTab,
 }: {
   work: Khassida;
   chunks: Chunk[];
+  editions: KhassidaEdition[];
   related: RelatedWork[];
   relatedMode: "related" | "discover";
   initialTab?: string;
@@ -232,6 +235,7 @@ export function ReaderView({
               <ReaderContent
                 work={work}
                 chunks={chunks}
+                editions={editions}
                 pages={pages}
                 active={active}
                 setActive={setActive}
@@ -460,6 +464,7 @@ function ActionButton({
 function ReaderContent({
   work,
   chunks,
+  editions,
   pages,
   active,
   setActive,
@@ -470,6 +475,7 @@ function ReaderContent({
 }: {
   work: Khassida;
   chunks: Chunk[];
+  editions: KhassidaEdition[];
   pages: { index: number; page: number; chapter: number; verse: number }[];
   active: number;
   setActive: (v: number) => void;
@@ -479,9 +485,15 @@ function ReaderContent({
   youtubeId: string | null;
 }) {
   const chunk = chunks[active];
+  const documents = [
+    ...(work.pdf_url ? [{ id: "primary", language: "ar", edition_kind: "original" as const, title: "Original arabe", translator: null, publisher: null, publication_year: null, page_count: work.page_count, source_name: work.source_name, file_name: "original.pdf", validation_status: "verified" as const, khassida_id: work.id, url: work.pdf_url }] : []),
+    ...editions,
+  ];
+  const [editionId, setEditionId] = useState(documents[0]?.id || "");
+  const selectedEdition = documents.find((edition) => edition.id === editionId) || documents[0];
   return (
-    <div className={cn("mt-4 grid gap-4", !work.pdf_url && pages.length && "md:grid-cols-[145px_minmax(0,1fr)]")}>
-      {!work.pdf_url && pages.length > 0 && (
+    <div className={cn("mt-4 grid gap-4", !selectedEdition && pages.length && "md:grid-cols-[145px_minmax(0,1fr)]")}>
+      {!selectedEdition && pages.length > 0 && (
         <aside className="hidden rounded-2xl border border-line bg-white p-4 md:block">
           <strong className="text-[10px] uppercase tracking-wider text-brand">Sommaire</strong>
           <p className="mt-4 text-[10px] font-semibold">Chapitre {chunk?.chapter_number || 1}</p>
@@ -502,7 +514,17 @@ function ReaderContent({
         </aside>
       )}
       <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-        {!work.pdf_url && chunks.length > 0 && (
+        {documents.length > 1 && (
+          <header className="flex flex-wrap items-center gap-3 border-b border-line bg-slate-50 p-3">
+            <Languages size={16} className="text-brand" />
+            <label className="text-[10px] font-semibold text-slate-600">Édition</label>
+            <select value={selectedEdition?.id || ""} onChange={(event) => setEditionId(event.target.value)} className="min-w-52 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold">
+              {documents.map((edition) => <option key={edition.id} value={edition.id}>{editionLabel(edition)}</option>)}
+            </select>
+            {selectedEdition?.translator && <span className="text-[10px] text-slate-500">Traduit par {selectedEdition.translator}</span>}
+          </header>
+        )}
+        {!selectedEdition && chunks.length > 0 && (
           <header className="flex items-center justify-between border-b border-line p-3">
             <select className="rounded-md border border-line bg-surface px-3 py-2 text-[10px]">
               <option>Arabe + Traduction</option>
@@ -531,10 +553,10 @@ function ReaderContent({
             </div>
           </header>
         )}
-        {work.pdf_url ? (
+        {selectedEdition ? (
           <iframe
-            src={`${work.pdf_url}#toolbar=1&navpanes=0&view=FitH`}
-            title={`Lire ${work.title}`}
+            src={`${selectedEdition.url}#toolbar=1&navpanes=0&view=FitH`}
+            title={`Lire ${selectedEdition.title || work.title}`}
             className="h-[calc(100vh-190px)] min-h-[680px] w-full bg-slate-100"
           />
         ) : chunks.length ? (
@@ -1063,6 +1085,11 @@ function formatTime(value: number) {
   const m = Math.floor(value / 60),
     s = Math.floor(value % 60);
   return `${m}:${String(s).padStart(2, "0")}`;
+}
+function editionLabel(edition: Pick<KhassidaEdition, "language" | "edition_kind" | "title">) {
+  const languages: Record<string, string> = { ar: "Arabe", fr: "Français", wo: "Wolof", en: "Anglais" };
+  const kinds = { original: "Original", translation: "Traduction", transcription: "Transcription" };
+  return edition.title || `${kinds[edition.edition_kind]} · ${languages[edition.language] || edition.language}`;
 }
 function youtubeVideoId(value: string | null | undefined) {
   if (!value) return null;
