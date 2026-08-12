@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, CheckCircle2, Clock3, Eye, FileText, Headphones } from "lucide-react";
+import { BookOpen, CheckCircle2, Eye, FileText, Headphones } from "lucide-react";
 import type { Khassida } from "@/types/database";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 
-export type WorkStats = { verses?: number; pages?: number; hasAudio?: boolean };
+export type WorkStats = { verses?: number; pages?: number; hasAudio?: boolean; hasPdf?: boolean };
 export function WorkCard({
   work,
   stats,
@@ -59,22 +59,22 @@ export function WorkCard({
           <p dir="rtl" className="mt-1 line-clamp-1 font-arabic text-xl leading-8 text-muted">
             {work.arabic_title}
           </p>
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">
+          <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-semibold">
             {stats?.verses ? (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-blue-700">
                 <BookOpen size={11} />
                 {stats.verses} vers
               </span>
             ) : null}
-            {stats?.pages ? (
-              <span className="flex items-center gap-1">
+            {(stats?.hasPdf || work.pdf_url) && (
+              <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700">
                 <FileText size={11} />
-                {stats.pages} pages
+                {stats?.pages ? `${stats.pages} pages` : "PDF"}
               </span>
-            ) : null}
+            )}
             {(stats?.hasAudio || work.audio_url) && (
-              <span className="flex items-center gap-1">
-                <Clock3 size={11} />
+              <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700">
+                <Headphones size={11} />
                 Audio
               </span>
             )}
