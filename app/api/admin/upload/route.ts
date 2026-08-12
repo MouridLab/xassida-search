@@ -1,2 +1,7 @@
-import {NextResponse} from "next/server";import {authError,requireStaff} from "@/lib/admin-auth";import {minioBucket,putMedia,safeObjectName} from "@/lib/minio";
-export async function POST(req:Request){try{const {db,user}=await requireStaff(req);const form=await req.formData();const file=form.get("file"),kind=String(form.get("kind")),khassidaId=String(form.get("khassida_id"));if(!(file instanceof File)||!['pdf','audio','cover'].includes(kind)||!/^[-0-9a-f]{36}$/i.test(khassidaId))return NextResponse.json({error:"Données invalides"},{status:400});const allowed=kind==='pdf'?file.type==='application/pdf':kind==='cover'?['image/png','image/jpeg','image/webp'].includes(file.type):file.type.startsWith('audio/');const limit=kind==='pdf'?60e6:kind==='cover'?10e6:150e6;if(!allowed||file.size>limit)return NextResponse.json({error:"Format ou taille non autorisé"},{status:400});const objectKey=`khassidas/${khassidaId}/${kind}/${crypto.randomUUID()}-${safeObjectName(file.name)}`;await putMedia(objectKey,Buffer.from(await file.arrayBuffer()),file.type);await db.from("media_assets").update({is_primary:false}).eq("khassida_id",khassidaId).eq("kind",kind);const {data,error}=await db.from("media_assets").insert({khassida_id:khassidaId,kind,provider:"minio",bucket:minioBucket,object_key:objectKey,mime_type:file.type,file_name:file.name,file_size:file.size,is_primary:true,created_by:user.id}).select().single();if(error)throw error;return NextResponse.json(data,{status:201})}catch(e){const x=authError(e);return NextResponse.json({error:x.message},{status:x.status})}}
+import { NextResponse } from "next/server";
+export function POST() {
+  return NextResponse.json(
+    { error: "Utilisez le workflow d’upload direct présigné." },
+    { status: 410 },
+  );
+}
