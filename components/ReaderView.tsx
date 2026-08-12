@@ -13,12 +13,9 @@ import {
   CircleHelp,
   Clock3,
   Copy,
-  Download,
   FileText,
   FolderHeart,
   Headphones,
-  Heart,
-  History,
   Home,
   Info,
   Library,
@@ -52,13 +49,6 @@ const mainLinks = [
   [FolderHeart, "Collections", "/collections"],
   [Bot, "Recherche IA", "/recherche-ia"],
   [CircleHelp, "À propos", "/a-propos"],
-] as const;
-const personalLinks = [
-  [Clock3, "Continuer la lecture"],
-  [Heart, "Favoris"],
-  [MessageSquare, "Notes"],
-  [History, "Historique"],
-  [Download, "Téléchargements"],
 ] as const;
 
 export function ReaderView({
@@ -366,51 +356,6 @@ function ReaderTopbar({ onMenu }: { onMenu: () => void }) {
         </button>
       </div>
     </header>
-  );
-}
-function ReaderSidebar() {
-  return (
-    <aside className="hidden bg-surface lg:block">
-      <div className="sticky top-16 flex h-[calc(100vh-64px)] flex-col p-4">
-        <nav className="space-y-0.5">
-          {mainLinks.map(([Icon, label, href]) => (
-            <Link
-              href={href}
-              key={href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-[11px] font-medium text-muted hover:bg-brand/5 hover:text-brand",
-                href === "/khassidas" && "bg-brand/5 text-brand",
-              )}
-            >
-              <Icon size={15} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <div className="my-4 border-t border-line" />
-        <p className="px-3 text-[9px] font-semibold uppercase tracking-wider text-muted">
-          Ma bibliothèque
-        </p>
-        <nav className="mt-2 space-y-0.5">
-          {personalLinks.map(([Icon, label]) => (
-            <button
-              key={label}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[11px] font-medium text-muted hover:bg-brand/5"
-            >
-              <Icon size={14} />
-              {label}
-            </button>
-          ))}
-        </nav>
-        <div className="mt-auto rounded-xl border border-brand/15 bg-brand/5 p-3">
-          <Download size={17} className="text-brand" />
-          <strong className="mt-2 block text-[11px]">Accédez partout</strong>
-          <p className="mt-1 text-[9px] leading-4 text-muted">
-            L’application mobile Xassida Search arrive bientôt.
-          </p>
-        </div>
-      </div>
-    </aside>
   );
 }
 function MobileDrawer({ onClose }: { onClose: () => void }) {
