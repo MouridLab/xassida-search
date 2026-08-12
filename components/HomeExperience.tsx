@@ -92,9 +92,7 @@ function HomeView({
   error: string;
 }) {
   const featured = works[0]?.khassida;
-  const featuredHasCover = featured
-    ? ["astahfirul-laha-bihi", "jazbul-qulub"].includes(featured.slug)
-    : false;
+  const featuredCover = featured?.cover_url;
   return (
     <main className="min-h-screen bg-white pb-28 text-ink">
       <header className="mx-auto flex max-w-[1400px] items-center justify-between px-5 pb-4 pt-6 lg:px-8">
@@ -140,14 +138,15 @@ function HomeView({
             <Image
               priority
               src={
-                featuredHasCover
-                  ? `/images/covers/${featured.slug}.png`
+                featuredCover
+                  ? featuredCover
                   : "/images/open-manuscript.png"
               }
-              alt={featuredHasCover ? `Couverture de ${featured.title}` : "Manuscrit de khassida"}
+              alt={featuredCover ? `Couverture de ${featured.title}` : "Manuscrit de khassida"}
               fill
+              unoptimized={Boolean(featured?.cover_url)}
               className={
-                featuredHasCover ? "bg-white object-contain object-top" : "object-cover opacity-55"
+                featuredCover ? "bg-white object-contain object-top" : "object-cover opacity-55"
               }
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
@@ -204,7 +203,7 @@ function MobileShelf({ title, works }: { title: string; works: Result[] }) {
       </div>
       <div className="mt-4 flex snap-x gap-3 overflow-x-auto px-5 pb-2 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-8">
         {works.map(({ khassida }) => {
-          const hasCover = ["astahfirul-laha-bihi", "jazbul-qulub"].includes(khassida.slug);
+          const cover = khassida.cover_url;
           return (
             <Link
               key={khassida.id}
@@ -214,16 +213,17 @@ function MobileShelf({ title, works }: { title: string; works: Result[] }) {
               <div
                 className={cn(
                   "relative grid aspect-[3/4] place-items-center overflow-hidden rounded-2xl border p-4 text-center shadow-lg",
-                  hasCover
+                  cover
                     ? "border-slate-200 bg-white"
                     : "border-emerald-950/10 bg-gradient-to-br from-emerald-950 to-emerald-700",
                 )}
               >
-                {hasCover ? (
+                {cover ? (
                   <Image
-                    src={`/images/covers/${khassida.slug}.png`}
+                    src={cover}
                     alt={`Couverture de ${khassida.title}`}
                     fill
+                    unoptimized={Boolean(khassida.cover_url)}
                     sizes="(min-width:1024px) 25vw, 144px"
                     className="object-contain p-2"
                   />

@@ -14,6 +14,11 @@ export type LibraryItem = {
   themes: string[];
   cover_url: string | null;
   resource_url: string | null;
+  media_bucket: string | null;
+  media_object_key: string | null;
+  media_mime_type: string | null;
+  media_file_name: string | null;
+  media_file_size: number | null;
   source_name: string | null;
   is_featured: boolean;
   is_verified: boolean;

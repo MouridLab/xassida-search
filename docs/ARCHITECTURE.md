@@ -115,5 +115,4 @@ erDiagram
 
 ## Rendu et état client
 
-Les pages catalogue et détail chargent leurs données côté serveur. Les composants marqués `"use client"` gèrent les filtres, le lecteur audio, les formulaires, le menu mobile et l’assistant conversationnel. Les couvertures spéciales sont actuellement résolues dans le code à partir du slug et stockées dans `public/images/covers/`.
-
+Les pages catalogue et détail chargent leurs données côté serveur. Les composants marqués `"use client"` gèrent les filtres, le lecteur audio, les formulaires, le menu mobile et l’assistant conversationnel. Toutes les couvertures sont stockées dans MinIO et référencées par `media_assets` avec le type `cover`.

@@ -15,7 +15,7 @@ export function WorkCard({
   stats?: WorkStats;
   className?: string;
 }) {
-  const hasCover = ["astahfirul-laha-bihi", "jazbul-qulub"].includes(work.slug);
+  const cover = work.cover_url;
   return (
     <article
       className={cn(
@@ -27,16 +27,17 @@ export function WorkCard({
         <div
           className={cn(
             "relative grid h-32 w-[88px] shrink-0 place-items-center overflow-hidden rounded-xl p-2 text-center shadow-sm",
-            hasCover
+            cover
               ? "border border-slate-200 bg-white"
               : "bg-gradient-to-br from-emerald-950 to-emerald-800 text-gold",
           )}
         >
-          {hasCover ? (
+          {cover ? (
             <Image
-              src={`/images/covers/${work.slug}.png`}
+              src={cover}
               alt={`Couverture de ${work.title}`}
               fill
+              unoptimized={Boolean(work.cover_url)}
               sizes="80px"
               className="object-contain p-1"
             />

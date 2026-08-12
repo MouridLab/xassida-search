@@ -12,7 +12,7 @@ export async function getCatalog() {
       .select("khassida_id,verse_end,page_number")
       .eq("validation_status", "verified")
       .limit(5000),
-    db.from("media_assets").select("khassida_id,kind"),
+    db.from("media_assets").select("id,khassida_id,kind,provider,external_url").eq("is_primary",true),
   ]);
   const map: Record<string, WorkStats> = {};
   for (const chunk of chunks || []) {
@@ -27,5 +27,7 @@ export async function getCatalog() {
     if (item.kind === "pdf") current.hasPdf = true;
     map[item.khassida_id] = current;
   }
-  return { works: (works || []) as Khassida[], stats: map };
+  const enriched=(works||[]).map(work=>{const cover=media?.find(item=>item.khassida_id===work.id&&item.kind==="cover");return {...work,cover_url:cover?(cover.provider==="external"?cover.external_url:`/api/media/${cover.id}`):null}}) as Khassida[];
+  for(const work of enriched){const current=map[work.id]||{};current.pages=Math.max(current.pages||0,work.page_count||0);current.verses=Math.max(current.verses||0,work.verse_count||0);map[work.id]=current}
+  return { works: enriched, stats: map };
 }

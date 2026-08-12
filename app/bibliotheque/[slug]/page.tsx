@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   BookOpen,
   Calendar,
-  ExternalLink,
+  FileText,
   Headphones,
   Languages,
   Mic2,
@@ -48,6 +48,7 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
     meta = types[item.item_type],
     Icon = meta.icon;
   const youtubeId = youtubeVideoId(item.resource_url);
+  const hostedDocument = item.media_object_key ? `/api/library-media/${item.id}` : null;
   return (
     <main className="min-h-screen bg-[#f8faf9] pb-20">
       <div className="mx-auto max-w-5xl px-5 py-10 lg:px-8">
@@ -90,6 +91,28 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                   />
                 </div>
               )}
+              {hostedDocument && item.media_mime_type === "application/pdf" && (
+                <section className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                  <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+                    <span className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                      <FileText size={15} className="text-emerald-700" />
+                      Document PDF
+                    </span>
+                    <a
+                      href={hostedDocument}
+                      download
+                      className="rounded-lg bg-emerald-800 px-3 py-2 text-[11px] font-semibold text-white"
+                    >
+                      Télécharger
+                    </a>
+                  </div>
+                  <iframe
+                    src={`${hostedDocument}#view=FitH`}
+                    title={`Lire ${item.title}`}
+                    className="h-[72vh] min-h-[560px] w-full bg-white"
+                  />
+                </section>
+              )}
               {item.item_type === "audio" && item.resource_url && (
                 <div className="mb-8 rounded-2xl bg-[#07182c] p-6 text-white">
                   <div className="flex items-center gap-3">
@@ -129,14 +152,14 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                   ))}
                 </div>
               )}
-              {item.resource_url && !youtubeId && (
+              {item.resource_url && !youtubeId && !hostedDocument && (
                 <a
                   href={item.resource_url}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-8 inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-600 hover:border-emerald-200 hover:text-emerald-800"
                 >
-                  Consulter le document original <ExternalLink size={14} />
+                  Consulter le document original
                 </a>
               )}
             </div>

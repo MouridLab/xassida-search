@@ -14,6 +14,8 @@
     "migrate:minio": "bun --env-file=.env.local scripts/migrate-media-to-minio.ts",
     "import:astahfir": "bun --env-file=.env.local scripts/import-astahfir-media.ts",
     "import:jazbul-audio": "bun --env-file=.env.local scripts/import-jazbul-audio.ts",
+    "import:library-documents": "bun --env-file=.env.local scripts/import-library-documents.ts",
+    "migrate:legacy-covers": "bun --env-file=.env.local scripts/migrate-legacy-covers-to-minio.ts",
     "seed:library": "bun --env-file=.env.local scripts/seed-library.ts"
   },
   "dependencies": {

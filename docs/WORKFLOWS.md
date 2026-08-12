@@ -67,6 +67,8 @@ flowchart LR
 
 La navigation principale reste interne : une carte ouvre toujours `/bibliotheque/[slug]`. Une vidéo YouTube peut être intégrée dans la fiche via le domaine sans cookies. Pour un article, un livre ou un audio non hébergé, la fiche conserve actuellement un lien secondaire vers l’original. Pour garantir un fonctionnement entièrement local, il faudra obtenir le droit d’héberger le document, importer le fichier dans le stockage privé et relier la fiche à ce média.
 
+Les PDF remis directement au projet sont importés dans le bucket MinIO privé sous `library/{slug}/`. La table `library_items` conserve la clé d’objet et les métadonnées du fichier. `/api/library-media/[id]` génère une URL signée temporaire pour le lecteur intégré et le téléchargement; aucun PDF ne reste dans `public/` ni dans Git. Avant l’ajout, comparer le contenu et les métadonnées afin de ne pas publier deux téléchargements du même article.
+
 ## 4. Recherche classique
 
 1. `/api/search` charge le catalogue validé et les statistiques de médias/pages.
@@ -121,4 +123,3 @@ flowchart LR
 ```
 
 Chaque commit doit représenter une intention unique : schéma, import de données, interface, correctif média ou documentation.
-

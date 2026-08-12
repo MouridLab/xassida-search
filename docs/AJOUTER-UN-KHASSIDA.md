@@ -11,7 +11,7 @@ flowchart TD
     C --> D[Créer la fiche du khassida]
     D --> E[Importer le PDF dans MinIO]
     D --> F[Importer l’audio dans MinIO]
-    D --> G[Ajouter la couverture dans public/images/covers]
+    D --> G[Importer la couverture dans MinIO]
     D --> H[Ajouter les passages]
     H --> I[Contrôler les textes et les références]
     I --> J[Passer les passages à verified]
@@ -29,7 +29,7 @@ flowchart TD
 | Fiche du khassida | `/admin` | Table Supabase `khassidas` |
 | PDF | `/admin`, panneau « Importer dans MinIO » | MinIO + table `media_assets` |
 | Audio | `/admin`, panneau « Importer dans MinIO » | MinIO + table `media_assets` |
-| Couverture | Manuellement dans le dépôt | `public/images/covers/{slug}.png` |
+| Couverture | `/admin`, panneau « Importer un média » | MinIO + table `media_assets` |
 | Texte et traduction | `/admin`, formulaire « Ajouter un passage » | Table `khassida_chunks` |
 | Publication | Supabase SQL Editor | Colonne `khassidas.is_verified` |
 
@@ -129,21 +129,11 @@ MinIO
 
 Importer un nouvel audio le rend principal à la place du précédent.
 
-## 6. Ajouter la couverture
+## 6. Ajouter la couverture et les métadonnées
 
-L’administration ne permet pas encore d’importer une couverture. Déposer manuellement le fichier ici :
+Dans « Importer un média », choisir `Couverture`, puis sélectionner une image PNG, JPG ou WebP de moins de 10 Mo. La couverture est stockée dans MinIO et apparaît automatiquement sur les cartes et la fiche.
 
-```text
-public/images/covers/{slug-du-khassida}.png
-```
-
-Exemple :
-
-```text
-public/images/covers/astahfirul-laha-bihi.png
-```
-
-Attention : le code actuel ne détecte pas encore toutes les couvertures automatiquement. Astahfirul Laha Bihi possède une intégration spécifique. Pour généraliser ce workflow, il faudra ajouter un champ `cover_url` ou un média de type `cover`.
+Dans « Modifier une fiche », renseigner ou corriger les thèmes abordés, la description, le nombre de pages et le nombre de vers. Ces nombres alimentent les badges du catalogue même si les passages n’ont pas encore été saisis un à un.
 
 ## 7. Ajouter les passages
 
@@ -234,4 +224,3 @@ Contrôles fonctionnels :
 - [ ] Passages validés
 - [ ] Fiche publiée
 - [ ] Page publique contrôlée sur mobile et ordinateur
-

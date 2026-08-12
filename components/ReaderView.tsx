@@ -389,13 +389,15 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
   );
 }
 function BookCover({ work }: { work: Khassida }) {
-  if (["astahfirul-laha-bihi", "jazbul-qulub"].includes(work.slug)) {
+  const cover = work.cover_url;
+  if (cover) {
     return (
       <div className="relative h-28 w-[82px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,.12)] sm:h-36 sm:w-[105px]">
         <Image
-          src={`/images/covers/${work.slug}.png`}
+          src={cover}
           alt={`Calligraphie de ${work.title}`}
           fill
+          unoptimized={Boolean(work.cover_url)}
           sizes="(min-width: 640px) 105px, 82px"
           className="object-contain p-1.5"
         />

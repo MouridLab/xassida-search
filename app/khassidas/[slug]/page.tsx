@@ -39,7 +39,7 @@ export default async function WorkPage({
       .eq("khassida_id", k.id)
       .eq("is_primary", true),
   ]);
-  const mediaUrl = (kind: "pdf" | "audio", fallback: string | null) => {
+  const mediaUrl = (kind: "pdf" | "audio" | "cover", fallback: string | null) => {
     const item = media?.find((candidate) => candidate.kind === kind);
     if (!item) return fallback;
     return item.provider === "external" ? item.external_url : `/api/media/${item.id}`;
@@ -48,6 +48,7 @@ export default async function WorkPage({
     ...k,
     pdf_url: mediaUrl("pdf", k.pdf_url),
     audio_url: mediaUrl("audio", k.audio_url),
+    cover_url: mediaUrl("cover", null),
   };
   return (
     <ReaderView work={resolved} chunks={chunks || []} related={related || []} initialTab={tab} />
