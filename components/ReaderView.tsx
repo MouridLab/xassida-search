@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Bell,
@@ -465,6 +466,20 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
   );
 }
 function BookCover({ work }: { work: Khassida }) {
+  if (work.slug === "astahfirul-laha-bihi") {
+    return (
+      <div className="relative h-36 w-[92px] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_30px_rgba(15,23,42,.14)] sm:h-48 sm:w-[130px]">
+        <Image
+          src="/images/covers/astahfirul-laha-bihi.png"
+          alt={`Calligraphie de ${work.title}`}
+          fill
+          sizes="(min-width: 640px) 130px, 92px"
+          className="object-contain p-1.5"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="relative grid h-36 w-[92px] place-items-center overflow-hidden rounded-lg bg-gradient-to-br from-emerald-950 to-emerald-800 p-2 text-center text-gold shadow-[0_14px_30px_rgba(6,78,59,.24)] sm:h-48 sm:w-[130px]">
       <span className="absolute inset-1.5 rounded border border-gold/40" />
