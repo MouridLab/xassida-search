@@ -35,19 +35,15 @@ import {
   Send,
   Settings,
   Share2,
-  Shuffle,
-  SkipBack,
-  SkipForward,
   Sparkles,
   Tags,
   UserRound,
-  Volume2,
   X,
 } from "lucide-react";
 import type { Chunk, Khassida } from "@/types/database";
 import { cn } from "@/lib/utils";
 
-type Tab = "lecture" | "audio" | "information" | "chapitres" | "commentaires" | "sources";
+type Tab = "lecture" | "audio" | "information";
 const mainLinks = [
   [Home, "Accueil", "/"],
   [FileText, "Khassaïdes", "/khassidas"],
@@ -69,13 +65,18 @@ export function ReaderView({
   work,
   chunks,
   related,
+  initialTab,
 }: {
   work: Khassida;
   chunks: Chunk[];
   related: Pick<Khassida, "slug" | "title" | "arabic_title">[];
+  initialTab?: string;
 }) {
+  const requestedTab: Tab = ["lecture", "audio", "information"].includes(initialTab || "")
+    ? (initialTab as Tab)
+    : "lecture";
   const [active, setActive] = useState(0),
-    [tab, setTab] = useState<Tab>("lecture"),
+    [tab, setTab] = useState<Tab>(requestedTab),
     [fontSize, setFontSize] = useState(29),
     [menu, setMenu] = useState(false),
     [playing, setPlaying] = useState(false),
@@ -83,7 +84,7 @@ export function ReaderView({
     [audioError, setAudioError] = useState(""),
     [progress, setProgress] = useState(0),
     [duration, setDuration] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLMediaElement>(null);
   const chunk = chunks[active];
   const audioUrl = chunk?.audio_url || work.audio_url;
   const youtubeId = youtubeVideoId(audioUrl);
@@ -98,14 +99,6 @@ export function ReaderView({
       })),
     [chunks],
   );
-  const tabs: [Tab, string][] = [
-    ["lecture", "Lecture"],
-    ["audio", "Audio"],
-    ["information", "Informations"],
-    ["chapitres", "Chapitres"],
-    ["commentaires", "Commentaires"],
-    ["sources", "Sources"],
-  ];
   useEffect(() => {
     setProgress(0);
     setPlaying(false);
@@ -137,138 +130,135 @@ export function ReaderView({
   function openAudio() {
     setTab("audio");
     if (youtubeId) void toggleAudio();
-    else setAudioOpen(true);
+    else if (window.matchMedia("(max-width: 767px)").matches) setAudioOpen(true);
+    else void toggleAudio();
   }
   return (
-    <div className="relative z-[60] -mt-[72px] min-h-screen bg-canvas pb-24 text-ink">
+    <div className="relative z-[60] -mt-[72px] min-h-screen bg-[#f8faf9] pb-24 text-ink">
       <ReaderTopbar onMenu={() => setMenu(true)} />
       {menu && <MobileDrawer onClose={() => setMenu(false)} />}
-      <div className="mx-auto grid max-w-[1500px] lg:grid-cols-[220px_minmax(0,1fr)]">
-        <ReaderSidebar />
-        <main className="min-w-0 border-l border-line bg-surface">
-          <div className="grid min-h-[calc(100vh-64px-76px)] xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="min-w-0 px-4 py-5 sm:px-7 lg:px-9">
-              <nav className="flex items-center gap-2 text-[11px] text-muted">
-                <Link href="/">Accueil</Link>
-                <ChevronRight size={12} />
-                <Link href="/khassidas">Khassaïdes</Link>
-                <ChevronRight size={12} />
-                <strong className="truncate text-ink">{work.title}</strong>
-              </nav>
-              <section className="mt-6 grid grid-cols-[92px_minmax(0,1fr)] gap-4 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-7">
-                <BookCover work={work} />
-                <div className="min-w-0 py-1">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-2xl font-bold tracking-[-.035em] sm:text-3xl">
-                      {work.title}
-                    </h1>
-                    {work.is_verified && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-[10px] font-semibold text-success">
-                        <CheckCircle2 size={12} />
-                        Vérifié
-                      </span>
-                    )}
-                  </div>
-                  <p dir="rtl" className="mt-1 w-fit font-arabic text-2xl sm:text-3xl">
-                    {work.arabic_title}
-                  </p>
-                  <p className="mt-3 line-clamp-2 max-w-2xl text-xs leading-5 text-muted sm:line-clamp-none sm:text-sm sm:leading-6">
-                    {work.description ||
-                      "Œuvre de Cheikh Ahmadou Bamba disponible dans la bibliothèque Xassida Search."}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-muted">
-                    {chunks.length > 0 && (
-                      <span className="flex items-center gap-1.5">
-                        <BookOpen size={13} />
-                        <b className="text-ink">{chunks.length}</b> passages
-                      </span>
-                    )}
-                    {pdfPages > 0 && (
-                      <span className="flex items-center gap-1.5">
-                        <FileText size={13} />
-                        <b className="text-ink">{pdfPages}</b> pages
-                      </span>
-                    )}
-                    {audioUrl && (
-                      <span className="flex items-center gap-1.5">
-                        <Headphones size={13} />
-                        <b className="text-ink">Audio</b> disponible
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1.5">
-                      <BookMarked size={13} />
-                      <b className="text-ink">Arabe</b>
+      <main className="mx-auto min-w-0 max-w-[1320px] px-4 py-6 sm:px-6 lg:px-8">
+        <div className="grid min-h-[calc(100vh-64px-76px)] gap-6 xl:grid-cols-[minmax(0,1fr)_270px]">
+          <div className="min-w-0">
+            <nav className="flex items-center gap-2 text-[11px] text-muted">
+              <Link href="/">Accueil</Link>
+              <ChevronRight size={12} />
+              <Link href="/khassidas">Khassaïdes</Link>
+              <ChevronRight size={12} />
+              <strong className="truncate text-ink">{work.title}</strong>
+            </nav>
+            <section className="relative mt-5 grid grid-cols-[82px_minmax(0,1fr)] gap-4 overflow-hidden rounded-[28px] border border-slate-200/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,.07)] sm:grid-cols-[105px_minmax(0,1fr)] sm:gap-6 sm:p-7">
+              <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-700 via-brand to-amber-400" />
+              <BookCover work={work} />
+              <div className="min-w-0 py-1">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-2xl font-bold tracking-[-.04em] text-slate-950 sm:text-[34px]">
+                    {work.title}
+                  </h1>
+                  {work.is_verified && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-[10px] font-semibold text-success">
+                      <CheckCircle2 size={12} />
+                      Vérifié
                     </span>
-                  </div>
-                </div>
-                <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex">
-                  {" "}
-                  <ActionButton
-                    icon={BookOpen}
-                    label="Lire"
-                    active
-                    onClick={() => setTab("lecture")}
-                  />
-                  <ActionButton icon={Headphones} label="Écouter" green onClick={openAudio} />
-                  {work.pdf_url && (
-                    <a
-                      href={work.pdf_url}
-                      target="_blank"
-                      className="flex h-10 items-center justify-center gap-2 rounded-lg border border-line px-5 text-xs font-semibold"
-                    >
-                      <FileText size={15} />
-                      PDF
-                    </a>
                   )}
-                  <Link
-                    href="/recherche-ia"
-                    className="flex h-10 items-center justify-center gap-2 rounded-lg border border-line px-5 text-xs font-semibold"
-                  >
-                    <Bot size={15} />
-                    Poser une question IA
-                  </Link>
                 </div>
-              </section>
-              <nav className="mt-5 flex gap-1 overflow-x-auto border-b border-line">
-                {tabs.map(([id, label]) => (
-                  <button
-                    key={id}
-                    onClick={() => setTab(id)}
-                    className={cn(
-                      "relative whitespace-nowrap px-3 py-3 text-[11px] font-semibold text-muted",
-                      tab === id &&
-                        "text-brand after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-brand",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </nav>
-              {tab === "lecture" || tab === "audio" ? (
-                <ReaderContent
-                  work={work}
-                  chunks={chunks}
-                  pages={pages}
-                  active={active}
-                  setActive={setActive}
-                  fontSize={fontSize}
-                  setFontSize={setFontSize}
-                  play={toggleAudio}
-                  youtubeId={youtubeId}
+                <p dir="rtl" className="mt-1 w-fit font-arabic text-2xl sm:text-3xl">
+                  {work.arabic_title}
+                </p>
+                <p className="mt-3 line-clamp-2 max-w-2xl text-xs leading-5 text-slate-500 sm:line-clamp-none sm:text-sm sm:leading-6">
+                  {work.description ||
+                    "Œuvre de Cheikh Ahmadou Bamba disponible dans la bibliothèque Xassida Search."}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-muted">
+                  {chunks.length > 0 && (
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={13} />
+                      <b className="text-ink">{chunks.length}</b> passages
+                    </span>
+                  )}
+                  {pdfPages > 0 && (
+                    <span className="flex items-center gap-1.5">
+                      <FileText size={13} />
+                      <b className="text-ink">{pdfPages}</b> pages
+                    </span>
+                  )}
+                  {audioUrl && (
+                    <span className="flex items-center gap-1.5">
+                      <Headphones size={13} />
+                      <b className="text-ink">Audio</b> disponible
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <BookMarked size={13} />
+                    <b className="text-ink">Arabe</b>
+                  </span>
+                </div>
+              </div>
+              <div className="col-span-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-5 sm:flex">
+                {" "}
+                <ActionButton
+                  icon={BookOpen}
+                  label="Lire"
+                  active={tab === "lecture"}
+                  onClick={() => setTab("lecture")}
                 />
-              ) : (
-                <TabContent tab={tab} work={work} chunks={chunks} />
-              )}
-            </div>
-            <ReaderAside
-              work={work}
-              chunks={chunks}
-              related={related}
-              progress={duration ? Math.round((progress / duration) * 100) : 0}
-            />
+                <ActionButton
+                  icon={Headphones}
+                  label="Écouter"
+                  green
+                  active={tab === "audio"}
+                  onClick={openAudio}
+                />
+                <ActionButton
+                  icon={Info}
+                  label="Informations clés"
+                  active={tab === "information"}
+                  onClick={() => setTab("information")}
+                />
+                <Link
+                  href="/recherche-ia"
+                  className="flex h-10 items-center justify-center gap-2 rounded-lg border border-line px-5 text-xs font-semibold"
+                >
+                  <Bot size={15} />
+                  Poser une question IA
+                </Link>
+              </div>
+            </section>
+            {tab === "lecture" ? (
+              <ReaderContent
+                work={work}
+                chunks={chunks}
+                pages={pages}
+                active={active}
+                setActive={setActive}
+                fontSize={fontSize}
+                setFontSize={setFontSize}
+                play={toggleAudio}
+                youtubeId={youtubeId}
+              />
+            ) : tab === "audio" ? (
+              <AudioPanel
+                work={work}
+                playing={playing}
+                progress={progress}
+                duration={duration}
+                error={audioError}
+                disabled={!audioUrl}
+                onToggle={toggleAudio}
+                onSeek={seek}
+              />
+            ) : (
+              <TabContent tab={tab} work={work} chunks={chunks} />
+            )}
           </div>
-        </main>
-      </div>
+          <ReaderAside
+            work={work}
+            chunks={chunks}
+            related={related}
+            progress={duration ? Math.round((progress / duration) * 100) : 0}
+          />
+        </div>
+      </main>
       {youtubeId ? (
         <div
           id="youtube-player"
@@ -285,32 +275,20 @@ export function ReaderView({
       ) : (
         audioUrl && (
           <audio
-            ref={audioRef}
+            ref={audioRef as React.RefObject<HTMLAudioElement>}
             src={audioUrl}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
             onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
-            onError={() =>
-              setAudioError(
-                "Impossible de charger ce fichier audio. Vérifiez le stockage et son format.",
-              )
-            }
+            onError={() => setAudioError("Impossible de charger ce fichier audio.")}
           />
         )
       )}
-      <BottomPlayer
-        work={work}
-        playing={playing}
-        progress={progress}
-        duration={duration}
-        onToggle={toggleAudio}
-        onSeek={seek}
-        disabled={!audioUrl}
-      />
       {audioOpen && audioUrl && !youtubeId && (
         <MobileAudioPlayer
           work={work}
+          chunk={chunk}
           playing={playing}
           progress={progress}
           duration={duration}
@@ -326,7 +304,7 @@ export function ReaderView({
 
 function ReaderTopbar({ onMenu }: { onMenu: () => void }) {
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-line bg-surface/95 px-4 backdrop-blur-xl lg:px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-line bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:px-8">
       <button
         onClick={onMenu}
         className="mr-3 grid size-9 place-items-center rounded-lg lg:hidden"
@@ -466,14 +444,14 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
   );
 }
 function BookCover({ work }: { work: Khassida }) {
-  if (work.slug === "astahfirul-laha-bihi") {
+  if (["astahfirul-laha-bihi", "jazbul-qulub"].includes(work.slug)) {
     return (
-      <div className="relative h-36 w-[92px] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_30px_rgba(15,23,42,.14)] sm:h-48 sm:w-[130px]">
+      <div className="relative h-28 w-[82px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,.12)] sm:h-36 sm:w-[105px]">
         <Image
-          src="/images/covers/astahfirul-laha-bihi.png"
+          src={`/images/covers/${work.slug}.png`}
           alt={`Calligraphie de ${work.title}`}
           fill
-          sizes="(min-width: 640px) 130px, 92px"
+          sizes="(min-width: 640px) 105px, 82px"
           className="object-contain p-1.5"
         />
       </div>
@@ -481,7 +459,7 @@ function BookCover({ work }: { work: Khassida }) {
   }
 
   return (
-    <div className="relative grid h-36 w-[92px] place-items-center overflow-hidden rounded-lg bg-gradient-to-br from-emerald-950 to-emerald-800 p-2 text-center text-gold shadow-[0_14px_30px_rgba(6,78,59,.24)] sm:h-48 sm:w-[130px]">
+    <div className="relative grid h-28 w-[82px] place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-emerald-950 to-emerald-800 p-2 text-center text-gold shadow-[0_10px_24px_rgba(6,78,59,.2)] sm:h-36 sm:w-[105px]">
       <span className="absolute inset-1.5 rounded border border-gold/40" />
       <span className="font-arabic text-lg leading-8 sm:text-2xl">
         {work.arabic_title || "خَصَائِد"}
@@ -506,8 +484,8 @@ function ActionButton({
     <button
       onClick={onClick}
       className={cn(
-        "flex h-10 items-center justify-center gap-2 rounded-lg border border-line px-6 text-xs font-semibold",
-        active && "border-brand bg-brand text-white",
+        "flex h-11 items-center justify-center gap-2 rounded-xl border border-line px-5 text-xs font-semibold transition hover:-translate-y-0.5 hover:shadow-sm",
+        active && !green && "border-brand bg-brand text-white",
         green && "border-emerald-700 bg-emerald-700 text-white",
       )}
     >
@@ -540,58 +518,57 @@ function ReaderContent({
 }) {
   const chunk = chunks[active];
   return (
-    <div className="mt-5 grid gap-4 md:grid-cols-[150px_minmax(0,1fr)]">
-      <aside className="hidden rounded-xl border border-line bg-canvas/50 p-3 md:block">
-        <strong className="text-[10px] uppercase tracking-wider text-brand">Sommaire</strong>
-        <p className="mt-4 text-[10px] font-semibold">Chapitre {chunk?.chapter_number || 1}</p>
-        <div className="mt-2 space-y-0.5">
-          {pages.slice(0, 24).map((item) => (
-            <button
-              key={item.index}
-              onClick={() => setActive(item.index)}
-              className={cn(
-                "w-full rounded-md px-2 py-1.5 text-left text-[10px] text-muted",
-                active === item.index && "bg-brand/10 font-semibold text-brand",
-              )}
-            >
-              Vers {item.verse}
-            </button>
-          ))}
-          {!pages.length && (
-            <p className="py-3 text-[10px] leading-4 text-muted">
-              Document scanné, sans découpage en vers.
-            </p>
-          )}
-        </div>
-      </aside>
-      <section className="overflow-hidden rounded-xl border border-line bg-surface">
-        <header className="flex items-center justify-between border-b border-line p-3">
-          <select className="rounded-md border border-line bg-surface px-3 py-2 text-[10px]">
-            <option>Arabe + Traduction</option>
-            <option>Arabe seul</option>
-            <option>Traduction seule</option>
-          </select>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setFontSize((s) => Math.max(20, s - 2))}
-              className="grid size-8 place-items-center rounded-md bg-canvas"
-            >
-              <Minus size={13} />
-            </button>
-            <button
-              onClick={() => setFontSize((s) => Math.min(42, s + 2))}
-              className="grid size-8 place-items-center rounded-md bg-canvas"
-            >
-              <Plus size={13} />
-            </button>
-            <button className="grid size-8 place-items-center rounded-md bg-canvas">
-              <BookMarked size={13} />
-            </button>
-            <button className="grid size-8 place-items-center rounded-md bg-canvas">
-              <Settings size={13} />
-            </button>
+    <div className={cn("mt-4 grid gap-4", pages.length && "md:grid-cols-[145px_minmax(0,1fr)]")}>
+      {pages.length > 0 && (
+        <aside className="hidden rounded-2xl border border-line bg-white p-4 md:block">
+          <strong className="text-[10px] uppercase tracking-wider text-brand">Sommaire</strong>
+          <p className="mt-4 text-[10px] font-semibold">Chapitre {chunk?.chapter_number || 1}</p>
+          <div className="mt-2 space-y-0.5">
+            {pages.slice(0, 24).map((item) => (
+              <button
+                key={item.index}
+                onClick={() => setActive(item.index)}
+                className={cn(
+                  "w-full rounded-md px-2 py-1.5 text-left text-[10px] text-muted",
+                  active === item.index && "bg-brand/10 font-semibold text-brand",
+                )}
+              >
+                Vers {item.verse}
+              </button>
+            ))}
           </div>
-        </header>
+        </aside>
+      )}
+      <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+        {chunks.length > 0 && (
+          <header className="flex items-center justify-between border-b border-line p-3">
+            <select className="rounded-md border border-line bg-surface px-3 py-2 text-[10px]">
+              <option>Arabe + Traduction</option>
+              <option>Arabe seul</option>
+              <option>Traduction seule</option>
+            </select>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setFontSize((s) => Math.max(20, s - 2))}
+                className="grid size-8 place-items-center rounded-md bg-canvas"
+              >
+                <Minus size={13} />
+              </button>
+              <button
+                onClick={() => setFontSize((s) => Math.min(42, s + 2))}
+                className="grid size-8 place-items-center rounded-md bg-canvas"
+              >
+                <Plus size={13} />
+              </button>
+              <button className="grid size-8 place-items-center rounded-md bg-canvas">
+                <BookMarked size={13} />
+              </button>
+              <button className="grid size-8 place-items-center rounded-md bg-canvas">
+                <Settings size={13} />
+              </button>
+            </div>
+          </header>
+        )}
         {chunks.length ? (
           <div className="space-y-3 bg-canvas/40 p-3 sm:p-4">
             {chunks.slice(active, active + 3).map((item, index) => (
@@ -608,7 +585,7 @@ function ReaderContent({
           <iframe
             src={`${work.pdf_url}#toolbar=1&navpanes=0&view=FitH`}
             title={`Lire ${work.title}`}
-            className="h-[65vh] min-h-[560px] w-full bg-slate-100"
+            className="h-[calc(100vh-190px)] min-h-[680px] w-full bg-slate-100"
           />
         ) : (
           <div className="grid min-h-[500px] place-items-center text-center">
@@ -685,26 +662,8 @@ function ReaderAside({
   progress: number;
 }) {
   return (
-    <aside className="hidden border-l border-line bg-canvas/40 p-5 xl:block">
+    <aside className="hidden xl:block">
       <div className="sticky top-20 space-y-3">
-        <SideCard title="Informations clés" icon={Info}>
-          <dl className="grid grid-cols-[95px_1fr] gap-y-2 text-[9px]">
-            <dt className="font-semibold">Auteur</dt>
-            <dd className="text-muted">Cheikh Ahmadou Bamba</dd>
-            <dt className="font-semibold">Source</dt>
-            <dd className="text-muted">{work.source_name || "Non renseignée"}</dd>
-            <dt className="font-semibold">Langue</dt>
-            <dd className="text-muted">Arabe</dd>
-            <dt className="font-semibold">Thèmes</dt>
-            <dd className="flex flex-wrap gap-1">
-              {work.themes.slice(0, 4).map((t) => (
-                <span className="rounded bg-canvas px-1.5 py-1" key={t}>
-                  {t}
-                </span>
-              ))}
-            </dd>
-          </dl>
-        </SideCard>
         <SideCard title="Progression de lecture" icon={Clock3}>
           <div className="h-1.5 overflow-hidden rounded-full bg-line">
             <div className="h-full bg-brand" style={{ width: `${progress}%` }} />
@@ -760,8 +719,8 @@ function SideCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-line bg-surface p-3.5 shadow-card">
-      <header className="mb-3 flex items-center gap-2 border-b border-line pb-2.5 text-[10px] font-semibold text-brand">
+    <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,.05)]">
+      <header className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-3 text-[10px] font-semibold text-brand">
         <Icon size={14} />
         {title}
         <ChevronRight size={12} className="ml-auto" />
@@ -771,23 +730,64 @@ function SideCard({
   );
 }
 function TabContent({ tab, work, chunks }: { tab: Tab; work: Khassida; chunks: Chunk[] }) {
-  const rows =
-    tab === "information"
-      ? [
-          `Auteur : Cheikh Ahmadou Bamba`,
-          `Source : ${work.source_name || "Non renseignée"}`,
-          `Thèmes : ${work.themes.join(", ") || "Non renseignés"}`,
-        ]
-      : tab === "chapitres"
-        ? [...new Set(chunks.map((c) => `Chapitre ${c.chapter_number || 1}`))]
-        : tab === "commentaires"
-          ? (chunks.map((c) => c.commentary).filter(Boolean) as string[])
-          : tab === "sources"
-            ? [
-                work.source_name || "Source non renseignée",
-                work.pdf_url ? "PDF original disponible" : "PDF indisponible",
-              ]
-            : ["La récitation associée est disponible dans le lecteur audio."];
+  if (tab === "information") {
+    return (
+      <section className="mt-4 overflow-hidden rounded-3xl border border-line bg-white shadow-sm">
+        <header className="relative overflow-hidden border-b border-slate-100 px-6 py-7 sm:px-8">
+          <span className="absolute -right-14 -top-16 size-40 rounded-full bg-brand/5" />
+          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.14em] text-brand">
+            <span className="grid size-8 place-items-center rounded-xl bg-brand/10">
+              <Info size={15} />
+            </span>
+            Informations clés
+          </span>
+          <h2 className="mt-4 text-2xl font-bold tracking-tight">À propos de {work.title}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+            Les repères essentiels pour identifier l’œuvre, sa provenance et les ressources
+            disponibles.
+          </p>
+        </header>
+        <dl className="grid gap-3 p-5 sm:grid-cols-2 sm:p-6">
+          {(
+            [
+              [UserRound, "Auteur", "Cheikh Ahmadou Bamba"],
+              [BookMarked, "Source", work.source_name || "Non renseignée"],
+              [MessageSquare, "Langue", "Arabe"],
+              [Tags, "Thèmes", work.themes.join(" · ") || "Non renseignés"],
+              [FileText, "Document", work.pdf_url ? "PDF disponible" : "PDF indisponible"],
+              [
+                Headphones,
+                "Récitation",
+                work.audio_url ? "Audio disponible" : "Audio indisponible",
+              ],
+            ] as const
+          ).map(([Icon, label, value]) => (
+            <div
+              key={label}
+              className="flex gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 transition hover:border-brand/15 hover:bg-white hover:shadow-sm"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-brand shadow-sm">
+                <Icon size={17} />
+              </span>
+              <div className="min-w-0">
+                <dt className="text-[9px] font-bold uppercase tracking-[.14em] text-muted">
+                  {label}
+                </dt>
+                <dd className="mt-1 text-sm font-semibold leading-5 text-ink">{value}</dd>
+              </div>
+            </div>
+          ))}
+        </dl>
+        {work.description && (
+          <div className="border-t border-slate-100 px-6 py-6 sm:px-8">
+            <p className="max-w-3xl text-sm leading-7 text-muted">{work.description}</p>
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  const rows = ["La récitation associée est disponible dans le lecteur audio."];
   return (
     <div className="mt-5 rounded-xl border border-line bg-surface p-6">
       <h2 className="text-base font-semibold capitalize">{tab}</h2>
@@ -806,8 +806,93 @@ function TabContent({ tab, work, chunks }: { tab: Tab; work: Khassida; chunks: C
   );
 }
 
+function AudioPanel({
+  work,
+  playing,
+  progress,
+  duration,
+  error,
+  disabled,
+  onToggle,
+  onSeek,
+}: {
+  work: Khassida;
+  playing: boolean;
+  progress: number;
+  duration: number;
+  error: string;
+  disabled: boolean;
+  onToggle: () => void;
+  onSeek: (value: number) => void;
+}) {
+  const percent = duration ? Math.min(100, (progress / duration) * 100) : 0;
+  return (
+    <section className="mt-4 overflow-hidden rounded-3xl bg-[#07182c] text-white shadow-xl">
+      <div className="relative grid min-h-[430px] place-items-center overflow-hidden px-6 py-12 text-center">
+        <span className="absolute -left-24 -top-24 size-72 rounded-full bg-emerald-500/10 blur-3xl" />
+        <span className="absolute -bottom-32 -right-20 size-80 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="relative w-full max-w-2xl">
+          <span className="mx-auto grid size-20 place-items-center rounded-3xl bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-300/15">
+            <Headphones size={34} />
+          </span>
+          <p className="mt-6 text-[10px] font-bold uppercase tracking-[.24em] text-emerald-300/70">
+            Récitation audio
+          </p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{work.title}</h2>
+          <p dir="rtl" className="mt-2 font-arabic text-2xl text-amber-200/90">
+            {work.arabic_title}
+          </p>
+          <div className="mt-10 flex items-center gap-4">
+            <span className="w-10 text-right text-xs tabular-nums text-white/55">
+              {formatTime(progress)}
+            </span>
+            <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
+              <div
+                className="h-full rounded-full bg-emerald-400"
+                style={{ width: `${percent}%` }}
+              />
+              <input
+                aria-label="Progression audio"
+                type="range"
+                min={0}
+                max={duration || 1}
+                value={progress}
+                disabled={disabled}
+                onChange={(event) => onSeek(Number(event.target.value))}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              />
+            </div>
+            <span className="w-10 text-xs tabular-nums text-white/55">{formatTime(duration)}</span>
+          </div>
+          <button
+            onClick={onToggle}
+            disabled={disabled}
+            className="mx-auto mt-9 grid size-20 place-items-center rounded-full bg-white text-[#07182c] shadow-2xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label={playing ? "Pause" : "Lecture"}
+          >
+            {playing ? (
+              <Pause size={30} fill="currentColor" />
+            ) : (
+              <Play className="ml-1" size={32} fill="currentColor" />
+            )}
+          </button>
+          <p className="mt-5 text-xs text-white/45">
+            {disabled
+              ? "Aucun audio disponible"
+              : playing
+                ? "Lecture en cours"
+                : "Appuyez pour écouter"}
+          </p>
+          {error && <p className="mt-3 text-sm font-medium text-red-300">{error}</p>}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function MobileAudioPlayer({
   work,
+  chunk,
   playing,
   progress,
   duration,
@@ -817,6 +902,7 @@ function MobileAudioPlayer({
   onSeek,
 }: {
   work: Khassida;
+  chunk?: Chunk;
   playing: boolean;
   progress: number;
   duration: number;
@@ -860,6 +946,38 @@ function MobileAudioPlayer({
         </p>
         <p className="mt-1 text-xs text-slate-500">Récitation · Cheikh Ahmadou Bamba</p>
       </div>
+      {(chunk?.arabic_text || chunk?.transcription) && (
+        <div className="relative mt-6 overflow-hidden rounded-3xl bg-[#080b0a] px-5 py-6 text-center text-white shadow-2xl ring-1 ring-amber-300/15">
+          <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
+          <span className="text-[9px] font-bold uppercase tracking-[.24em] text-amber-300/70">
+            Jazbul Qulub · Passage en cours
+          </span>
+          {chunk.arabic_text && (
+            <p
+              dir="rtl"
+              className="mt-3 line-clamp-3 font-arabic text-2xl leading-[1.75] text-[#e8cc62]"
+            >
+              {chunk.arabic_text}
+            </p>
+          )}
+          {chunk.transcription && (
+            <p className="mx-auto mt-2 line-clamp-2 max-w-lg text-xs font-semibold leading-5 text-white/70">
+              {chunk.transcription}
+            </p>
+          )}
+          <div className="mx-auto mt-4 flex h-3 max-w-56 items-center justify-center gap-0.5">
+            {[3, 7, 4, 10, 5, 8, 3, 11, 6, 9, 4, 7, 3, 8, 5, 10, 4, 7, 3, 6, 4, 9, 5, 7].map(
+              (height, index) => (
+                <span
+                  key={index}
+                  className={cn("w-px rounded-full bg-[#e8cc62]", playing && "animate-pulse")}
+                  style={{ height }}
+                />
+              ),
+            )}
+          </div>
+        </div>
+      )}
       <div className="relative mt-10 flex min-h-0 flex-1 items-center">
         <div className="absolute inset-x-0 flex h-56 items-center justify-center gap-[3px] overflow-hidden rounded-3xl bg-white px-5 shadow-sm">
           {bars.map((height, index) => (
@@ -937,80 +1055,6 @@ function MobileAudioPlayer({
         Retour au texte
       </button>
     </section>
-  );
-}
-
-function BottomPlayer({
-  work,
-  playing,
-  progress,
-  duration,
-  onToggle,
-  onSeek,
-  disabled,
-}: {
-  work: Khassida;
-  playing: boolean;
-  progress: number;
-  duration: number;
-  onToggle: () => void;
-  onSeek: (v: number) => void;
-  disabled: boolean;
-}) {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-[90] h-[76px] border-t border-white/10 bg-[#07182c] text-white shadow-2xl">
-      {playing && <AudioReaction progress={progress} />}
-      <div className="mx-auto flex h-full max-w-[1500px] items-center gap-4 px-4 sm:px-6">
-        <span className="hidden size-11 place-items-center rounded bg-emerald-900 font-arabic text-gold sm:grid">
-          خ
-        </span>
-        <div className="min-w-0 sm:w-44">
-          <strong className="block truncate text-[11px]">{work.title}</strong>
-          <small className="text-[9px] text-slate-400">
-            {disabled ? "Audio indisponible" : "Récitation"}
-          </small>
-        </div>
-        <div className="ml-auto flex items-center gap-2 sm:ml-0">
-          <button className="hidden size-8 place-items-center text-slate-400 sm:grid">
-            <Shuffle size={14} />
-          </button>
-          <button className="hidden size-8 place-items-center sm:grid">
-            <SkipBack size={16} />
-          </button>
-          <button
-            onClick={onToggle}
-            disabled={disabled}
-            className="grid size-12 place-items-center rounded-full bg-brand shadow-[0_0_24px_rgba(29,78,216,.55)] disabled:opacity-40"
-          >
-            {playing ? (
-              <Pause size={20} fill="currentColor" />
-            ) : (
-              <Play size={20} fill="currentColor" />
-            )}
-          </button>
-          <button className="hidden size-8 place-items-center sm:grid">
-            <SkipForward size={16} />
-          </button>
-          <button className="hidden size-8 place-items-center text-slate-400 sm:grid">
-            <RotateCcw size={14} />
-          </button>
-        </div>
-        <span className="ml-2 hidden text-[9px] text-slate-400 md:block">
-          {formatTime(progress)}
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={duration || 1}
-          value={progress}
-          onChange={(e) => onSeek(Number(e.target.value))}
-          className="hidden min-w-0 flex-1 accent-brand md:block"
-        />
-        <span className="hidden text-[9px] text-slate-400 md:block">{formatTime(duration)}</span>
-        <Volume2 size={15} className="ml-auto hidden text-slate-300 lg:block" />
-        <MoreHorizontal size={18} className="text-slate-300" />
-      </div>
-    </div>
   );
 }
 
