@@ -124,12 +124,10 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
                 </div>
               </article>
             );
-            return item.resource_url ? (
-              <Link key={item.id} href={item.resource_url}>
+            return (
+              <Link key={item.id} href={`/bibliotheque/${item.slug}`}>
                 {card}
               </Link>
-            ) : (
-              <div key={item.id}>{card}</div>
             );
           })}
         </div>
