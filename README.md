@@ -4,7 +4,7 @@ Application Next.js pour constituer, valider et rechercher un corpus de khassaï
 
 ## Documentation
 
-La documentation complète est organisée dans [`docs/README.md`](docs/README.md) : architecture, modèle de données, workflows, exploitation, ajout d’un khassida et audit du code mort.
+La documentation complète est organisée dans [`docs/README.md`](docs/README.md) : architecture, modèle de données, workflows, exploitation, [stockage MinIO](docs/MINIO.md), ajout d’un khassida et audit du code mort.
 
 La plateforme distingue deux corpus : **Khassaïdes** pour les œuvres poétiques de Cheikh Ahmadou Bamba et **Bibliothèque** pour les ressources documentaires plus larges autour du mouridisme.
 
