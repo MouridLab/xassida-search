@@ -1,0 +1,4 @@
+interface:
+  display_name: "nextjs-api"
+  short_description: "Production safeguards for nextjs-api"
+  default_prompt: "Apply the nextjs-api workflow to the current codebase."

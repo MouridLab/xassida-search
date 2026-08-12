@@ -9,7 +9,6 @@ import {
   Headphones,
   Home,
   Info,
-  Library,
   Play,
   Search,
 } from "lucide-react";

@@ -1,0 +1,4 @@
+interface:
+  display_name: "supabase-rls"
+  short_description: "Production safeguards for supabase-rls"
+  default_prompt: "Apply the supabase-rls workflow to the current codebase."

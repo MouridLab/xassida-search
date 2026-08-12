@@ -1,0 +1,4 @@
+interface:
+  display_name: "auth-security"
+  short_description: "Production safeguards for auth-security"
+  default_prompt: "Apply the auth-security workflow to the current codebase."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "storage-consistency"
+  short_description: "Production safeguards for storage-consistency"
+  default_prompt: "Apply the storage-consistency workflow to the current codebase."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "api-abuse-protection"
+  short_description: "Production safeguards for api-abuse-protection"
+  default_prompt: "Apply the api-abuse-protection workflow to the current codebase."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "production-readiness"
+  short_description: "Production safeguards for production-readiness"
+  default_prompt: "Apply the production-readiness workflow to the current codebase."

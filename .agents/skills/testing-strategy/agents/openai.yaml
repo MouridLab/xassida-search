@@ -1,0 +1,4 @@
+interface:
+  display_name: "testing-strategy"
+  short_description: "Production safeguards for testing-strategy"
+  default_prompt: "Apply the testing-strategy workflow to the current codebase."

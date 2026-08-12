@@ -260,7 +260,6 @@ export function ReaderView({
             )}
           </div>
           <ReaderAside
-            work={work}
             chunks={chunks}
             related={related}
             relatedMode={relatedMode}
@@ -635,13 +634,11 @@ function VerseCard({
 }
 
 function ReaderAside({
-  work,
   chunks,
   related,
   relatedMode,
   progress,
 }: {
-  work: Khassida;
   chunks: Chunk[];
   related: RelatedWork[];
   relatedMode: "related" | "discover";
@@ -731,7 +728,7 @@ function SideCard({
     </section>
   );
 }
-function TabContent({ tab, work, chunks }: { tab: Tab; work: Khassida; chunks: Chunk[] }) {
+function TabContent({ tab, work }: { tab: Tab; work: Khassida; chunks: Chunk[] }) {
   if (tab === "information") {
     return (
       <section className="mt-4 overflow-hidden rounded-3xl border border-line bg-white shadow-sm">

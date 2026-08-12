@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "format:check:ci": "prettier --check .env.example .github/workflows/ci.yml .eslintrc.json app/api/admin/uploads app/api/admin/editions/route.ts app/api/admin/upload/route.ts app/api/ask/route.ts components/AdminDashboard.tsx docs/audit/FINAL-P1-PRODUCTION-READINESS.md lib/api-abuse.ts lib/ask-policy.ts lib/authorization.ts lib/minio.ts lib/shared-rate-limit.ts lib/storage-workflow.ts lib/upload-policy.ts scripts/verify-rls.ts tests",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:rls": "bun --env-file=.env.local scripts/verify-rls.ts",
     "import:xassaid": "bun --env-file=.env.local scripts/import-xassaid.ts",
     "migrate:minio": "bun --env-file=.env.local scripts/migrate-media-to-minio.ts",
     "import:astahfir": "bun --env-file=.env.local scripts/import-astahfir-media.ts",
@@ -42,7 +45,10 @@
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.22",
     "prettier": "^3.9.6",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.7"
   }
 }
