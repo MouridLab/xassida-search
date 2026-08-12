@@ -78,7 +78,10 @@ export function ReaderView({
   const chunk = chunks[active];
   const audioUrl = chunk?.audio_url || work.audio_url;
   const youtubeId = youtubeVideoId(audioUrl);
-  const pdfPages = Math.max(0, ...chunks.map((c) => c.page_number || 0));
+  const detectedPages = Math.max(0, ...chunks.map((c) => c.page_number || 0));
+  const displayedPages = work.page_count || detectedPages;
+  const detectedVerses = Math.max(0, ...chunks.map((c) => c.verse_end || c.verse_start || 0));
+  const displayedVerses = work.verse_count || detectedVerses;
   const pages = useMemo(
     () =>
       chunks.map((item, index) => ({
@@ -160,16 +163,21 @@ export function ReaderView({
                     "Œuvre de Cheikh Ahmadou Bamba disponible dans la bibliothèque Xassida Search."}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-muted">
-                  {chunks.length > 0 && (
+                  {displayedVerses > 0 ? (
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={13} />
+                      <b className="text-ink">{displayedVerses}</b> vers
+                    </span>
+                  ) : chunks.length > 0 ? (
                     <span className="flex items-center gap-1.5">
                       <BookOpen size={13} />
                       <b className="text-ink">{chunks.length}</b> passages
                     </span>
-                  )}
-                  {pdfPages > 0 && (
+                  ) : null}
+                  {displayedPages > 0 && (
                     <span className="flex items-center gap-1.5">
                       <FileText size={13} />
-                      <b className="text-ink">{pdfPages}</b> pages
+                      <b className="text-ink">{displayedPages}</b> pages
                     </span>
                   )}
                   {audioUrl && (
@@ -465,8 +473,8 @@ function ReaderContent({
 }) {
   const chunk = chunks[active];
   return (
-    <div className={cn("mt-4 grid gap-4", pages.length && "md:grid-cols-[145px_minmax(0,1fr)]")}>
-      {pages.length > 0 && (
+    <div className={cn("mt-4 grid gap-4", !work.pdf_url && pages.length && "md:grid-cols-[145px_minmax(0,1fr)]")}>
+      {!work.pdf_url && pages.length > 0 && (
         <aside className="hidden rounded-2xl border border-line bg-white p-4 md:block">
           <strong className="text-[10px] uppercase tracking-wider text-brand">Sommaire</strong>
           <p className="mt-4 text-[10px] font-semibold">Chapitre {chunk?.chapter_number || 1}</p>
@@ -487,7 +495,7 @@ function ReaderContent({
         </aside>
       )}
       <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-        {chunks.length > 0 && (
+        {!work.pdf_url && chunks.length > 0 && (
           <header className="flex items-center justify-between border-b border-line p-3">
             <select className="rounded-md border border-line bg-surface px-3 py-2 text-[10px]">
               <option>Arabe + Traduction</option>
@@ -516,7 +524,13 @@ function ReaderContent({
             </div>
           </header>
         )}
-        {chunks.length ? (
+        {work.pdf_url ? (
+          <iframe
+            src={`${work.pdf_url}#toolbar=1&navpanes=0&view=FitH`}
+            title={`Lire ${work.title}`}
+            className="h-[calc(100vh-190px)] min-h-[680px] w-full bg-slate-100"
+          />
+        ) : chunks.length ? (
           <div className="space-y-3 bg-canvas/40 p-3 sm:p-4">
             {chunks.slice(active, active + 3).map((item, index) => (
               <VerseCard
@@ -528,12 +542,6 @@ function ReaderContent({
               />
             ))}
           </div>
-        ) : work.pdf_url ? (
-          <iframe
-            src={`${work.pdf_url}#toolbar=1&navpanes=0&view=FitH`}
-            title={`Lire ${work.title}`}
-            className="h-[calc(100vh-190px)] min-h-[680px] w-full bg-slate-100"
-          />
         ) : (
           <div className="grid min-h-[500px] place-items-center text-center">
             <div>
