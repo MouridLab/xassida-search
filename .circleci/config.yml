@@ -1,0 +1,58 @@
+version: 2.1
+
+executors:
+  node-bun:
+    docker:
+      - image: cimg/node:22.14.0
+
+commands:
+  install-bun:
+    steps:
+      - run:
+          name: Install Bun 1.3.14
+          command: |
+            curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.14"
+            echo 'export BUN_INSTALL="$HOME/.bun"' >> "$BASH_ENV"
+            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
+            bun --version | grep -Fx "1.3.14"
+
+jobs:
+  quality:
+    executor: node-bun
+    steps:
+      - checkout
+      - install-bun
+      - run: bun install --frozen-lockfile
+      - run: bun run format:check:ci
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
+
+  rls-integration:
+    executor: node-bun
+    steps:
+      - checkout
+      - install-bun
+      - run: bun install --frozen-lockfile
+      - run:
+          name: Verify dedicated Supabase test environment
+          command: |
+            test -n "$NEXT_PUBLIC_SUPABASE_URL"
+            test -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+            test -n "$SUPABASE_SERVICE_ROLE_KEY"
+            case "$NEXT_PUBLIC_SUPABASE_URL" in
+              *supabase.co) ;;
+              *) echo "RLS test URL must be a dedicated Supabase project" >&2; exit 1 ;;
+            esac
+      - run: bun run test:rls
+
+workflows:
+  release-validation:
+    jobs:
+      - quality
+      - rls-integration:
+          context: xassida-supabase-test
+          requires:
+            - quality
