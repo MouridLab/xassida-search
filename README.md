@@ -2,15 +2,22 @@
 
 Application Next.js pour constituer, valider et rechercher un corpus de khassaïdes. Elle associe une recherche lexicale (titres, variantes, arabe normalisé et transcription) à une recherche sémantique pgvector, puis produit des réponses strictement sourcées.
 
+## Documentation
+
+La documentation complète est organisée dans [`docs/README.md`](docs/README.md) : architecture, modèle de données, workflows, exploitation, ajout d’un khassida et audit du code mort.
+
+La plateforme distingue deux corpus : **Khassaïdes** pour les œuvres poétiques de Cheikh Ahmadou Bamba et **Bibliothèque** pour les ressources documentaires plus larges autour du mouridisme.
+
 ## Fonctionnalités
 
-- Bibliothèque publique limitée aux fiches et passages validés
+- Catalogue public de khassaïdes limité aux fiches et passages validés
+- Bibliothèque documentaire distincte : livres, articles, conférences, audios, vidéos et archives
 - Titres officiels/arabe, variantes, thèmes, transcription et traduction
 - Recherche hybride PostgreSQL (`pg_trgm` + `pgvector`, index HNSW)
 - Assistant RAG avec citations, références de vers/pages et réponse de repli anti-invention
 - Pages individuelles avec distinction original/transcription/traduction/commentaire
 - Authentification administrateur, rôles éditeur/validateur/admin et audit
-- Import PDF/audio dans deux buckets privés avec contrôle du type et de la taille
+- Import PDF/audio dans un bucket MinIO privé avec contrôle du type et de la taille
 - Interface responsive prête pour Vercel
 
 ## Installation locale
@@ -23,7 +30,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Renseignez les six variables de `.env.local`. La clé `SUPABASE_SERVICE_ROLE_KEY` et la clé OpenAI sont exclusivement utilisées côté serveur et ne doivent jamais porter le préfixe `NEXT_PUBLIC_`.
+Renseignez les variables de `.env.local`. Les clés Supabase de service, OpenAI et MinIO sont exclusivement utilisées côté serveur et ne doivent jamais porter le préfixe `NEXT_PUBLIC_`.
 
 ## Initialiser Supabase
 
