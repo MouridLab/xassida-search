@@ -41,6 +41,10 @@ import type { Chunk, Khassida } from "@/types/database";
 import { cn } from "@/lib/utils";
 
 type Tab = "lecture" | "audio" | "information";
+type RelatedWork = Pick<Khassida, "slug" | "title" | "arabic_title" | "cover_url"> & {
+  shared_themes: string[];
+  relevance: number;
+};
 const mainLinks = [
   [Home, "Accueil", "/"],
   [FileText, "Khassaïdes", "/khassidas"],
@@ -55,11 +59,13 @@ export function ReaderView({
   work,
   chunks,
   related,
+  relatedMode,
   initialTab,
 }: {
   work: Khassida;
   chunks: Chunk[];
-  related: Pick<Khassida, "slug" | "title" | "arabic_title">[];
+  related: RelatedWork[];
+  relatedMode: "related" | "discover";
   initialTab?: string;
 }) {
   const requestedTab: Tab = ["lecture", "audio", "information"].includes(initialTab || "")
@@ -253,6 +259,7 @@ export function ReaderView({
             work={work}
             chunks={chunks}
             related={related}
+            relatedMode={relatedMode}
             progress={duration ? Math.round((progress / duration) * 100) : 0}
           />
         </div>
@@ -609,11 +616,13 @@ function ReaderAside({
   work,
   chunks,
   related,
+  relatedMode,
   progress,
 }: {
   work: Khassida;
   chunks: Chunk[];
-  related: Pick<Khassida, "slug" | "title" | "arabic_title">[];
+  related: RelatedWork[];
+  relatedMode: "related" | "discover";
   progress: number;
 }) {
   return (
@@ -640,7 +649,7 @@ function ReaderAside({
             <Send size={13} className="ml-auto text-brand" />
           </Link>
         </SideCard>
-        <SideCard title="Liés à ce khassida" icon={Sparkles}>
+        <SideCard title={relatedMode === "related" ? "Liés à ce khassaida" : "À découvrir"} icon={Sparkles}>
           <div className="divide-y divide-line">
             {related.map((item) => (
               <Link
@@ -648,12 +657,28 @@ function ReaderAside({
                 href={`/khassidas/${item.slug}`}
                 className="flex items-center gap-2 py-2"
               >
-                <span className="grid size-8 place-items-center rounded bg-emerald-900 font-arabic text-gold">
-                  خ
+                <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-emerald-900 font-arabic text-gold">
+                  {item.cover_url ? (
+                    <Image
+                      src={item.cover_url}
+                      alt=""
+                      fill
+                      unoptimized
+                      sizes="36px"
+                      className="bg-white object-contain p-0.5"
+                    />
+                  ) : (
+                    "خ"
+                  )}
                 </span>
                 <span className="min-w-0 flex-1">
                   <strong className="block truncate text-[10px]">{item.title}</strong>
                   <small className="font-arabic text-[11px] text-muted">{item.arabic_title}</small>
+                  {item.shared_themes.length > 0 && (
+                    <small className="mt-0.5 block truncate text-[8px] font-semibold text-emerald-700">
+                      {item.shared_themes.join(" · ")}
+                    </small>
+                  )}
                 </span>
                 <ChevronRight size={12} className="text-muted" />
               </Link>
@@ -783,6 +808,7 @@ function AudioPanel({
   const percent = duration ? Math.min(100, (progress / duration) * 100) : 0;
   return (
     <section className="mt-4 overflow-hidden rounded-3xl bg-[#07182c] text-white shadow-xl">
+      {playing && <AudioReaction progress={progress} />}
       <div className="relative grid min-h-[430px] place-items-center overflow-hidden px-6 py-12 text-center">
         <span className="absolute -left-24 -top-24 size-72 rounded-full bg-emerald-500/10 blur-3xl" />
         <span className="absolute -bottom-32 -right-20 size-80 rounded-full bg-blue-500/10 blur-3xl" />

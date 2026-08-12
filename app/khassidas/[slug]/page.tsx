@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { isConfigured, publicServerClient } from "@/lib/supabase";
 import { ReaderView } from "@/components/ReaderView";
+import { normalizeSearch } from "@/lib/normalize";
 export default async function WorkPage({
   params,
   searchParams,
@@ -19,7 +20,7 @@ export default async function WorkPage({
     .eq("is_verified", true)
     .single();
   if (!k) notFound();
-  const [{ data: chunks }, { data: related }, { data: media }] = await Promise.all([
+  const [{ data: chunks }, { data: related }, { data: media }, { data: relatedCovers }] = await Promise.all([
     db
       .from("khassida_chunks")
       .select("*")
@@ -29,15 +30,21 @@ export default async function WorkPage({
       .limit(150),
     db
       .from("khassidas")
-      .select("slug,title,arabic_title")
+      .select("id,slug,title,arabic_title,aliases,themes,description,updated_at")
       .eq("is_verified", true)
       .neq("id", k.id)
-      .limit(3),
+      .limit(100),
     db
       .from("media_assets")
       .select("id,kind,provider,external_url")
       .eq("khassida_id", k.id)
       .eq("is_primary", true),
+    db
+      .from("media_assets")
+      .select("id,khassida_id,provider,external_url,khassidas!inner(is_verified)")
+      .eq("kind", "cover")
+      .eq("is_primary", true)
+      .eq("khassidas.is_verified", true),
   ]);
   const mediaUrl = (kind: "pdf" | "audio" | "cover", fallback: string | null) => {
     const item = media?.find((candidate) => candidate.kind === kind);
@@ -50,7 +57,48 @@ export default async function WorkPage({
     audio_url: mediaUrl("audio", k.audio_url),
     cover_url: mediaUrl("cover", null),
   };
+  const currentTerms = searchableTerms(k);
+  const rankedRelated = (related || [])
+    .map((item) => {
+      const sharedThemes = item.themes.filter((theme: string) =>
+        k.themes.some((current: string) => normalizeSearch(current) === normalizeSearch(theme)),
+      );
+      const itemTerms = searchableTerms(item);
+      const sharedTerms = [...itemTerms].filter((term) => currentTerms.has(term));
+      return { ...item, sharedThemes, relevance: sharedThemes.length * 10 + sharedTerms.length };
+    })
+    .sort(
+      (a, b) =>
+        b.relevance - a.relevance ||
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    )
+    .slice(0, 3);
+  const hasRelevantRelated = rankedRelated.some((item) => item.relevance > 0);
+  const resolvedRelated = rankedRelated.map((item) => {
+    const cover = relatedCovers?.find((candidate) => candidate.khassida_id === item.id);
+    return {
+      slug: item.slug,
+      title: item.title,
+      arabic_title: item.arabic_title,
+      cover_url: cover
+        ? cover.provider === "external"
+          ? cover.external_url
+          : `/api/media/${cover.id}`
+        : null,
+      shared_themes: item.sharedThemes,
+      relevance: item.relevance,
+    };
+  });
   return (
-    <ReaderView work={resolved} chunks={chunks || []} related={related || []} initialTab={tab} />
+    <ReaderView work={resolved} chunks={chunks || []} related={resolvedRelated} relatedMode={hasRelevantRelated ? "related" : "discover"} initialTab={tab} />
+  );
+}
+
+function searchableTerms(work: { title: string; arabic_title: string | null; aliases: string[]; themes: string[]; description: string | null }) {
+  const stopWords = new Set(["avec", "dans", "pour", "cette", "oeuvre", "khassaida", "cheikh", "ahmadou", "bamba"]);
+  return new Set(
+    normalizeSearch([work.title, work.arabic_title, ...work.aliases, ...work.themes, work.description].filter(Boolean).join(" "))
+      .split(" ")
+      .filter((term) => term.length >= 4 && !stopWords.has(term)),
   );
 }
