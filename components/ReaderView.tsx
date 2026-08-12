@@ -46,13 +46,7 @@ import {
 import type { Chunk, Khassida } from "@/types/database";
 import { cn } from "@/lib/utils";
 
-type Tab =
-  | "lecture"
-  | "audio"
-  | "information"
-  | "chapitres"
-  | "commentaires"
-  | "sources";
+type Tab = "lecture" | "audio" | "information" | "chapitres" | "commentaires" | "sources";
 const mainLinks = [
   [Home, "Accueil", "/"],
   [FileText, "Khassaïdes", "/khassidas"],
@@ -126,10 +120,12 @@ export function ReaderView({
     if (!el) return;
     if (el.paused) {
       setAudioError("");
-      try { await el.play(); }
-      catch { setAudioError("Ce fichier audio est indisponible ou son format n’est pas pris en charge."); }
-    }
-    else el.pause();
+      try {
+        await el.play();
+      } catch {
+        setAudioError("Ce fichier audio est indisponible ou son format n’est pas pris en charge.");
+      }
+    } else el.pause();
   }
   function seek(value: number) {
     const el = audioRef.current;
@@ -172,10 +168,7 @@ export function ReaderView({
                       </span>
                     )}
                   </div>
-                  <p
-                    dir="rtl"
-                    className="mt-1 w-fit font-arabic text-2xl sm:text-3xl"
-                  >
+                  <p dir="rtl" className="mt-1 w-fit font-arabic text-2xl sm:text-3xl">
                     {work.arabic_title}
                   </p>
                   <p className="mt-3 line-clamp-2 max-w-2xl text-xs leading-5 text-muted sm:line-clamp-none sm:text-sm sm:leading-6">
@@ -215,12 +208,7 @@ export function ReaderView({
                     active
                     onClick={() => setTab("lecture")}
                   />
-                  <ActionButton
-                    icon={Headphones}
-                    label="Écouter"
-                    green
-                    onClick={openAudio}
-                  />
+                  <ActionButton icon={Headphones} label="Écouter" green onClick={openAudio} />
                   {work.pdf_url && (
                     <a
                       href={work.pdf_url}
@@ -302,7 +290,11 @@ export function ReaderView({
             onPause={() => setPlaying(false)}
             onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
             onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
-            onError={() => setAudioError("Impossible de charger ce fichier audio. Vérifiez le stockage et son format.")}
+            onError={() =>
+              setAudioError(
+                "Impossible de charger ce fichier audio. Vérifiez le stockage et son format.",
+              )
+            }
           />
         )
       )}
@@ -315,7 +307,18 @@ export function ReaderView({
         onSeek={seek}
         disabled={!audioUrl}
       />
-      {audioOpen&&audioUrl&&!youtubeId&&<MobileAudioPlayer work={work} playing={playing} progress={progress} duration={duration} error={audioError} onClose={()=>setAudioOpen(false)} onToggle={toggleAudio} onSeek={seek}/>}
+      {audioOpen && audioUrl && !youtubeId && (
+        <MobileAudioPlayer
+          work={work}
+          playing={playing}
+          progress={progress}
+          duration={duration}
+          error={audioError}
+          onClose={() => setAudioOpen(false)}
+          onToggle={toggleAudio}
+          onSeek={seek}
+        />
+      )}
     </div>
   );
 }
@@ -433,10 +436,7 @@ function ReaderSidebar() {
 }
 function MobileDrawer({ onClose }: { onClose: () => void }) {
   return (
-    <div
-      className="fixed inset-0 z-[100] bg-black/30 lg:hidden"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[100] bg-black/30 lg:hidden" onClick={onClose}>
       <aside
         className="h-full w-[280px] bg-surface p-5 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -527,12 +527,8 @@ function ReaderContent({
   return (
     <div className="mt-5 grid gap-4 md:grid-cols-[150px_minmax(0,1fr)]">
       <aside className="hidden rounded-xl border border-line bg-canvas/50 p-3 md:block">
-        <strong className="text-[10px] uppercase tracking-wider text-brand">
-          Sommaire
-        </strong>
-        <p className="mt-4 text-[10px] font-semibold">
-          Chapitre {chunk?.chapter_number || 1}
-        </p>
+        <strong className="text-[10px] uppercase tracking-wider text-brand">Sommaire</strong>
+        <p className="mt-4 text-[10px] font-semibold">Chapitre {chunk?.chapter_number || 1}</p>
         <div className="mt-2 space-y-0.5">
           {pages.slice(0, 24).map((item) => (
             <button
@@ -603,17 +599,12 @@ function ReaderContent({
           <div className="grid min-h-[500px] place-items-center text-center">
             <div>
               <BookOpen className="mx-auto text-brand" />
-              <h2 className="mt-3 text-sm font-semibold">
-                Document indisponible
-              </h2>
+              <h2 className="mt-3 text-sm font-semibold">Document indisponible</h2>
             </div>
           </div>
         )}
         {youtubeId && (
-          <div
-            id="youtube-player"
-            className="border-t border-line p-3 md:hidden"
-          >
+          <div id="youtube-player" className="border-t border-line p-3 md:hidden">
             <iframe
               className="aspect-video w-full rounded-lg"
               src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
@@ -639,20 +630,12 @@ function VerseCard({
 }) {
   return (
     <article className="rounded-lg border border-line bg-surface p-4">
-      <span className="text-[10px] font-semibold text-brand">
-        Vers {number}
-      </span>
-      <p
-        dir="rtl"
-        style={{ fontSize }}
-        className="mt-3 font-arabic leading-[1.9]"
-      >
+      <span className="text-[10px] font-semibold text-brand">Vers {number}</span>
+      <p dir="rtl" style={{ fontSize }} className="mt-3 font-arabic leading-[1.9]">
         {chunk.arabic_text || "Texte arabe non disponible"}
       </p>
       {chunk.transcription && (
-        <p className="mt-2 text-center text-[11px] text-muted">
-          {chunk.transcription}
-        </p>
+        <p className="mt-2 text-center text-[11px] text-muted">{chunk.transcription}</p>
       )}
       {chunk.french_translation && (
         <p className="mt-2 text-center text-xs leading-5 text-muted">
@@ -694,9 +677,7 @@ function ReaderAside({
             <dt className="font-semibold">Auteur</dt>
             <dd className="text-muted">Cheikh Ahmadou Bamba</dd>
             <dt className="font-semibold">Source</dt>
-            <dd className="text-muted">
-              {work.source_name || "Non renseignée"}
-            </dd>
+            <dd className="text-muted">{work.source_name || "Non renseignée"}</dd>
             <dt className="font-semibold">Langue</dt>
             <dd className="text-muted">Arabe</dd>
             <dt className="font-semibold">Thèmes</dt>
@@ -711,22 +692,16 @@ function ReaderAside({
         </SideCard>
         <SideCard title="Progression de lecture" icon={Clock3}>
           <div className="h-1.5 overflow-hidden rounded-full bg-line">
-            <div
-              className="h-full bg-brand"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full bg-brand" style={{ width: `${progress}%` }} />
           </div>
           <div className="mt-2 flex justify-between text-[9px] text-muted">
-            <span>
-              {chunks.length ? `Passage 1 / ${chunks.length}` : "Document PDF"}
-            </span>
+            <span>{chunks.length ? `Passage 1 / ${chunks.length}` : "Document PDF"}</span>
             <b className="text-brand">{progress}%</b>
           </div>
         </SideCard>
         <SideCard title="Poser une question IA" icon={Bot}>
           <p className="text-[9px] leading-4 text-muted">
-            Interrogez ce khassida avec une réponse basée uniquement sur les
-            sources.
+            Interrogez ce khassida avec une réponse basée uniquement sur les sources.
           </p>
           <Link
             href="/recherche-ia"
@@ -748,12 +723,8 @@ function ReaderAside({
                   خ
                 </span>
                 <span className="min-w-0 flex-1">
-                  <strong className="block truncate text-[10px]">
-                    {item.title}
-                  </strong>
-                  <small className="font-arabic text-[11px] text-muted">
-                    {item.arabic_title}
-                  </small>
+                  <strong className="block truncate text-[10px]">{item.title}</strong>
+                  <small className="font-arabic text-[11px] text-muted">{item.arabic_title}</small>
                 </span>
                 <ChevronRight size={12} className="text-muted" />
               </Link>
@@ -784,15 +755,7 @@ function SideCard({
     </section>
   );
 }
-function TabContent({
-  tab,
-  work,
-  chunks,
-}: {
-  tab: Tab;
-  work: Khassida;
-  chunks: Chunk[];
-}) {
+function TabContent({ tab, work, chunks }: { tab: Tab; work: Khassida; chunks: Chunk[] }) {
   const rows =
     tab === "information"
       ? [
@@ -821,27 +784,145 @@ function TabContent({
             </p>
           ))
         ) : (
-          <p className="py-8 text-center text-xs text-muted">
-            Aucun contenu publié.
-          </p>
+          <p className="py-8 text-center text-xs text-muted">Aucun contenu publié.</p>
         )}
       </div>
     </div>
   );
 }
 
-function MobileAudioPlayer({work,playing,progress,duration,error,onClose,onToggle,onSeek}:{work:Khassida;playing:boolean;progress:number;duration:number;error:string;onClose:()=>void;onToggle:()=>void;onSeek:(value:number)=>void}){
-  const bars=[18,24,16,28,20,34,23,18,27,38,22,16,31,25,42,28,20,35,48,30,24,39,54,31,22,44,65,38,28,58,80,54,38,68,92,72,48,63,82,55,35,46];
-  const percent=duration?Math.min(100,(progress/duration)*100):0;
-  return <section className="fixed inset-0 z-[200] flex flex-col overflow-hidden bg-[#f7f7f5] px-6 pb-8 pt-[max(24px,env(safe-area-inset-top))] text-slate-950">
-    <header className="flex items-center justify-between"><button onClick={onClose} className="grid size-12 place-items-center rounded-full bg-white shadow-lg" aria-label="Fermer"><X size={22}/></button><div className="text-center"><span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">Lecture audio</span><p className="mt-1 max-w-[190px] truncate text-sm font-semibold">{work.title}</p></div><button className="grid size-12 place-items-center rounded-full bg-white shadow-lg" aria-label="Plus d’options"><MoreHorizontal size={23}/></button></header>
-    <div className="mt-10 text-center"><p dir="rtl" className="font-arabic text-3xl leading-relaxed">{work.arabic_title||"خَصَائِد"}</p><p className="mt-1 text-xs text-slate-500">Récitation · Cheikh Ahmadou Bamba</p></div>
-    <div className="relative mt-10 flex min-h-0 flex-1 items-center"><div className="absolute inset-x-0 flex h-56 items-center justify-center gap-[3px] overflow-hidden rounded-3xl bg-white px-5 shadow-sm">{bars.map((height,index)=><span key={index} className="w-[3px] shrink-0 rounded-full bg-slate-900 transition-colors" style={{height:`${height}%`,opacity:index/bars.length*100<=percent?1:.2}}/>)}</div><div className="pointer-events-none absolute inset-y-[20%] w-0.5 bg-emerald-500" style={{left:`${percent}%`}}><span className="absolute -left-1 -top-1 size-2.5 rounded-full bg-emerald-500"/></div><input aria-label="Progression audio" type="range" min={0} max={duration||1} value={progress} onChange={e=>onSeek(Number(e.target.value))} className="absolute inset-x-0 z-10 h-56 w-full cursor-pointer opacity-0"/></div>
-    <div className="mt-6 flex justify-between text-xs font-medium text-slate-400"><span>{formatTime(progress)}</span><span>-{formatTime(Math.max(0,duration-progress))}</span></div>
-    <strong className="mt-4 text-center text-5xl tabular-nums tracking-tight">{formatTime(progress)}</strong>{error&&<p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-red-600">{error}</p>}
-    <div className="mt-8 flex items-center justify-center gap-10"><button onClick={()=>onSeek(Math.max(0,progress-15))} className="relative grid size-14 place-items-center" aria-label="Reculer de 15 secondes"><RotateCcw size={36}/><span className="absolute text-[10px] font-bold">15</span></button><button onClick={onToggle} className="grid size-20 place-items-center rounded-full bg-slate-950 text-white shadow-xl" aria-label={playing?"Pause":"Lecture"}>{playing?<Pause size={32} fill="currentColor"/>:<Play className="ml-1" size={34} fill="currentColor"/>}</button><button onClick={()=>onSeek(Math.min(duration,progress+15))} className="relative grid size-14 -scale-x-100 place-items-center" aria-label="Avancer de 15 secondes"><RotateCcw size={36}/><span className="absolute scale-x-[-1] text-[10px] font-bold">15</span></button></div>
-    <button onClick={onClose} className="mt-9 h-14 rounded-2xl bg-emerald-700 text-sm font-bold text-white shadow-lg">Retour au texte</button>
-  </section>
+function MobileAudioPlayer({
+  work,
+  playing,
+  progress,
+  duration,
+  error,
+  onClose,
+  onToggle,
+  onSeek,
+}: {
+  work: Khassida;
+  playing: boolean;
+  progress: number;
+  duration: number;
+  error: string;
+  onClose: () => void;
+  onToggle: () => void;
+  onSeek: (value: number) => void;
+}) {
+  const bars = [
+    18, 24, 16, 28, 20, 34, 23, 18, 27, 38, 22, 16, 31, 25, 42, 28, 20, 35, 48, 30, 24, 39, 54, 31,
+    22, 44, 65, 38, 28, 58, 80, 54, 38, 68, 92, 72, 48, 63, 82, 55, 35, 46,
+  ];
+  const percent = duration ? Math.min(100, (progress / duration) * 100) : 0;
+  return (
+    <section className="fixed inset-0 z-[200] flex flex-col overflow-hidden bg-[#f7f7f5] px-6 pb-8 pt-[max(24px,env(safe-area-inset-top))] text-slate-950">
+      <header className="flex items-center justify-between">
+        <button
+          onClick={onClose}
+          className="grid size-12 place-items-center rounded-full bg-white shadow-lg"
+          aria-label="Fermer"
+        >
+          <X size={22} />
+        </button>
+        <div className="text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
+            Lecture audio
+          </span>
+          <p className="mt-1 max-w-[190px] truncate text-sm font-semibold">{work.title}</p>
+        </div>
+        <button
+          className="grid size-12 place-items-center rounded-full bg-white shadow-lg"
+          aria-label="Plus d’options"
+        >
+          <MoreHorizontal size={23} />
+        </button>
+      </header>
+      <div className="relative mt-10 text-center">
+        {playing && <AudioReaction progress={progress} compact />}
+        <p dir="rtl" className="font-arabic text-3xl leading-relaxed">
+          {work.arabic_title || "خَصَائِد"}
+        </p>
+        <p className="mt-1 text-xs text-slate-500">Récitation · Cheikh Ahmadou Bamba</p>
+      </div>
+      <div className="relative mt-10 flex min-h-0 flex-1 items-center">
+        <div className="absolute inset-x-0 flex h-56 items-center justify-center gap-[3px] overflow-hidden rounded-3xl bg-white px-5 shadow-sm">
+          {bars.map((height, index) => (
+            <span
+              key={index}
+              className="w-[3px] shrink-0 rounded-full bg-slate-900 transition-colors"
+              style={{
+                height: `${height}%`,
+                opacity: (index / bars.length) * 100 <= percent ? 1 : 0.2,
+              }}
+            />
+          ))}
+        </div>
+        <div
+          className="pointer-events-none absolute inset-y-[20%] w-0.5 bg-emerald-500"
+          style={{ left: `${percent}%` }}
+        >
+          <span className="absolute -left-1 -top-1 size-2.5 rounded-full bg-emerald-500" />
+        </div>
+        <input
+          aria-label="Progression audio"
+          type="range"
+          min={0}
+          max={duration || 1}
+          value={progress}
+          onChange={(e) => onSeek(Number(e.target.value))}
+          className="absolute inset-x-0 z-10 h-56 w-full cursor-pointer opacity-0"
+        />
+      </div>
+      <div className="mt-6 flex justify-between text-xs font-medium text-slate-400">
+        <span>{formatTime(progress)}</span>
+        <span>-{formatTime(Math.max(0, duration - progress))}</span>
+      </div>
+      <strong className="mt-4 text-center text-5xl tabular-nums tracking-tight">
+        {formatTime(progress)}
+      </strong>
+      {error && (
+        <p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-red-600">
+          {error}
+        </p>
+      )}
+      <div className="mt-8 flex items-center justify-center gap-10">
+        <button
+          onClick={() => onSeek(Math.max(0, progress - 15))}
+          className="relative grid size-14 place-items-center"
+          aria-label="Reculer de 15 secondes"
+        >
+          <RotateCcw size={36} />
+          <span className="absolute text-[10px] font-bold">15</span>
+        </button>
+        <button
+          onClick={onToggle}
+          className="grid size-20 place-items-center rounded-full bg-slate-950 text-white shadow-xl"
+          aria-label={playing ? "Pause" : "Lecture"}
+        >
+          {playing ? (
+            <Pause size={32} fill="currentColor" />
+          ) : (
+            <Play className="ml-1" size={34} fill="currentColor" />
+          )}
+        </button>
+        <button
+          onClick={() => onSeek(Math.min(duration, progress + 15))}
+          className="relative grid size-14 -scale-x-100 place-items-center"
+          aria-label="Avancer de 15 secondes"
+        >
+          <RotateCcw size={36} />
+          <span className="absolute scale-x-[-1] text-[10px] font-bold">15</span>
+        </button>
+      </div>
+      <button
+        onClick={onClose}
+        className="mt-9 h-14 rounded-2xl bg-emerald-700 text-sm font-bold text-white shadow-lg"
+      >
+        Retour au texte
+      </button>
+    </section>
+  );
 }
 
 function BottomPlayer({
@@ -863,6 +944,7 @@ function BottomPlayer({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-[90] h-[76px] border-t border-white/10 bg-[#07182c] text-white shadow-2xl">
+      {playing && <AudioReaction progress={progress} />}
       <div className="mx-auto flex h-full max-w-[1500px] items-center gap-4 px-4 sm:px-6">
         <span className="hidden size-11 place-items-center rounded bg-emerald-900 font-arabic text-gold sm:grid">
           خ
@@ -909,15 +991,33 @@ function BottomPlayer({
           onChange={(e) => onSeek(Number(e.target.value))}
           className="hidden min-w-0 flex-1 accent-brand md:block"
         />
-        <span className="hidden text-[9px] text-slate-400 md:block">
-          {formatTime(duration)}
-        </span>
+        <span className="hidden text-[9px] text-slate-400 md:block">{formatTime(duration)}</span>
         <Volume2 size={15} className="ml-auto hidden text-slate-300 lg:block" />
         <MoreHorizontal size={18} className="text-slate-300" />
       </div>
     </div>
   );
 }
+
+function AudioReaction({ progress, compact = false }: { progress: number; compact?: boolean }) {
+  const reaction = Math.floor(progress / 6) % 3;
+  const labels = ["Quelle intensité !", "Une récitation profonde", "Un moment d’élévation"];
+
+  return (
+    <div className={cn("audio-reaction", compact && "audio-reaction--compact")} aria-hidden="true">
+      <span className="audio-reaction__halo" />
+      <span
+        key={reaction}
+        className="audio-reaction__sticker"
+        style={{ backgroundPosition: `${reaction * 50}% center` }}
+      />
+      {!compact && <span className="audio-reaction__caption">{labels[reaction]}</span>}
+      <span className="audio-reaction__note audio-reaction__note--one">♪</span>
+      <span className="audio-reaction__note audio-reaction__note--two">♫</span>
+    </div>
+  );
+}
+
 function formatTime(value: number) {
   if (!Number.isFinite(value)) return "0:00";
   const m = Math.floor(value / 60),
@@ -928,14 +1028,9 @@ function youtubeVideoId(value: string | null | undefined) {
   if (!value) return null;
   try {
     const url = new URL(value);
-    if (url.hostname.includes("youtu.be"))
-      return url.pathname.slice(1).split("/")[0] || null;
+    if (url.hostname.includes("youtu.be")) return url.pathname.slice(1).split("/")[0] || null;
     if (url.hostname.includes("youtube.com"))
-      return (
-        url.searchParams.get("v") ||
-        url.pathname.split("/embed/")[1]?.split("/")[0] ||
-        null
-      );
+      return url.searchParams.get("v") || url.pathname.split("/embed/")[1]?.split("/")[0] || null;
   } catch {}
   return null;
 }
