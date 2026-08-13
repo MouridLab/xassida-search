@@ -10,6 +10,7 @@ Ce dossier est la documentation de référence du projet. Il sépare volontairem
 4. [Stockage MinIO](./MINIO.md) — fichiers privés, imports, routes signées, diagnostic et sauvegarde.
 5. [Ajouter un nouveau khassida](./AJOUTER-UN-KHASSIDA.md) — procédure éditoriale détaillée.
 6. [Audit du code mort](./AUDIT-CODE-MORT.md) — éléments inutilisés, obsolètes ou à confirmer.
+7. [Commandes Supabase](./SUPABASE-COMMANDS.md) — aide-mémoire CLI, migrations, sécurité et backups.
 
 ## Périmètre fonctionnel
 

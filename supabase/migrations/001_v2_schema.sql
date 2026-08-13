@@ -63,8 +63,8 @@ create function public.hybrid_search(query_text text, query_embedding extensions
 returns table(id uuid,khassida_id uuid,arabic_text text,transcription text,french_translation text,commentary text,chapter_number int,verse_start int,verse_end int,page_number int,source_pdf_url text,audio_url text,score float)
 language sql stable security invoker as $$
 with candidates as (
- select c.*, greatest(similarity(coalesce(c.normalized_arabic,''),query_text),similarity(coalesce(c.normalized_transcription,''),query_text)) lexical,
- case when query_embedding is null or c.embedding is null then 0 else 1-(c.embedding <=> query_embedding) end semantic
+ select c.*, greatest(extensions.similarity(coalesce(c.normalized_arabic,''),query_text),extensions.similarity(coalesce(c.normalized_transcription,''),query_text)) lexical,
+ case when query_embedding is null or c.embedding is null then 0 else 1-(c.embedding OPERATOR(extensions.<=>) query_embedding) end semantic
  from khassida_chunks c join khassidas k on k.id=c.khassida_id where c.validation_status='verified' and k.is_verified
 )
 select id,khassida_id,arabic_text,transcription,french_translation,commentary,chapter_number,verse_start,verse_end,page_number,source_pdf_url,audio_url,(lexical*.55+semantic*.45)::float score

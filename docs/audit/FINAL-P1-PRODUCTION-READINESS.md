@@ -2,6 +2,16 @@
 
 Date: 2026-08-12
 
+## Release scope update
+
+**MinIO/S3 production gate: DEFERRED UNTIL PUBLIC LAUNCH**
+
+Le stockage MinIO/S3 de production n'est pas encore déployé. Sa confidentialité,
+son CORS, les uploads directs, la finalisation réelle et la sauvegarde des objets
+restent obligatoires avant tout lancement public, mais ne font pas partie du
+périmètre de la release contrôlée actuelle. Ce report ne constitue ni un PASS ni
+une validation implicite du stockage production.
+
 Statut local: prêt. Statut distant: migration 012 non appliquée, car le CLI Supabase ne dispose d’aucun jeton d’accès dans cette session.
 
 ## Résultat
@@ -44,27 +54,27 @@ Revenir au build précédent ne nécessite pas de supprimer les tables. Conserve
 
 ## Production readiness gates
 
-| Gate                         | Statut  | Preuve                                                                               | Travail restant                                                  |
-| ---------------------------- | ------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| A — Identity & Authorization | PASS    | Tests RLS réels de la passe précédente, migrations 008–011                           | Aucun changement P1 ne relâche ces règles                        |
-| B — Editorial integrity      | PASS    | Triggers 010–011, tests de contrats/imports                                          | —                                                                |
-| C — Media integrity          | PASS    | RPC transactionnelles, verrouillage, pending uploads et compensation                 | Automatiser la réconciliation en P2                              |
-| D — Large uploads            | PARTIAL | UI → PUT MinIO direct; aucune lecture `arrayBuffer` dans les routes; HEAD/signatures | Appliquer 012 et CORS MinIO, puis test E2E réel                  |
-| E — AI abuse protection      | PARTIAL | Compteur PostgreSQL atomique, fail-closed, timeout, concurrence et tokens bornés     | Appliquer 012 et tester deux instances réellement                |
-| F — Tests                    | PARTIAL | 32 tests, lint, typecheck et build verts; CI présente                                | Intégration upload réel et nouveau test RLS distant non exécutés |
-| G — Operations               | PARTIAL | Variables et procédure documentées                                                   | Vérifications externes ci-dessous                                |
+| Gate                         | Statut                       | Preuve                                                                               | Travail restant                                                                  |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| A — Identity & Authorization | PASS                         | Tests RLS réels de la passe précédente, migrations 008–011                           | Aucun changement P1 ne relâche ces règles                                        |
+| B — Editorial integrity      | PASS                         | Triggers 010–011, tests de contrats/imports                                          | —                                                                                |
+| C — Media integrity          | PASS                         | RPC transactionnelles, verrouillage, pending uploads et compensation                 | Automatiser la réconciliation en P2                                              |
+| D — Large uploads            | DEFERRED UNTIL PUBLIC LAUNCH | UI → PUT MinIO direct; aucune lecture `arrayBuffer` dans les routes; HEAD/signatures | Déployer MinIO/S3, configurer CORS et exécuter l'E2E réel avant lancement public |
+| E — AI abuse protection      | PARTIAL                      | Compteur PostgreSQL atomique, fail-closed, timeout, concurrence et tokens bornés     | Appliquer 012 et tester deux instances réellement                                |
+| F — Tests                    | PARTIAL                      | 32 tests, lint, typecheck et build verts; CI présente                                | Intégration upload réel et nouveau test RLS distant non exécutés                 |
+| G — Operations               | PARTIAL                      | Variables et procédure documentées                                                   | Vérifications externes ci-dessous                                                |
 
 ## Vérifications externes requises
 
-- `NEEDS EXTERNAL VERIFICATION`: sauvegardes et test de restauration PostgreSQL/MinIO.
-- `NEEDS EXTERNAL VERIFICATION`: MFA des administrateurs Supabase/MinIO.
+- `NEEDS EXTERNAL VERIFICATION`: sauvegarde et restauration MinIO/S3 — **DEFERRED UNTIL PUBLIC LAUNCH**.
+- `NEEDS EXTERNAL VERIFICATION`: MFA des administrateurs MinIO — **DEFERRED UNTIL PUBLIC LAUNCH**.
 - `NEEDS EXTERNAL VERIFICATION`: alertes de budget OpenAI et monitoring 429/503.
-- `NEEDS EXTERNAL VERIFICATION`: CORS MinIO restreint à l’origine de production.
+- `NEEDS EXTERNAL VERIFICATION`: CORS MinIO/S3 restreint à l’origine de production — **DEFERRED UNTIL PUBLIC LAUNCH**.
 - `NEEDS EXTERNAL VERIFICATION`: secrets CI du projet Supabase de test.
 
 ## Backlog reclassé
 
-- P1 avant lancement durable: appliquer/tester la migration 012, configurer/tester CORS, E2E upload MinIO et concurrence multi-instance du limiter.
+- Gate obligatoire avant lancement public: déployer MinIO/S3 privé et persistant, configurer/tester son CORS, vérifier sa sauvegarde et exécuter l'E2E upload/finalisation réel. Statut: **DEFERRED UNTIL PUBLIC LAUNCH**.
 - P2 recommandé avant montée en charge: pagination, réconciliation automatique MinIO, observabilité, versionnement des embeddings, types Supabase générés.
 - P2 après lancement contrôlé: découpage de `ReaderView` et `AdminDashboard`.
 - P3: nettoyage des contrôles UI morts non bloquants.
