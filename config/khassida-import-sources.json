@@ -1,0 +1,560 @@
+[
+  {
+    "slug": "masaalikul-jinaan",
+    "title": "Masaalikul Jinaan",
+    "aliases": ["Masaalik", "Masalikoul Jinaan", "Masalik"],
+    "themes": ["spiritualité", "éducation", "soufisme"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Masalikul-Jinaan-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Masaalikul Jinaan — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Masaalikul%20Jinaan-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Les Itinéraires du Paradis",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "matlaboul-fawzayni",
+    "title": "Matlaboul Fawzayni",
+    "themes": ["prière", "Touba", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Matlaboul-fawzayni.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Matlaboul Fawzayni — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Matlaboul%20fawzayni-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Matlaboul Fawzayni — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "tazawwudush-shubban",
+    "title": "Tazawwudush Shubbān",
+    "themes": ["jeunesse", "éducation", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Tazawudush%20Shubbaan.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Tazawwudush Shubbān — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Tazawwudou-sh-subban-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Tazawwudush Shubbān — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "jazbul-qulub",
+    "title": "Jazbul Qulub",
+    "aliases": ["Jazboul Khouloub", "Jazboul Qulub"],
+    "themes": ["éloge prophétique", "spiritualité", "prière"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Jazboul%20Khouloub.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Jazbul Qulub — arabe",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "safinatul-aman",
+    "title": "Safinatul Amān",
+    "themes": ["spiritualité", "protection", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Safinatoul-amane.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Safinatul Amān — arabe",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "assiru",
+    "title": "Assīru",
+    "aliases": ["Assirou"],
+    "themes": ["spiritualité", "éducation", "cheminement"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Assiru-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Assīru — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Assirou-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Assīru — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "asma-ul-husna",
+    "title": "Asmā’ ul-Husnā",
+    "aliases": ["Asmaa ul Husnaa"],
+    "themes": ["noms divins", "invocation", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Asma-ul-Husna-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Asmā’ ul-Husnā — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Asmaa-ul%20Husnaa.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Asmā’ ul-Husnā — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "bismillahi-ikfini",
+    "title": "Bismillāhi Ikfīnī",
+    "aliases": ["Bismillahi Ikfini", "Ikfini"],
+    "themes": ["invocation", "protection", "confiance"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Bismillahi-ikfini-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Bismillāhi Ikfīnī — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Ikfini.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Bismillāhi Ikfīnī — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "chayatina-al-unaas",
+    "title": "Chayātina al-Unās",
+    "aliases": ["Chayaatinal Ounaas"],
+    "themes": ["spiritualité", "humanité", "éthique"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Chayatina-al-unaass-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Chayātina al-Unās — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Chayaatinal-Ounaas.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Chayātina al-Unās — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "fathul-manan",
+    "title": "Fathul Manān",
+    "aliases": ["Fathoul Manan"],
+    "themes": ["grâce divine", "spiritualité", "louange"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Fathul%20Manan.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Fathul Manān — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Fathulmanan-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Fathul Manān — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "fiihi-chifaahun-linnaasi",
+    "title": "Fīhi Chifā’un lin-Nāsi",
+    "aliases": ["Fihi Shifa Oun Lin Naas"],
+    "themes": ["guérison", "spiritualité", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Fiihi-Chifaahun-Linnaasi-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Fīhi Chifā’un lin-Nāsi — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Fihi%20shifa%20oun%20lin%20naas.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Fīhi Chifā’un lin-Nāsi — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "hisnul-abrar",
+    "title": "Hisnul Abrār",
+    "aliases": ["Hisnoul Abrar"],
+    "themes": ["protection", "spiritualité", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Hisnul-Abrar-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Hisnul Abrār — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Hisnoul%20Abrar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Hisnul Abrār — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "huqqal-bukau",
+    "title": "Huqqal Bukā’u",
+    "aliases": ["Huqqal Bukka'u", "Huqqal"],
+    "themes": ["repentir", "méditation", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Huqqal%20bukka_u.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Huqqal Bukā’u — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Huqqal-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Huqqal Bukā’u — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "irwanu-nadim",
+    "title": "Irwā’un Nadīm",
+    "aliases": ["Irwanoun Nadiim", "Abreuvoir du commensal"],
+    "themes": ["éducation", "spiritualité", "discipline"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Irwanu-Nadim.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Irwā’un Nadīm — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Irwaou%20nadim-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "L’Abreuvoir du commensal",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Irwaun-Nadiim-wolof.pdf",
+        "language": "wo",
+        "editionKind": "translation",
+        "title": "Irwā’un Nadīm — traduction wolof",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "islaahud-daarayni",
+    "title": "Islāhud Dārayni",
+    "themes": ["réforme", "spiritualité", "éthique"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Islaahud-Daarayni-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Islāhud Dārayni — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Islaahud-Daarayni.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Islāhud Dārayni — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "jaawartu",
+    "title": "Jāwartu",
+    "aliases": ["Jawartou", "Djawartou"],
+    "themes": ["prière", "spiritualité", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Jaawartu.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Jāwartu — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Jawartou-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Jāwartu — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "kanzul-muhtadin",
+    "title": "Kanzul Muhtadīn",
+    "aliases": ["Kanzoul Mouhtadine"],
+    "themes": ["guidance", "spiritualité", "éducation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Kanzul-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Kanzul Muhtadīn — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Kanzoul%20Mouhtadine%20%28Edition%20Che%CC%81rif%20Abdoulaye%20Thiaw%20Laye%29.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Kanzul Muhtadīn — édition Chérif Abdoulaye Thiaw Laye",
+        "publisher": "Chérif Abdoulaye Thiaw Laye",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "karamna",
+    "title": "Karamnā",
+    "themes": ["grâce divine", "louange", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Karamna-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Karamnā — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Karamna.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Karamnā — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "khatimatu-munajati",
+    "title": "Khātimatu Munājātī",
+    "aliases": ["Khaatimatoul Mounadiati"],
+    "themes": ["invocation", "prière", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Khaatimatu%20Munaajaatii.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Khātimatu Munājātī — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Khatimatu-Munajati-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Khātimatu Munājātī — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "kun-kaatiman",
+    "title": "Kun Kātiman",
+    "themes": ["discrétion", "éducation", "sagesse"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Kun%20Kaatiman.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Kun Kātiman — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Kun-Kaariman-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Kun Kātiman — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "la-in-shakartum",
+    "title": "La’in Shakartum",
+    "themes": ["gratitude", "spiritualité", "louange"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Lainchakartum-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "La’in Shakartum — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/La-in%20Shakartum.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "La’in Shakartum — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "lam-yabdu",
+    "title": "Lam Yabdu",
+    "themes": ["éloge prophétique", "spiritualité", "prophète"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Lam-yabdou-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Lam Yabdu — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Lamyabdu.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Lam Yabdu — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "laysal-birru",
+    "title": "Laysal Birru",
+    "aliases": ["Layssa Birrou"],
+    "themes": ["éthique", "spiritualité", "éducation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Laysal-birru-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Laysal Birru — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Layssa%20Birrou.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Laysal Birru — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "liyan-qaada",
+    "title": "Liyan Qāda",
+    "themes": ["spiritualité", "louange", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Liyan-Qaada-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Liyan Qāda — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Liyan%20khaada.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Liyan Qāda — autre édition",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "maghaaliqun-niiraan",
+    "title": "Maghāliqun Nīrān",
+    "aliases": ["Les Verrous de l’Enfer et les Clefs du Paradis"],
+    "themes": ["protection", "spiritualité", "salut"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/MAGHAALIKHUN-NIIRAAN-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Maghāliqun Nīrān — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/LES-VERROUS-DE-L-ENFER-ET-LES-CLEFS-DU-PARADIS.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Les Verrous de l’Enfer et les Clefs du Paradis",
+        "translator": "Serigne Sam Mbaye",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "mawaahibul-quddus",
+    "title": "Mawāhibul Quddūs",
+    "aliases": ["Les Dons du Très-Saint"],
+    "themes": ["grâce divine", "spiritualité", "louange"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/MAWAAHIBUL-KHUDDUSS-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Mawāhibul Quddūs — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/LES-DONS-DU-TR_S-SAINT.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Les Dons du Très-Saint",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  }
+]

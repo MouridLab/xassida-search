@@ -31,7 +31,10 @@ describe("passage deep links", () => {
   });
 
   it("ignores a missing passage and keeps normal local restoration", () => {
-    expect(resolveInitialPassage("removed", chunks, progress)).toEqual({ index: 1, source: "progress" });
+    expect(resolveInitialPassage("removed", chunks, progress)).toEqual({
+      index: 1,
+      source: "progress",
+    });
   });
 
   it("does not crash without a parameter or local progress", () => {
