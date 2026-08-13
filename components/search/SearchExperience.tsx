@@ -125,50 +125,52 @@ export function SearchExperience({
 
   return (
     <section className="mx-auto max-w-[1100px] px-5 py-16 lg:px-8 lg:py-24">
-      <form onSubmit={submit} className="relative">
-        <label className="flex h-16 items-center gap-3 border-y border-ink bg-transparent px-0 focus-within:border-brand">
-          <span className="text-[10px] font-bold tracking-[.18em] text-gold">CONCORDANCE</span>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            maxLength={120}
-            className="min-w-0 flex-1 bg-transparent px-3 text-base outline-none sm:text-lg"
-            placeholder="Titre, alias, thème, passage, auteur…"
-          />
-          <button className="border-b border-brand py-2 text-xs font-semibold uppercase tracking-[.12em] text-brand">
-            Chercher
-          </button>
-        </label>
-        {suggestions.length > 0 && (
-          <div className="absolute inset-x-0 top-16 z-20 border border-line bg-surface p-3 shadow-xl">
-            {suggestions.map((suggestion) => (
-              <Link
-                key={suggestion.id}
-                href={suggestion.href}
-                className="block border-b border-line px-3 py-3 text-sm last:border-0 hover:text-brand"
-              >
-                {suggestion.title}
-                {suggestion.subtitle && (
-                  <span className="ml-2 text-xs text-muted">{suggestion.subtitle}</span>
-                )}
-              </Link>
-            ))}
-          </div>
-        )}
-      </form>
+      <div className="editorial-filter relative">
+        <form onSubmit={submit} className="relative">
+          <label className="flex h-16 items-center gap-3 border-y border-ink bg-transparent px-0 focus-within:border-brand">
+            <span className="text-[10px] font-bold tracking-[.18em] text-gold">CONCORDANCE</span>
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              maxLength={120}
+              className="min-w-0 flex-1 bg-transparent px-3 text-base outline-none sm:text-lg"
+              placeholder="Titre, alias, thème, passage, auteur…"
+            />
+            <button className="border-b border-brand py-2 text-xs font-semibold uppercase tracking-[.12em] text-brand">
+              Chercher
+            </button>
+          </label>
+          {suggestions.length > 0 && (
+            <div className="absolute inset-x-0 top-16 z-20 border border-line bg-surface p-3 shadow-xl">
+              {suggestions.map((suggestion) => (
+                <Link
+                  key={suggestion.id}
+                  href={suggestion.href}
+                  className="block border-b border-line px-3 py-3 text-sm last:border-0 hover:text-brand"
+                >
+                  {suggestion.title}
+                  {suggestion.subtitle && (
+                    <span className="ml-2 text-xs text-muted">{suggestion.subtitle}</span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
+        </form>
 
-      <div className="mt-5 flex flex-wrap gap-6 border-b border-line pb-4">
-        {searchTypes.map((item) => (
-          <button
-            key={item}
-            onClick={() => {
-              navigate(1, item);
-            }}
-            className={`border-b py-2 text-[10px] font-bold uppercase tracking-[.14em] ${type === item ? "border-brand text-brand" : "border-transparent text-muted"}`}
-          >
-            {item === "all" ? "Tout" : labels[item]}
-          </button>
-        ))}
+        <div className="editorial-filter-options">
+          {searchTypes.map((item) => (
+            <button
+              key={item}
+              onClick={() => {
+                navigate(1, item);
+              }}
+              className={`editorial-filter-option ${type === item ? "editorial-filter-option-active" : ""}`}
+            >
+              {item === "all" ? "Tout" : labels[item]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {initialQuery.trim().length < 2 ? (

@@ -330,19 +330,19 @@ export function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1320px] items-center justify-between px-5 py-8 lg:px-8">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
-              Gestion du corpus
-            </span>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">Administration</h1>
-            <p className="mt-2 text-sm text-slate-500">Khassaïdes, éditions et médias privés.</p>
+    <main className="admin-manuscript min-h-screen bg-canvas pb-20 text-ink">
+      <header className="border-b border-line bg-surface">
+        <div className="mx-auto flex max-w-[1320px] items-end justify-between gap-6 px-5 py-10 lg:px-8 lg:py-14">
+          <div className="border-l border-gold pl-5">
+            <span className="folio-label">Atelier éditorial · accès réservé</span>
+            <h1 className="mt-4 text-4xl font-semibold tracking-[-.045em] sm:text-5xl">
+              Administration
+            </h1>
+            <p className="mt-3 text-sm text-muted">Khassaïdes, éditions et médias privés.</p>
           </div>
           <button
             onClick={signOut}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+            className="flex items-center gap-2 border-b border-brand px-1 py-2.5 text-xs font-semibold uppercase tracking-[.1em] text-brand"
           >
             <LogOut size={15} /> Déconnexion
           </button>
@@ -765,7 +765,7 @@ export function AdminDashboard() {
 }
 
 const controlClass =
-  "min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10";
+  "min-h-11 w-full border-b border-line bg-transparent px-1 py-2.5 text-sm text-ink outline-none transition focus:border-brand";
 
 function splitList(value: FormDataEntryValue | null) {
   return String(value || "")
@@ -797,9 +797,9 @@ function AdminCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="border-t border-line bg-surface p-5 sm:p-6">
       <header className="mb-6 flex gap-3">
-        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+        <span className="grid size-11 shrink-0 place-items-center border-l border-gold text-brand">
           <Icon size={20} />
         </span>
         <div>

@@ -20,6 +20,7 @@ export function HomeExperience() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [readingProgress, setReadingProgress] = useState<ReadingProgress | null>(null);
+  const [featuredId, setFeaturedId] = useState<string | null>(null);
   async function search(event?: FormEvent) {
     event?.preventDefault();
     const value = query.trim();
@@ -34,7 +35,18 @@ export function HomeExperience() {
         const res = await fetch("/api/search?scope=featured");
         const body = await res.json();
         if (!res.ok) throw new Error(body.error);
-        if (!cancelled) setResults(body.results);
+        if (!cancelled) {
+          const nextResults = body.results as Result[];
+          const uniqueWorks = [
+            ...new Map(nextResults.map((result) => [result.khassida.id, result])).values(),
+          ].slice(0, 8);
+          setResults(nextResults);
+          setFeaturedId(
+            uniqueWorks.length
+              ? uniqueWorks[Math.floor(Math.random() * uniqueWorks.length)].khassida.id
+              : null,
+          );
+        }
       } catch (reason) {
         if (!cancelled) setError(reason instanceof Error ? reason.message : "Recherche impossible");
       } finally {
@@ -64,6 +76,7 @@ export function HomeExperience() {
       loading={loading}
       error={error}
       readingProgress={readingProgress}
+      featuredId={featuredId}
     />
   );
 }
@@ -76,6 +89,7 @@ function HomeView({
   loading,
   error,
   readingProgress,
+  featuredId,
 }: {
   works: Result[];
   query: string;
@@ -84,16 +98,18 @@ function HomeView({
   loading: boolean;
   error: string;
   readingProgress: ReadingProgress | null;
+  featuredId: string | null;
 }) {
-  const featured = works[0]?.khassida;
+  const featured =
+    works.find(({ khassida }) => khassida.id === featuredId)?.khassida ?? works[0]?.khassida;
   const featuredCover = featured?.cover_url;
   return (
     <main className="min-h-screen bg-canvas pb-28 text-ink">
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto grid max-w-[1380px] gap-10 px-5 py-12 md:grid-cols-[minmax(0,1.1fr)_minmax(280px,.65fr)] md:items-end md:py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-[1240px] gap-10 px-5 py-12 md:grid-cols-[minmax(0,1fr)_minmax(260px,.5fr)] md:items-center md:py-16 lg:px-8 lg:py-20">
           <div className="relative border-l border-gold pl-5 sm:pl-9">
             <span className="folio-label">Ouverture · 001</span>
-            <h1 className="mt-7 max-w-4xl text-[clamp(2.7rem,7vw,6.8rem)] font-semibold leading-[.91] tracking-[-.065em]">
+            <h1 className="mt-7 max-w-3xl text-[clamp(2.7rem,6vw,5.5rem)] font-semibold leading-[.94] tracking-[-.06em]">
               Lire les
               <br />
               <span className="text-brand">khassaïdes.</span>
@@ -101,14 +117,30 @@ function HomeView({
               Transmettre les sources.
             </h1>
           </div>
-          <div className="pb-2 md:border-t md:border-line md:pt-6">
-            <p className="text-[10px] font-bold uppercase tracking-[.2em] text-gold">
-              Lire · Écouter · Étudier
-            </p>
-            <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base sm:leading-8">
-              Une publication numérique pour découvrir les œuvres disponibles, consulter leurs
-              passages et remonter à leurs sources.
-            </p>
+          <div className="pb-2">
+            <figure className="relative mx-auto max-w-[380px] border-y border-line md:mx-0">
+              <div className="relative aspect-[4/5] overflow-hidden bg-canvas">
+                <Image
+                  src="/images/serigne-touba-historical.png"
+                  alt="Portrait historique de Cheikh Ahmadou Bamba entouré de ses compagnons"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 90vw, 32vw"
+                  className="object-cover object-center grayscale-[.12] sepia-[.12]"
+                />
+              </div>
+              <figcaption className="py-3 text-[9px] font-semibold uppercase leading-4 tracking-[.12em] text-muted">
+                Cheikh Ahmadou Bamba · archive historique
+              </figcaption>
+            </figure>
+            <div className="mt-4">
+              <p className="text-[10px] font-bold uppercase tracking-[.2em] text-gold">
+                Lire · Écouter · Étudier
+              </p>
+              <p className="mt-3 max-w-sm text-sm leading-7 text-muted">
+                Découvrir les œuvres, consulter leurs passages et remonter à leurs sources.
+              </p>
+            </div>
           </div>
           <Link
             href="/recherche-ia"
@@ -205,8 +237,8 @@ function HomeView({
                 unoptimized={Boolean(featured?.cover_url)}
                 className={
                   featuredCover
-                    ? "bg-surface object-contain object-center p-8"
-                    : "object-cover opacity-85"
+                    ? "featured-cover-motion bg-surface object-contain object-center p-8"
+                    : "featured-cover-motion object-cover opacity-85"
                 }
               />
             </div>
@@ -229,6 +261,21 @@ function HomeView({
                 {featured.description ||
                   "Lire, comprendre et écouter cette œuvre de Cheikh Ahmadou Bamba."}
               </p>
+              {featured.themes.length > 0 && (
+                <ul
+                  aria-label="Thèmes de l’œuvre"
+                  className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2"
+                >
+                  {featured.themes.slice(0, 3).map((theme) => (
+                    <li
+                      key={theme}
+                      className="before:mr-2 before:text-gold before:content-['◆'] text-[10px] font-semibold uppercase tracking-[.12em] text-muted"
+                    >
+                      {theme}
+                    </li>
+                  ))}
+                </ul>
+              )}
               <div className="mt-8 flex items-center gap-7">
                 <span className="flex h-12 items-center justify-center gap-2 border-b border-brand font-semibold text-brand">
                   <Play size={19} fill="currentColor" />

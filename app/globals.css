@@ -134,6 +134,18 @@ a {
   content: "";
   pointer-events: none;
 }
+.featured-cover-motion {
+  animation: featured-cover-drift 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes featured-cover-drift {
+  from {
+    transform: scale(1.02) translate3d(-0.8%, 0.4%, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(1.2%, -0.8%, 0);
+  }
+}
 
 .paper-panel {
   border: 1px solid rgb(var(--line));
@@ -298,6 +310,9 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+  .featured-cover-motion {
+    animation: featured-cover-drift 9s ease-in-out infinite alternate !important;
+  }
   .audio-reaction,
   .audio-reaction__halo,
   .audio-reaction__sticker,
@@ -317,7 +332,63 @@ a {
   }
 }
 
-/* Styles de l'espace d'administration conservés jusqu'à sa migration. */
+/* Une même grammaire de recherche et de filtre dans tout le corpus. */
+.editorial-filter {
+  padding-block: 1rem;
+  border-block: 1px solid rgb(var(--line));
+}
+.editorial-filter-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+.editorial-filter-option {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.5rem;
+  border-bottom: 1px solid transparent;
+  color: rgb(var(--muted));
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.editorial-filter-option:hover,
+.editorial-filter-option-active {
+  border-bottom-color: rgb(var(--brand));
+  color: rgb(var(--brand));
+}
+
+/* L'administration garde ses fonctions, mais rejoint l'identité éditoriale. */
+.admin-manuscript .rounded-3xl,
+.admin-manuscript .rounded-2xl,
+.admin-manuscript .rounded-xl {
+  border-radius: 2px;
+}
+.admin-manuscript .shadow-sm {
+  box-shadow: none;
+}
+.admin-manuscript .bg-white {
+  background-color: rgb(var(--surface));
+}
+.admin-manuscript .border-slate-200,
+.admin-manuscript .border-slate-300 {
+  border-color: rgb(var(--line));
+}
+.admin-manuscript .text-slate-500,
+.admin-manuscript .text-slate-600,
+.admin-manuscript .text-slate-700 {
+  color: rgb(var(--muted));
+}
+
+/* Styles utilitaires historiques de l'espace d'administration. */
 .container {
   width: min(1160px, calc(100% - 40px));
   margin-inline: auto;

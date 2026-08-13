@@ -36,7 +36,7 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
   }, [category, items]);
   return (
     <div>
-      <div className="border-y border-line py-4">
+      <div className="editorial-filter">
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -53,12 +53,12 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
             placeholder="Rechercher un livre, un auteur, une conférence…"
           />
         </form>
-        <div className="mt-4 flex gap-6 overflow-x-auto pb-1">
+        <div className="editorial-filter-options">
           {categories.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setCategory(id)}
-              className={`flex shrink-0 items-center gap-2 border-b py-2 text-[10px] font-bold uppercase tracking-[.12em] transition ${category === id ? "border-brand text-brand" : "border-transparent text-muted hover:text-ink"}`}
+              className={`editorial-filter-option ${category === id ? "editorial-filter-option-active" : ""}`}
             >
               <Icon size={15} />
               {label}
