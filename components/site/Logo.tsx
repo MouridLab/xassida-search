@@ -1,2 +1,22 @@
 import Link from "next/link";
-export function Logo(){return <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Xassida Search — Accueil"><span className="grid size-10 place-items-center rounded-[14px] border border-brand/20 bg-brand/5 font-arabic text-xl text-brand transition group-hover:rotate-3 group-hover:bg-brand/10">خ</span><span className="leading-none"><strong className="block font-serif text-[19px] text-ink">Xassida Search</strong><small className="mt-1 hidden text-[9px] font-medium text-muted sm:block">Les écrits de Cheikh Ahmadou Bamba</small></span></Link>}
+export function Logo() {
+  return (
+    <Link
+      href="/"
+      className="group flex shrink-0 items-center gap-3"
+      aria-label="Xassida Search — Accueil"
+    >
+      <span className="relative grid size-9 place-items-center border border-gold font-arabic text-xl text-brand before:absolute before:inset-1 before:border before:border-gold/30">
+        خ
+      </span>
+      <span className="leading-none">
+        <strong className="block text-[17px] font-semibold tracking-[-.03em] text-ink">
+          Xassida Search
+        </strong>
+        <small className="mt-1 hidden text-[8px] font-bold uppercase tracking-[.14em] text-muted sm:block">
+          Corpus · lecture · sources
+        </small>
+      </span>
+    </Link>
+  );
+}

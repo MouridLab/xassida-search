@@ -2,40 +2,28 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpen,
-  Bot,
-  Headphones,
-  Home,
-  Info,
-  Play,
-  Search,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, BookOpen, Bot, Headphones, Home, Info, Play, Search } from "lucide-react";
 import type { Khassida } from "@/types/database";
 import type { WorkStats } from "@/components/khassidas/WorkCard";
-import { cn } from "@/lib/utils";
+import {
+  hasUsefulReadingProgress,
+  readLatestReadingProgress,
+  type ReadingProgress,
+} from "@/lib/reading-progress";
 type Result = { kind: "khassida" | "chunk"; khassida: Khassida; stats?: WorkStats };
 
 export function HomeExperience() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [readingProgress, setReadingProgress] = useState<ReadingProgress | null>(null);
   async function search(event?: FormEvent) {
     event?.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error);
-      setResults(body.results);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Recherche impossible");
-    } finally {
-      setLoading(false);
-    }
+    const value = query.trim();
+    if (value.length >= 2) router.push(`/search?q=${encodeURIComponent(value)}`);
   }
   useEffect(() => {
     let cancelled = false;
@@ -43,7 +31,7 @@ export function HomeExperience() {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch("/api/search?q=");
+        const res = await fetch("/api/search?scope=featured");
         const body = await res.json();
         if (!res.ok) throw new Error(body.error);
         if (!cancelled) setResults(body.results);
@@ -58,6 +46,10 @@ export function HomeExperience() {
       cancelled = true;
     };
   }, []);
+  useEffect(() => {
+    const saved = readLatestReadingProgress(window.localStorage);
+    setReadingProgress(hasUsefulReadingProgress(saved) ? saved : null);
+  }, []);
   const works = useMemo(() => {
     const unique = new Map<string, Result>();
     results.forEach((r) => unique.set(r.khassida.id, r));
@@ -71,6 +63,7 @@ export function HomeExperience() {
       search={search}
       loading={loading}
       error={error}
+      readingProgress={readingProgress}
     />
   );
 }
@@ -82,6 +75,7 @@ function HomeView({
   search,
   loading,
   error,
+  readingProgress,
 }: {
   works: Result[];
   query: string;
@@ -89,38 +83,63 @@ function HomeView({
   search: (event?: FormEvent) => Promise<void>;
   loading: boolean;
   error: string;
+  readingProgress: ReadingProgress | null;
 }) {
   const featured = works[0]?.khassida;
   const featuredCover = featured?.cover_url;
   return (
-    <main className="min-h-screen bg-white pb-28 text-ink">
-      <header className="mx-auto flex max-w-[1400px] items-center justify-between px-5 pb-4 pt-6 lg:px-8">
-        <div>
-          <span className="text-[10px] font-semibold uppercase tracking-[.2em] text-emerald-700">
-            Bibliothèque mouride
-          </span>
-          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">Explorer les khassaïdes</h1>
+    <main className="min-h-screen bg-canvas pb-28 text-ink">
+      <header className="border-b border-line bg-surface">
+        <div className="mx-auto grid max-w-[1380px] gap-10 px-5 py-12 md:grid-cols-[minmax(0,1.1fr)_minmax(280px,.65fr)] md:items-end md:py-20 lg:px-8 lg:py-28">
+          <div className="relative border-l border-gold pl-5 sm:pl-9">
+            <span className="folio-label">Ouverture · 001</span>
+            <h1 className="mt-7 max-w-4xl text-[clamp(2.7rem,7vw,6.8rem)] font-semibold leading-[.91] tracking-[-.065em]">
+              Lire les
+              <br />
+              <span className="text-brand">khassaïdes.</span>
+              <br />
+              Transmettre les sources.
+            </h1>
+          </div>
+          <div className="pb-2 md:border-t md:border-line md:pt-6">
+            <p className="text-[10px] font-bold uppercase tracking-[.2em] text-gold">
+              Lire · Écouter · Étudier
+            </p>
+            <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base sm:leading-8">
+              Une publication numérique pour découvrir les œuvres disponibles, consulter leurs
+              passages et remonter à leurs sources.
+            </p>
+          </div>
+          <Link
+            href="/recherche-ia"
+            aria-label="Questionner le corpus avec des réponses sourcées"
+            className="hidden"
+          >
+            <Bot size={20} />
+          </Link>
         </div>
-        <Link
-          href="/recherche-ia"
-          className="grid size-11 place-items-center rounded-full border border-slate-200 bg-slate-50 text-emerald-800 shadow-sm"
-        >
-          <Bot size={20} />
-        </Link>
       </header>
       <form
         onSubmit={search}
-        className="mx-auto flex h-12 w-[calc(100%-40px)] max-w-[1336px] items-center rounded-2xl border border-slate-200 bg-white px-4 shadow-sm lg:h-14"
+        className="mx-auto flex h-16 w-[calc(100%-40px)] max-w-[1100px] items-center border-b border-ink bg-transparent px-0 lg:h-20"
       >
-        <Search size={18} className="text-slate-400" />
+        <span className="mr-4 text-[10px] font-bold tracking-[.18em] text-gold">INDEX</span>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="min-w-0 flex-1 bg-transparent px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400"
-          placeholder="Titre, thème ou vers…"
+          className="min-w-0 flex-1 bg-transparent px-3 text-base text-ink outline-none placeholder:text-muted sm:text-lg"
+          placeholder="Rechercher une œuvre, un passage, un thème…"
+          maxLength={120}
         />
-        <button aria-label="Rechercher" className="text-emerald-700">
-          {loading ? "…" : <ArrowRight size={18} />}
+        <button aria-label="Rechercher" className="flex items-center gap-2 text-brand">
+          {loading ? (
+            "…"
+          ) : (
+            <>
+              <span className="hidden text-xs font-semibold sm:inline">Rechercher</span>
+              <ArrowRight size={18} />
+            </>
+          )}
         </button>
       </form>
       {error && (
@@ -128,45 +147,94 @@ function HomeView({
           {error}
         </p>
       )}
-      {featured ? (
+      {readingProgress && (
         <section className="mx-auto max-w-[1400px] px-5 pt-6 lg:px-8">
+          <div className="grid gap-5 border-y border-line py-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+            <span className="text-[10px] font-bold tracking-[.18em] text-gold">REPRISE</span>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
+                Reprendre la lecture
+              </span>
+              <h2 className="mt-1 text-lg font-bold text-slate-950">{readingProgress.title}</h2>
+              <p className="mt-1 text-xs text-slate-600">
+                {readingProgress.activeTab === "audio"
+                  ? readingProgress.audioPosition
+                    ? `Audio à ${formatDuration(readingProgress.audioPosition)}`
+                    : "Reprendre l’écoute"
+                  : readingProgress.page
+                    ? `Page ${readingProgress.page}`
+                    : "Reprendre au dernier passage"}
+              </p>
+            </div>
+            <Link
+              href={`/khassidas/${readingProgress.slug}?resume=1`}
+              className="inline-flex h-11 items-center justify-center gap-2 border-b border-brand text-xs font-semibold uppercase tracking-[.12em] text-brand"
+            >
+              <BookOpen size={16} />
+              Reprendre
+            </Link>
+          </div>
+        </section>
+      )}
+      {featured ? (
+        <section className="mx-auto max-w-[1380px] px-5 pt-16 lg:px-8 lg:pt-24">
+          <div className="mb-7 flex items-end justify-between border-b border-line pb-4">
+            <div>
+              <span className="folio-label">Œuvre à découvrir · 002</span>
+              <h2 className="mt-3 text-2xl font-semibold tracking-[-.04em] sm:text-4xl">
+                Ouvrir une œuvre
+              </h2>
+            </div>
+            <Link
+              href="/khassidas"
+              className="text-xs font-semibold uppercase tracking-[.12em] text-brand"
+            >
+              Index complet →
+            </Link>
+          </div>
           <Link
             href={`/khassidas/${featured.slug}?tab=information`}
-            className="relative block min-h-[460px] overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-b from-emerald-900 to-black shadow-2xl sm:min-h-[560px]"
+            className="group grid min-h-[430px] overflow-hidden border-y border-line bg-surface md:grid-cols-[.8fr_1.2fr] sm:min-h-[520px]"
           >
-            <Image
-              priority
-              src={
-                featuredCover
-                  ? featuredCover
-                  : "/images/open-manuscript.png"
-              }
-              alt={featuredCover ? `Couverture de ${featured.title}` : "Manuscrit de khassida"}
-              fill
-              unoptimized={Boolean(featured?.cover_url)}
-              className={
-                featuredCover ? "bg-white object-contain object-top" : "object-cover opacity-55"
-              }
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl p-6 text-center text-white sm:p-10">
-              <p
-                dir="rtl"
-                className="font-arabic text-4xl leading-relaxed text-amber-200 sm:text-6xl"
-              >
-                {featured.arabic_title || "خَصَائِد"}
-              </p>
-              <h2 className="mt-2 text-2xl font-bold sm:text-4xl">{featured.title}</h2>
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/65 sm:text-base">
+            <div className="manuscript-frame relative min-h-[320px] overflow-hidden md:order-2">
+              <Image
+                priority
+                src={featuredCover ? featuredCover : "/images/open-manuscript.png"}
+                alt={featuredCover ? `Couverture de ${featured.title}` : "Manuscrit de khassida"}
+                fill
+                unoptimized={Boolean(featured?.cover_url)}
+                className={
+                  featuredCover
+                    ? "bg-surface object-contain object-center p-8"
+                    : "object-cover opacity-85"
+                }
+              />
+            </div>
+            <div className="flex flex-col justify-end p-7 md:order-1 md:p-12 lg:p-16">
+              <span className="text-[10px] font-bold uppercase tracking-[.18em] text-gold">
+                Sélection du corpus
+              </span>
+              {featured.arabic_title && (
+                <p
+                  dir="rtl"
+                  className="mt-8 text-left font-arabic text-4xl leading-relaxed text-brand sm:text-6xl"
+                >
+                  {featured.arabic_title}
+                </p>
+              )}
+              <h2 className="mt-3 text-3xl font-semibold tracking-[-.04em] text-ink sm:text-5xl">
+                {featured.title}
+              </h2>
+              <p className="mt-5 line-clamp-3 max-w-lg text-sm leading-7 text-muted sm:text-base">
                 {featured.description ||
                   "Lire, comprendre et écouter cette œuvre de Cheikh Ahmadou Bamba."}
               </p>
-              <div className="mx-auto mt-5 grid max-w-md grid-cols-2 gap-3">
-                <span className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white font-bold text-black">
+              <div className="mt-8 flex items-center gap-7">
+                <span className="flex h-12 items-center justify-center gap-2 border-b border-brand font-semibold text-brand">
                   <Play size={19} fill="currentColor" />
                   Découvrir
                 </span>
-                <span className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white/15 font-semibold backdrop-blur">
+                <span className="flex h-12 items-center justify-center gap-2 text-sm text-muted">
                   <Info size={18} />
                   Informations clés
                 </span>
@@ -181,72 +249,63 @@ function HomeView({
       )}
       <MobileShelf title="À découvrir" works={works.slice(1, 5)} />
       <MobileShelf title="Récemment ajoutés" works={[...works].reverse().slice(0, 4)} />
-      <nav className="fixed inset-x-4 bottom-4 z-40 mx-auto grid max-w-xl grid-cols-4 rounded-[24px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl">
+      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto grid max-w-xl grid-cols-4 border-t border-line bg-surface/95 px-2 py-1 backdrop-blur-xl md:hidden">
         <MobileNav href="/" icon={Home} label="Accueil" active />
         <MobileNav href="/khassidas" icon={BookOpen} label="Lire" />
         <MobileNav href="/bibliotheque?type=audio" icon={Headphones} label="Écouter" />
-        <MobileNav href="/recherche-ia" icon={Search} label="Chercher" />
+        <MobileNav href="/search" icon={Search} label="Chercher" />
       </nav>
     </main>
   );
 }
+function formatDuration(seconds: number) {
+  const value = Math.max(0, Math.floor(seconds));
+  return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
+}
 function MobileShelf({ title, works }: { title: string; works: Result[] }) {
   if (!works.length) return null;
   return (
-    <section className="mx-auto max-w-[1400px] pt-8">
-      <div className="flex items-center justify-between px-5 lg:px-8">
-        <h2 className="text-xl font-bold sm:text-2xl">{title}</h2>
-        <Link href="/khassidas" className="text-xs font-semibold text-emerald-700">
+    <section className="mx-auto max-w-[1380px] px-5 pt-16 lg:px-8 lg:pt-24">
+      <div className="flex items-end justify-between border-b border-line pb-4">
+        <div>
+          <span className="folio-label">Sommaire</span>
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-.04em] sm:text-3xl">{title}</h2>
+        </div>
+        <Link
+          href="/khassidas"
+          className="text-xs font-semibold uppercase tracking-[.12em] text-brand"
+        >
           Voir tout
         </Link>
       </div>
-      <div className="mt-4 flex snap-x gap-3 overflow-x-auto px-5 pb-2 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-8">
-        {works.map(({ khassida }) => {
-          const cover = khassida.cover_url;
+      <div className="border-b border-line">
+        {works.map(({ khassida }, index) => {
           return (
             <Link
               key={khassida.id}
               href={`/khassidas/${khassida.slug}?tab=information`}
-              className="w-36 shrink-0 snap-start lg:w-auto"
+              className="group grid grid-cols-[38px_minmax(0,1fr)_auto] items-center border-t border-line py-6 first:border-t-0 sm:grid-cols-[58px_minmax(0,1fr)_auto]"
             >
-              <div
-                className={cn(
-                  "relative grid aspect-[3/4] place-items-center overflow-hidden rounded-2xl border p-4 text-center shadow-lg",
-                  cover
-                    ? "border-slate-200 bg-white"
-                    : "border-emerald-950/10 bg-gradient-to-br from-emerald-950 to-emerald-700",
+              <span className="text-[10px] font-bold tracking-[.16em] text-gold">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                {khassida.arabic_title && (
+                  <p dir="rtl" className="font-arabic text-xl leading-8 text-brand sm:text-2xl">
+                    {khassida.arabic_title}
+                  </p>
                 )}
-              >
-                {cover ? (
-                  <Image
-                    src={cover}
-                    alt={`Couverture de ${khassida.title}`}
-                    fill
-                    unoptimized={Boolean(khassida.cover_url)}
-                    sizes="(min-width:1024px) 25vw, 144px"
-                    className="object-contain p-2"
-                  />
-                ) : (
-                  <>
-                    <span className="absolute inset-2 rounded-xl border border-amber-300/25" />
-                    <span
-                      dir="rtl"
-                      className="font-arabic text-2xl leading-relaxed text-amber-200 sm:text-3xl"
-                    >
-                      {khassida.arabic_title || "خَصَائِد"}
-                    </span>
-                  </>
-                )}
-                <span className="absolute bottom-3 right-3 grid size-8 place-items-center rounded-full bg-white text-black shadow">
-                  <Play size={13} fill="currentColor" />
+                <strong className="block text-base font-semibold text-ink sm:text-lg">
+                  {khassida.title}
+                </strong>
+                <span className="text-[10px] uppercase tracking-[.12em] text-muted">
+                  {khassida.themes?.[0] || "Œuvre"}
                 </span>
               </div>
-              <strong className="mt-2 block truncate text-sm text-slate-900">
-                {khassida.title}
-              </strong>
-              <span className="text-[11px] text-slate-500">
-                {khassida.themes?.[0] || "Khassida"}
-              </span>
+              <ArrowRight
+                size={17}
+                className="text-muted transition group-hover:translate-x-1 group-hover:text-brand"
+              />
             </Link>
           );
         })}
@@ -268,7 +327,7 @@ function MobileNav({
   return (
     <Link
       href={href}
-      className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-[10px] ${active ? "bg-emerald-50 font-semibold text-emerald-800" : "text-slate-400"}`}
+      className={`flex flex-col items-center gap-1 py-2 text-[9px] uppercase tracking-[.08em] ${active ? "font-semibold text-brand" : "text-muted"}`}
     >
       <Icon size={19} />
       <span>{label}</span>

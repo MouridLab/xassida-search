@@ -50,38 +50,46 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
   const youtubeId = youtubeVideoId(item.resource_url);
   const hostedDocument = item.media_object_key ? `/api/library-media/${item.id}` : null;
   return (
-    <main className="min-h-screen bg-[#f8faf9] pb-20">
-      <div className="mx-auto max-w-5xl px-5 py-10 lg:px-8">
+    <main className="min-h-screen bg-canvas pb-24">
+      <div className="mx-auto max-w-[1180px] px-5 py-12 lg:px-8 lg:py-20">
         <Link
           href="/bibliotheque"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800"
+          className="inline-flex items-center gap-2 border-b border-line pb-1 text-[10px] font-bold uppercase tracking-[.14em] text-muted hover:text-brand"
         >
           <ArrowLeft size={16} />
           Retour à la bibliothèque
         </Link>
-        <article className="mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,.08)]">
-          <header className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-[#07182c] px-6 py-12 text-white sm:px-10">
-            <span className="absolute -right-16 -top-20 size-64 rounded-full bg-amber-200/10 blur-2xl" />
-            <span className="relative inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold backdrop-blur">
-              <Icon size={15} />
-              {meta.label}
+        <article className="mt-10">
+          <header className="relative grid gap-8 border-y border-line py-10 sm:grid-cols-[60px_minmax(0,1fr)_220px] sm:py-16">
+            <span className="hidden text-[10px] font-bold tracking-[.18em] text-gold sm:block">
+              NOTICE
             </span>
-            <h1
-              dir={item.language === "ar" ? "rtl" : undefined}
-              className="relative mt-6 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl"
-            >
-              {item.title}
-            </h1>
-            {item.subtitle && (
-              <p className="relative mt-4 max-w-2xl text-sm leading-7 text-white/65">
-                {item.subtitle}
-              </p>
-            )}
+            <div>
+              <span className="folio-label">
+                <Icon size={13} />
+                {meta.label}
+              </span>
+              <h1
+                dir={item.language === "ar" ? "rtl" : undefined}
+                lang={item.language === "ar" ? "ar" : undefined}
+                className={`mt-7 max-w-4xl font-semibold leading-[1.08] tracking-[-.05em] text-ink ${item.language === "ar" ? "font-arabic text-4xl sm:text-6xl" : "text-4xl sm:text-6xl"}`}
+              >
+                {item.title}
+              </h1>
+              {item.subtitle && (
+                <p className="mt-5 max-w-2xl text-base leading-8 text-muted">{item.subtitle}</p>
+              )}
+            </div>
+            <div className="border-t border-line pt-5 text-xs leading-6 text-muted sm:self-end">
+              <p className="font-semibold text-ink">{item.author || "Auteur non renseigné"}</p>
+              {item.publication_year && <p>{item.publication_year}</p>}
+              <p className="mt-2">{item.source_name || item.publisher || "Source référencée"}</p>
+            </div>
           </header>
-          <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="grid gap-12 py-12 lg:grid-cols-[minmax(0,1fr)_250px] lg:py-16">
             <div>
               {youtubeId && (
-                <div className="mb-8 overflow-hidden rounded-2xl bg-black shadow-lg">
+                <div className="mb-12 overflow-hidden border-y border-line bg-black">
                   <iframe
                     className="aspect-video w-full"
                     src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
@@ -92,16 +100,16 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                 </div>
               )}
               {hostedDocument && item.media_mime_type === "application/pdf" && (
-                <section className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-                  <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
-                    <span className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                      <FileText size={15} className="text-emerald-700" />
+                <section className="mb-12 overflow-hidden border-y border-line bg-surface">
+                  <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                    <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.12em] text-muted">
+                      <FileText size={15} className="text-brand" />
                       Document PDF
                     </span>
                     <a
                       href={hostedDocument}
                       download
-                      className="rounded-lg bg-emerald-800 px-3 py-2 text-[11px] font-semibold text-white"
+                      className="border-b border-brand px-2 py-2 text-[10px] font-bold uppercase tracking-[.12em] text-brand"
                     >
                       Télécharger
                     </a>
@@ -114,14 +122,14 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                 </section>
               )}
               {item.item_type === "audio" && item.resource_url && (
-                <div className="mb-8 rounded-2xl bg-[#07182c] p-6 text-white">
+                <div className="mb-12 border-y border-line py-6">
                   <div className="flex items-center gap-3">
-                    <span className="grid size-12 place-items-center rounded-xl bg-emerald-500/15 text-emerald-300">
+                    <span className="grid size-12 place-items-center border border-gold text-brand">
                       <Headphones />
                     </span>
                     <div>
                       <strong>Collection audio</strong>
-                      <p className="text-xs text-white/50">
+                      <p className="text-xs text-muted">
                         Écouter depuis la fiche source référencée
                       </p>
                     </div>
@@ -129,23 +137,21 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                 </div>
               )}
               <section>
-                <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
-                  Présentation
-                </span>
+                <span className="folio-label">Présentation</span>
                 <p
                   dir={item.language === "ar" ? "rtl" : undefined}
-                  className="mt-4 text-base leading-8 text-slate-600"
+                  className="mt-7 max-w-3xl text-base leading-8 text-muted sm:text-lg sm:leading-9"
                 >
                   {item.description ||
                     "Cette ressource documentaire a été vérifiée et référencée dans la bibliothèque."}
                 </p>
               </section>
               {item.themes.length > 0 && (
-                <div className="mt-8 flex flex-wrap gap-2">
+                <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-5">
                   {item.themes.map((theme) => (
                     <span
                       key={theme}
-                      className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800"
+                      className="border-b border-line py-1 text-[10px] font-bold uppercase tracking-[.12em] text-muted"
                     >
                       {theme}
                     </span>
@@ -157,13 +163,13 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                   href={item.resource_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-8 inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-600 hover:border-emerald-200 hover:text-emerald-800"
+                  className="mt-10 inline-flex items-center gap-2 border-b border-brand py-2 text-xs font-semibold text-brand"
                 >
                   Consulter le document original
                 </a>
               )}
             </div>
-            <aside className="space-y-3">
+            <aside className="border-t border-line lg:border-t-0">
               <Info label="Type" value={meta.label} icon={Icon} />
               <Info
                 label="Auteur / intervenant"
@@ -200,12 +206,12 @@ function Info({
   icon: typeof BookOpen;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-      <span className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+    <div className="border-b border-line py-5">
+      <span className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.14em] text-muted">
         <Icon size={13} />
         {label}
       </span>
-      <p className="mt-2 text-sm font-semibold leading-5">{value}</p>
+      <p className="mt-2 text-sm font-semibold leading-6 text-ink">{value}</p>
     </div>
   );
 }

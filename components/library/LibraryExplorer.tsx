@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Archive,
   BookOpen,
@@ -9,7 +10,6 @@ import {
   Library,
   Mic2,
   Newspaper,
-  Play,
   Search,
   ScrollText,
   UserRound,
@@ -28,25 +28,23 @@ const categories: Array<{ id: LibraryItemType | "all"; label: string; icon: type
   { id: "archive", label: "Archives", icon: Archive },
 ];
 export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
+  const router = useRouter();
   const [category, setCategory] = useState<LibraryItemType | "all">("all"),
     [query, setQuery] = useState("");
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return items.filter(
-      (item) =>
-        (category === "all" || item.item_type === category) &&
-        (!q ||
-          [item.title, item.subtitle, item.author, item.description, ...item.themes]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase()
-            .includes(q)),
-    );
-  }, [category, items, query]);
+    return items.filter((item) => category === "all" || item.item_type === category);
+  }, [category, items]);
   return (
     <div>
-      <div className="rounded-3xl border border-line bg-white p-4 shadow-sm sm:p-5">
-        <label className="flex h-12 items-center gap-3 rounded-2xl bg-slate-50 px-4 ring-1 ring-slate-200 focus-within:ring-brand/30">
+      <div className="border-y border-line py-4">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (query.trim().length >= 2)
+              router.push(`/search?q=${encodeURIComponent(query.trim())}&type=library`);
+          }}
+          className="flex h-12 items-center gap-3 border-b border-ink px-0 focus-within:border-brand"
+        >
           <Search size={18} className="text-muted" />
           <input
             value={query}
@@ -54,13 +52,13 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
             className="min-w-0 flex-1 bg-transparent text-sm outline-none"
             placeholder="Rechercher un livre, un auteur, une conférence…"
           />
-        </label>
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+        </form>
+        <div className="mt-4 flex gap-6 overflow-x-auto pb-1">
           {categories.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setCategory(id)}
-              className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition ${category === id ? "bg-emerald-800 text-white" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+              className={`flex shrink-0 items-center gap-2 border-b py-2 text-[10px] font-bold uppercase tracking-[.12em] transition ${category === id ? "border-brand text-brand" : "border-transparent text-muted hover:text-ink"}`}
             >
               <Icon size={15} />
               {label}
@@ -70,10 +68,8 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
       </div>
       <div className="mt-8 flex items-end justify-between">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
-            Ressources documentaires
-          </span>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight">
+          <span className="folio-label">Ressources documentaires</span>
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-.04em]">
             {category === "all"
               ? "Toute la bibliothèque"
               : categories.find((x) => x.id === category)?.label}
@@ -84,44 +80,37 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
         </span>
       </div>
       {filtered.length ? (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((item) => {
+        <div className="mt-8 border-b border-line">
+          {filtered.map((item, index) => {
             const meta = categories.find((x) => x.id === item.item_type),
               Icon = meta?.icon || FileText;
             const card = (
-              <article className="group h-full overflow-hidden rounded-3xl border border-line bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <div className="relative grid aspect-[16/10] place-items-center overflow-hidden bg-gradient-to-br from-emerald-950 to-emerald-700 text-white">
-                  {item.cover_url ? (
-                    <img src={item.cover_url} alt="" className="size-full object-cover" />
-                  ) : (
-                    <Icon size={40} className="text-amber-200" />
-                  )}
-                  <span className="absolute left-3 top-3 rounded-full bg-black/30 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur">
+              <article className="group grid grid-cols-[42px_minmax(0,1fr)] border-t border-line py-7 sm:grid-cols-[60px_38px_minmax(0,1fr)_180px_auto] sm:items-start sm:gap-5 sm:py-9">
+                <span className="text-[10px] font-bold tracking-[.16em] text-gold">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <Icon size={18} className="hidden text-brand sm:block" />
+                <div>
+                  <span className="text-[9px] font-bold uppercase tracking-[.16em] text-muted">
                     {meta?.label}
                   </span>
-                  {["audio", "video"].includes(item.item_type) && (
-                    <span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-white text-slate-950 shadow">
-                      <Play size={15} fill="currentColor" />
-                    </span>
+                  <h3 className="mt-2 text-xl font-semibold leading-7 tracking-[-.025em] sm:text-2xl">
+                    {item.title}
+                  </h3>
+                  {item.description && (
+                    <p className="mt-3 line-clamp-2 max-w-2xl text-sm leading-6 text-muted">
+                      {item.description}
+                    </p>
                   )}
                 </div>
-                <div className="p-5">
-                  <h3 className="line-clamp-2 font-bold leading-6">{item.title}</h3>
-                  {item.author && <p className="mt-1 text-xs text-emerald-700">{item.author}</p>}
-                  <p className="mt-3 line-clamp-3 text-xs leading-5 text-muted">
-                    {item.description || item.subtitle || "Ressource documentaire vérifiée."}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {item.themes.slice(0, 3).map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-full bg-slate-100 px-2 py-1 text-[9px] text-slate-600"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                <div className="col-start-2 mt-4 text-xs leading-6 text-muted sm:col-start-auto sm:mt-0">
+                  {item.author && <p className="font-semibold text-ink">{item.author}</p>}
+                  {item.publication_year && <p>{item.publication_year}</p>}
+                  {item.source_name && <p className="mt-2 line-clamp-2">{item.source_name}</p>}
                 </div>
+                <span className="col-start-2 mt-4 border-b border-brand pb-1 text-[10px] font-bold uppercase tracking-[.12em] text-brand sm:col-start-auto sm:mt-0">
+                  Consulter →
+                </span>
               </article>
             );
             return (

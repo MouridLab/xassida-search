@@ -1,111 +1,99 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, CheckCircle2, Eye, FileText, Headphones } from "lucide-react";
+import { ArrowRight, FileText, Headphones } from "lucide-react";
 import type { Khassida } from "@/types/database";
-import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 
 export type WorkStats = { verses?: number; pages?: number; hasAudio?: boolean; hasPdf?: boolean };
+
 export function WorkCard({
   work,
   stats,
   className,
+  index,
 }: {
   work: Khassida;
   stats?: WorkStats;
   className?: string;
+  index?: number;
 }) {
   const cover = work.cover_url;
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-[24px] border border-slate-200/90 bg-white shadow-[0_12px_35px_rgba(15,23,42,.06)] transition duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-lift",
+        "group grid grid-cols-[42px_minmax(0,1fr)] border-t border-line py-7 sm:grid-cols-[64px_100px_minmax(0,1fr)_auto] sm:items-center sm:gap-6 sm:py-9",
         className,
       )}
     >
-      <div className="flex min-h-36 gap-4 p-4 pb-3">
-        <div
-          className={cn(
-            "relative grid h-32 w-[88px] shrink-0 place-items-center overflow-hidden rounded-xl p-2 text-center shadow-sm",
-            cover
-              ? "border border-slate-200 bg-white"
-              : "bg-gradient-to-br from-emerald-950 to-emerald-800 text-gold",
-          )}
-        >
-          {cover ? (
-            <Image
-              src={cover}
-              alt={`Couverture de ${work.title}`}
-              fill
-              unoptimized={Boolean(work.cover_url)}
-              sizes="80px"
-              className="object-contain p-1"
-            />
-          ) : (
-            <>
-              <span className="absolute inset-1 rounded border border-gold/30" />
-              <span className="font-arabic text-lg leading-7">
-                {work.arabic_title || "خَصَائِد"}
+      <span className="pt-1 text-[10px] font-bold tracking-[.18em] text-gold sm:self-start">
+        {String((index ?? 0) + 1).padStart(2, "0")}
+      </span>
+      <div className="manuscript-frame relative hidden aspect-[3/4] overflow-hidden border border-line bg-surface sm:block">
+        {cover ? (
+          <Image
+            src={cover}
+            alt={`Couverture de ${work.title}`}
+            fill
+            unoptimized={Boolean(work.cover_url)}
+            sizes="100px"
+            className="object-contain p-2"
+          />
+        ) : (
+          <div className="grid size-full place-items-center px-3 text-center">
+            {work.arabic_title ? (
+              <span dir="rtl" className="font-arabic text-xl leading-9 text-brand">
+                {work.arabic_title}
               </span>
-            </>
-          )}
-        </div>
-        <div className="min-w-0 flex-1 py-1">
-          <Badge className="w-fit border-success/15 bg-success/10 px-2.5 py-1 text-success">
-            <CheckCircle2 size={12} /> Vérifié
-          </Badge>
-          <h3 className="mt-3 line-clamp-2 text-[17px] font-bold leading-6 tracking-tight text-ink">
-            {work.title}
-          </h3>
-          <p dir="rtl" className="mt-1 line-clamp-1 font-arabic text-xl leading-8 text-muted">
-            {work.arabic_title}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-semibold">
-            {stats?.verses ? (
-              <span className="flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-blue-700">
-                <BookOpen size={11} />
-                {stats.verses} vers
-              </span>
-            ) : null}
-            {(stats?.hasPdf || work.pdf_url) && (
-              <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700">
-                <FileText size={11} />
-                {stats?.pages ? `${stats.pages} pages` : "PDF"}
-              </span>
-            )}
-            {(stats?.hasAudio || work.audio_url) && (
-              <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700">
-                <Headphones size={11} />
-                Audio
-              </span>
+            ) : (
+              <FileText size={20} className="text-gold" />
             )}
           </div>
+        )}
+      </div>
+      <div className="min-w-0">
+        {work.arabic_title && (
+          <p
+            dir="rtl"
+            lang="ar"
+            className="font-arabic text-2xl leading-[1.7] text-ink sm:text-3xl"
+          >
+            {work.arabic_title}
+          </p>
+        )}
+        <h3 className="mt-1 text-xl font-semibold tracking-[-.03em] text-ink sm:text-2xl">
+          {work.title}
+        </h3>
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[10px] uppercase tracking-[.1em] text-muted">
+          {work.themes?.[0] && <span>{work.themes[0]}</span>}
+          {stats?.verses ? <span>{stats.verses} vers</span> : null}
+          {(stats?.hasPdf || work.pdf_url) && (
+            <span className="inline-flex items-center gap-1">
+              <FileText size={11} /> PDF
+            </span>
+          )}
+          {(stats?.hasAudio || work.audio_url) && (
+            <span className="inline-flex items-center gap-1">
+              <Headphones size={11} /> Audio
+            </span>
+          )}
         </div>
       </div>
-      <div className="flex gap-2 border-t border-slate-100 bg-slate-50/70 p-3 sm:translate-y-full sm:absolute sm:inset-x-0 sm:bottom-0 sm:bg-white/95 sm:backdrop-blur sm:transition sm:duration-300 sm:group-hover:translate-y-0 sm:group-focus-within:translate-y-0">
+      <div className="col-start-2 mt-5 flex items-center gap-5 sm:col-start-auto sm:mt-0">
         <Link
-          className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-brand px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           href={`/khassidas/${work.slug}?tab=lecture`}
+          className="inline-flex min-h-11 items-center gap-3 border-b border-brand pb-1 text-xs font-semibold uppercase tracking-[.12em] text-brand"
         >
-          <BookOpen size={14} />
-          Lire
+          Ouvrir <ArrowRight size={14} />
         </Link>
         {(stats?.hasAudio || work.audio_url) && (
           <Link
-            className="grid size-11 place-items-center rounded-xl border border-emerald-200 bg-white text-emerald-700 transition hover:bg-emerald-50"
             href={`/khassidas/${work.slug}?tab=audio`}
-            aria-label="Écouter"
+            aria-label={`Écouter ${work.title}`}
+            className="text-muted hover:text-brand"
           >
-            <Headphones size={14} />
+            <Headphones size={17} />
           </Link>
         )}
-        <Link
-          className="grid size-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-brand/20 hover:text-brand"
-          href={`/khassidas/${work.slug}?tab=information`}
-          aria-label="Voir"
-        >
-          <Eye size={14} />
-        </Link>
       </div>
     </article>
   );

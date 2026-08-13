@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import type { Khassida } from "@/types/database";
 import type { WorkStats } from "./WorkCard";
@@ -15,6 +16,7 @@ export function CatalogExplorer({
   stats: Record<string, WorkStats>;
   initialTheme?: string;
 }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [theme, setTheme] = useState(initialTheme || "");
   const themes = useMemo(
@@ -27,22 +29,20 @@ export function CatalogExplorer({
   }, [initialTheme]);
 
   const filtered = useMemo(
-    () =>
-      works.filter(
-        (work) =>
-          (!theme || work.themes.includes(theme)) &&
-          (!query ||
-            [work.title, work.arabic_title, ...work.aliases, ...work.themes]
-              .join(" ")
-              .toLocaleLowerCase()
-              .includes(query.toLocaleLowerCase())),
-      ),
-    [works, query, theme],
+    () => works.filter((work) => !theme || work.themes.includes(theme)),
+    [works, theme],
   );
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-3 shadow-card sm:flex-row">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (query.trim().length >= 2)
+            router.push(`/search?q=${encodeURIComponent(query.trim())}&type=khassida`);
+        }}
+        className="grid border-y border-line py-3 sm:grid-cols-[1fr_auto]"
+      >
         <label className="flex flex-1 items-center gap-3 px-2">
           <Search size={18} className="text-muted" />
           <input
@@ -52,7 +52,7 @@ export function CatalogExplorer({
             placeholder="Titre, mot arabe ou thème…"
           />
         </label>
-        <label className="flex items-center gap-2 rounded-xl border border-line px-3 text-sm text-muted">
+        <label className="flex items-center gap-2 border-l border-line px-4 text-sm text-muted">
           <SlidersHorizontal size={16} />
           <select
             value={theme}
@@ -65,8 +65,8 @@ export function CatalogExplorer({
             ))}
           </select>
         </label>
-      </div>
-      <div className="mt-6 flex items-center justify-between gap-4">
+      </form>
+      <div className="mt-12 flex items-end justify-between gap-4">
         <p className="text-xs font-medium text-muted">
           {filtered.length} khassaida{filtered.length !== 1 ? "s" : ""}
           {theme && <> pour le thème « {theme} »</>}
@@ -80,9 +80,9 @@ export function CatalogExplorer({
           </button>
         )}
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filtered.map((work) => (
-          <WorkCard key={work.id} work={work} stats={stats[work.id]} />
+      <div className="mt-5 border-b border-line">
+        {filtered.map((work, index) => (
+          <WorkCard key={work.id} work={work} stats={stats[work.id]} index={index} />
         ))}
       </div>
       {!filtered.length && (
