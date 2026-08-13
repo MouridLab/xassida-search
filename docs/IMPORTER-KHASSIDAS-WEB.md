@@ -50,6 +50,10 @@ Le manifeste versionné est `config/khassida-import-sources.json`. Une entrée d
 4. le traducteur ou l’éditeur lorsqu’il est indiqué;
 5. le droit de conserver une copie privée et de la rendre accessible après validation.
 
+Le lot initial inventorie 26 œuvres et 51 éditions PDF. Plusieurs fichiers d’une même œuvre sont
+regroupés comme éditions : ils ne doivent pas devenir des fiches distinctes à cause d’une différence
+de translittération ou de langue.
+
 Les hôtes autorisés sont configurables sans secret :
 
 ```text
