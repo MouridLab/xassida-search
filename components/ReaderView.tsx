@@ -657,6 +657,7 @@ function ReaderContent({
       : []),
     ...editions,
   ];
+  const translationEditions = documents.filter((edition) => edition.edition_kind === "translation");
   const [editionId, setEditionId] = useState(preferPassages ? "" : documents[0]?.id || "");
   const selectedEdition = editionId
     ? documents.find((edition) => edition.id === editionId)
@@ -699,6 +700,57 @@ function ReaderContent({
         </aside>
       )}
       <section className="overflow-hidden border-y border-line bg-surface">
+        {translationEditions.length > 1 && (
+          <div className="border-b border-line border-l-2 border-l-gold bg-brand/[.035] px-4 py-5 sm:px-6">
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center border border-gold/50 text-brand">
+                <Languages size={18} />
+              </span>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[.16em] text-gold">
+                  Choix de traduction
+                </p>
+                <h3 className="mt-1 text-base font-semibold text-ink">
+                  {translationEditions.length} traductions disponibles
+                </h3>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  Sélectionnez l’édition que vous souhaitez consulter.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {translationEditions.map((edition) => {
+                const selected = selectedEdition?.id === edition.id;
+                return (
+                  <button
+                    key={edition.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => setEditionId(edition.id)}
+                    className={cn(
+                      "min-h-16 border px-3 py-3 text-left transition",
+                      selected
+                        ? "border-brand bg-brand text-white"
+                        : "border-line bg-surface text-ink hover:border-brand",
+                    )}
+                  >
+                    <span className="block text-xs font-semibold">{editionLabel(edition)}</span>
+                    <span
+                      className={cn(
+                        "mt-1 block text-[10px]",
+                        selected ? "text-white/75" : "text-muted",
+                      )}
+                    >
+                      {edition.translator
+                        ? `Traduit par ${edition.translator}`
+                        : languageLabel(edition.language)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {(documents.length > 1 || (documents.length > 0 && chunks.length > 0)) && (
           <header className="flex flex-wrap items-center gap-3 border-b border-line px-4 py-3">
             <Languages size={16} className="text-brand" />
@@ -1584,17 +1636,17 @@ function nextFontLevel(value: number) {
   return fontLevels.find((level) => level > value) ?? fontLevels[fontLevels.length - 1];
 }
 function editionLabel(edition: Pick<KhassidaEdition, "language" | "edition_kind" | "title">) {
+  const kinds = { original: "Original", translation: "Traduction", transcription: "Transcription" };
+  return edition.title || `${kinds[edition.edition_kind]} · ${languageLabel(edition.language)}`;
+}
+function languageLabel(language: string) {
   const languages: Record<string, string> = {
     ar: "Arabe",
     fr: "Français",
     wo: "Wolof",
     en: "Anglais",
   };
-  const kinds = { original: "Original", translation: "Traduction", transcription: "Transcription" };
-  return (
-    edition.title ||
-    `${kinds[edition.edition_kind]} · ${languages[edition.language] || edition.language}`
-  );
+  return languages[language] || language;
 }
 function youtubeVideoId(value: string | null | undefined) {
   if (!value) return null;
