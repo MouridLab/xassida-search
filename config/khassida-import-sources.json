@@ -1,0 +1,95 @@
+[
+  {
+    "slug": "masaalikul-jinaan",
+    "title": "Masaalikul Jinaan",
+    "aliases": ["Masaalik", "Masalikoul Jinaan", "Masalik"],
+    "themes": ["spiritualité", "éducation", "soufisme"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Masalikul-Jinaan-ar.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Masaalikul Jinaan — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Masaalikul%20Jinaan-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Les Itinéraires du Paradis",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "matlaboul-fawzayni",
+    "title": "Matlaboul Fawzayni",
+    "themes": ["prière", "Touba", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Matlaboul-fawzayni.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Matlaboul Fawzayni — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Matlaboul%20fawzayni-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Matlaboul Fawzayni — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "tazawwudush-shubban",
+    "title": "Tazawwudush Shubbān",
+    "themes": ["jeunesse", "éducation", "spiritualité"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Tazawudush%20Shubbaan.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Tazawwudush Shubbān — arabe",
+        "sourceName": "Xassaid.com"
+      },
+      {
+        "url": "https://files.xassaid.com/files/Tazawwudou-sh-subban-fr.pdf",
+        "language": "fr",
+        "editionKind": "translation",
+        "title": "Tazawwudush Shubbān — traduction française",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "jazbul-qulub",
+    "title": "Jazbul Qulub",
+    "aliases": ["Jazboul Khouloub", "Jazboul Qulub"],
+    "themes": ["éloge prophétique", "spiritualité", "prière"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Jazboul%20Khouloub.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Jazbul Qulub — arabe",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  },
+  {
+    "slug": "safinatul-aman",
+    "title": "Safinatul Amān",
+    "themes": ["spiritualité", "protection", "invocation"],
+    "resources": [
+      {
+        "url": "https://files.xassaid.com/files/Safinatoul-amane.pdf",
+        "language": "ar",
+        "editionKind": "original",
+        "title": "Safinatul Amān — arabe",
+        "sourceName": "Xassaid.com"
+      }
+    ]
+  }
+]
