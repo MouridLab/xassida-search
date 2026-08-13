@@ -7,11 +7,11 @@ export default async function WorkPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; passage?: string }>;
 }) {
   if (!isConfigured) notFound();
   const { slug } = await params;
-  const { tab } = await searchParams;
+  const { tab, passage } = await searchParams;
   const db = publicServerClient();
   const { data: k } = await db
     .from("khassidas")
@@ -101,7 +101,7 @@ export default async function WorkPage({
     url: `/api/edition-media/${edition.id}`,
   }));
   return (
-    <ReaderView work={resolved} chunks={chunks || []} editions={resolvedEditions} related={resolvedRelated} relatedMode={hasRelevantRelated ? "related" : "discover"} initialTab={tab} />
+    <ReaderView work={resolved} chunks={chunks || []} editions={resolvedEditions} related={resolvedRelated} relatedMode={hasRelevantRelated ? "related" : "discover"} initialTab={tab} initialPassageId={passage} />
   );
 }
 

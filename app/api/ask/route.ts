@@ -124,6 +124,7 @@ export async function POST(request: Request) {
       answer: completion.choices[0].message.content || fallback,
       sources: sources.map((source: (typeof sources)[number]) => ({
         id: source.id,
+        chunk_id: source.id,
         title: source.title,
         slug: source.slug,
         quote: source.quote,
