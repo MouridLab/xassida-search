@@ -1,4 +1,6 @@
 -- Métadonnées de départ uniquement : elles restent non publiées jusqu'à validation humaine.
+-- Idempotence : le slug est l'identifiant stable et aucune fiche éditoriale existante n'est écrasée.
+-- Les textes, traductions et nombres absents ne sont volontairement pas inventés ici.
 insert into public.khassidas(slug,title,arabic_title,aliases,themes,description,is_verified) values
 ('masaalikul-jinaan','Masaalikul Jinaan','مسالك الجنان',array['Masaalik','Masalikoul Jinaan','Masalik'],array['spiritualité','éducation'],'Œuvre à documenter et faire valider.',false),
 ('matlaboul-fawzayni','Matlaboul Fawzayni','مطلب الفوزين',array['Matlabul Fawzayni','Matlaboul Fawzaini'],array['prière','Touba'],'Œuvre à documenter et faire valider.',false),
