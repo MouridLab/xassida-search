@@ -14,6 +14,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
+import { sortAdminEditions } from "@/lib/admin-editions";
 import type { Khassida } from "@/types/database";
 
 type AdminEdition = {
@@ -121,7 +122,7 @@ export function AdminDashboard() {
       ]);
       setWorks(worksBody.items || []);
       setRole(worksBody.role || "");
-      setEditions(editionsBody.items || []);
+      setEditions(sortAdminEditions(editionsBody.items || []));
     } catch (reason) {
       handleError(reason);
     } finally {
