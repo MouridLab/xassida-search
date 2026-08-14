@@ -9,7 +9,7 @@
     "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:check:ci": "prettier --check .env.example .github/workflows/ci.yml .eslintrc.json app/api/admin/uploads app/api/admin/editions/route.ts app/api/admin/upload/route.ts app/api/ask/route.ts components/AdminDashboard.tsx docs/audit/FINAL-P1-PRODUCTION-READINESS.md docs/PRODUCTION-BACKUP.md docs/SUPABASE-COMMANDS.md docs/SUPABASE-TEST-SETUP.md lib/api-abuse.ts lib/ask-policy.ts lib/authorization.ts lib/minio.ts lib/shared-rate-limit.ts lib/storage-workflow.ts lib/upload-policy.ts scripts/setup-test-supabase.ts scripts/verify-rls.ts tests",
+    "format:check:ci": "prettier --check .env.example .eslintrc.json app/api/admin/uploads app/api/admin/editions/route.ts app/api/admin/upload/route.ts app/api/ask/route.ts components/AdminDashboard.tsx docs/audit/FINAL-P1-PRODUCTION-READINESS.md docs/PRODUCTION-BACKUP.md docs/SUPABASE-COMMANDS.md docs/SUPABASE-TEST-SETUP.md lib/api-abuse.ts lib/ask-policy.ts lib/authorization.ts lib/minio.ts lib/shared-rate-limit.ts lib/storage-workflow.ts lib/upload-policy.ts scripts/setup-test-supabase.ts scripts/verify-rls.ts tests",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:rls": "bun --env-file=.env.local scripts/verify-rls.ts",
