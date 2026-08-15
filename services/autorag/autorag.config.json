@@ -1,0 +1,27 @@
+{
+  "searchPaths": ["/data/corpus"],
+  "workspacePath": "/data/workspace",
+  "memoryPath": "/data/memory.json",
+  "agents": {
+    "orchestrator": {
+      "provider": "ollama",
+      "id": "qwen3:4b",
+      "baseUrl": "http://ollama:11434/v1",
+      "api": "openai-completions",
+      "apiKeyEnv": "OLLAMA_API_KEY",
+      "contextWindow": 32768,
+      "maxTokens": 2048
+    },
+    "explorer": {
+      "provider": "ollama",
+      "id": "qwen3:4b",
+      "baseUrl": "http://ollama:11434/v1",
+      "api": "openai-completions",
+      "apiKeyEnv": "OLLAMA_API_KEY",
+      "contextWindow": 32768,
+      "maxTokens": 2048
+    }
+  },
+  "bm25": { "enabled": true },
+  "minSync": false
+}

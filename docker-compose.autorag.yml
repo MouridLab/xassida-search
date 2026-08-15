@@ -1,0 +1,25 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+
+  autorag:
+    build: ./services/autorag
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      AUTORAG_INTERNAL_TOKEN: ${AUTORAG_INTERNAL_TOKEN}
+      OLLAMA_API_KEY: local-model-placeholder-key
+    volumes:
+      - autorag_data:/data
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  ollama_models:
+  autorag_data:
