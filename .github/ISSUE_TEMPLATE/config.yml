@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Signalement de sécurité
+    url: https://github.com/MouridLab/xassida-search/security/advisories/new
+    about: Ne publiez pas une vulnérabilité dans une issue publique.

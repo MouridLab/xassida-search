@@ -1,0 +1,23 @@
+name: Proposition
+description: Proposer une amélioration produit ou technique
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème utilisateur
+      description: Quel besoin concret cette proposition résout-elle ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposition
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risques et dépendances
+      description: Corpus, validation éditoriale, infrastructure, sécurité ou accessibilité.
