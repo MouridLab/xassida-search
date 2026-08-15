@@ -1,6 +1,6 @@
 # AutoRAG local sans OpenAI
 
-Xassida Search utilise AutoRAG 2.0 comme service privé et Ollama comme moteur local. Les passages publiés restent dans Supabase. Le service synchronise uniquement les khassidas vérifiés et leurs passages `verified` dans un volume local, puis construit un index BM25. À chaque question, l'API de récupération BM25 d'AutoRAG sélectionne quatre passages au maximum et un seul appel à Qwen rédige la réponse sourcée.
+Xassida Search consomme le microservice privé [`MouridLab/xassida-rag`](https://github.com/MouridLab/xassida-rag), fondé sur AutoRAG 2.0 et Ollama. Les passages publiés restent dans Supabase. Le service synchronise uniquement les khassidas vérifiés et leurs passages `verified` dans un volume local, puis construit un index BM25. À chaque question, l'API de récupération BM25 d'AutoRAG sélectionne quatre passages au maximum et un seul appel à Qwen rédige la réponse sourcée.
 
 ## Pré-requis
 
@@ -14,10 +14,17 @@ La valeur `openai-completions` du fichier de configuration désigne uniquement l
 
 ## Premier démarrage
 
+Tant que le dépôt et son paquet GHCR sont privés, authentifier Docker sans afficher le token :
+
+```bash
+gh auth token | docker login ghcr.io -u "$(gh api user --jq .login)" --password-stdin
+```
+
 ```bash
 docker compose -f docker-compose.autorag.yml up -d ollama
 docker compose -f docker-compose.autorag.yml exec ollama ollama pull qwen3:4b
-docker compose -f docker-compose.autorag.yml up -d --build autorag
+docker compose -f docker-compose.autorag.yml pull autorag
+docker compose -f docker-compose.autorag.yml up -d autorag
 curl http://127.0.0.1:8080/health
 ```
 
@@ -32,7 +39,7 @@ AUTORAG_INTERNAL_TOKEN=<token local long et aléatoire>
 
 ## Mise à jour du corpus
 
-Après publication ou correction de passages, reconstruire le service pour relancer la synchronisation contrôlée :
+Après publication ou correction de passages, redémarrer le service pour relancer la synchronisation contrôlée :
 
 ```bash
 docker compose -f docker-compose.autorag.yml restart autorag

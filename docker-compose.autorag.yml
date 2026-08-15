@@ -6,7 +6,7 @@ services:
       - ollama_models:/root/.ollama
 
   autorag:
-    build: ./services/autorag
+    image: ghcr.io/mouridlab/xassida-rag:0.1.0
     restart: unless-stopped
     depends_on:
       - ollama

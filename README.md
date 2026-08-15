@@ -2,6 +2,8 @@
 
 Application Next.js pour constituer, valider et rechercher un corpus de khassaïdes. Elle associe une recherche lexicale (titres, variantes, arabe normalisé et transcription) à une recherche sémantique pgvector, puis produit des réponses strictement sourcées.
 
+Projet porté par [MouridLab](https://github.com/MouridLab). Le moteur documentaire est maintenu séparément dans [`MouridLab/xassida-rag`](https://github.com/MouridLab/xassida-rag) et consommé comme microservice privé versionné.
+
 ## Documentation
 
 La documentation complète est organisée dans [`docs/README.md`](docs/README.md) : architecture, modèle de données, workflows, exploitation, [stockage MinIO](docs/MINIO.md), ajout d’un khassida et audit du code mort.
