@@ -22,7 +22,7 @@ La plateforme distingue deux corpus : **Khassaïdes** pour les œuvres poétique
 
 ## Installation locale
 
-Prérequis : Node.js 20+, un projet Supabase et une clé API OpenAI.
+Prérequis : Node.js 20+, un projet Supabase et le service local AutoRAG/Ollama.
 
 ```bash
 npm install
@@ -30,7 +30,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Renseignez les variables de `.env.local`. Les clés Supabase de service, OpenAI et MinIO sont exclusivement utilisées côté serveur et ne doivent jamais porter le préfixe `NEXT_PUBLIC_`.
+Renseignez les variables de `.env.local`. Les clés Supabase de service, le token AutoRAG et les secrets MinIO sont exclusivement utilisés côté serveur et ne doivent jamais porter le préfixe `NEXT_PUBLIC_`. Consultez [`docs/AUTORAG-LOCAL.md`](docs/AUTORAG-LOCAL.md) pour lancer le RAG sans OpenAI.
 
 ## Initialiser Supabase
 
@@ -48,7 +48,7 @@ La migration active RLS. Le public ne peut lire que les contenus `verified`; la 
 2. Il conserve distinctement texte arabe original, transcription, traduction et commentaire.
 3. Un validateur vérifie la source et marque les passages `verified`.
 4. La fiche est publiée (`is_verified=true`) seulement quand sa provenance est documentée.
-5. L’embedding doit être recalculé après toute correction du contenu textuel.
+5. L’index AutoRAG doit être reconstruit après toute correction d’un passage publié.
 
 Les entrées du seed ne sont pas un corpus religieux validé. Elles sont volontairement invisibles au public jusqu’à revue humaine.
 

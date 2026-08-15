@@ -28,7 +28,7 @@ flowchart LR
     E[Équipe éditoriale] --> AD[Administration]
     AD --> S[(Supabase)]
     AD --> M[(MinIO privé)]
-    R --> O[OpenAI]
+    R --> O[AutoRAG + Ollama]
     O --> S
 ```
 

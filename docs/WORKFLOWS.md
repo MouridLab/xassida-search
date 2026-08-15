@@ -85,28 +85,26 @@ Sans requête, l’API renvoie le catalogue public utilisé par l’accueil.
 sequenceDiagram
     participant U as Utilisateur
     participant API as /api/ask
-    participant O as OpenAI
+    participant R as AutoRAG + Ollama
     participant DB as Supabase
     U->>API: question
-    API->>O: embedding de la question
-    O-->>API: vecteur
-    API->>DB: hybrid_search texte + vecteur
-    DB-->>API: 6 passages validés
-    API->>O: question + contexte numéroté
-    O-->>API: réponse avec citations [n]
+    API->>R: question validée
+    R-->>API: réponse + identifiants de passages
+    API->>DB: vérifier les passages et œuvres publiés
+    DB-->>API: métadonnées des sources autorisées
     API-->>U: réponse + sources cliquables
 ```
 
-Si aucune source validée ne suffit, l’API renvoie une réponse de repli explicite. Toute correction de texte devrait entraîner un recalcul de l’embedding correspondant.
+Si aucune source validée ne suffit, l’API renvoie une réponse de repli explicite. Toute correction de texte publié doit entraîner une resynchronisation de l’index AutoRAG.
 
 ## 6. Migrer ou importer les médias
 
-| Commande | Usage |
-| --- | --- |
-| `bun run import:xassaid` | Associer/importer le catalogue PDF Xassaid et extraire le texte disponible |
-| `bun run migrate:minio` | Copier dans MinIO les médias déjà référencés |
-| `bun run import:astahfir` | Import spécialisé du PDF/audio d’Astahfirul Laha Bihi |
-| `bun run import:jazbul-audio` | Extraire/importer l’audio de Jazbul Qulub |
+| Commande                      | Usage                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| `bun run import:xassaid`      | Associer/importer le catalogue PDF Xassaid et extraire le texte disponible |
+| `bun run migrate:minio`       | Copier dans MinIO les médias déjà référencés                               |
+| `bun run import:astahfir`     | Import spécialisé du PDF/audio d’Astahfirul Laha Bihi                      |
+| `bun run import:jazbul-audio` | Extraire/importer l’audio de Jazbul Qulub                                  |
 
 Ces scripts modifient les données et/ou le stockage distant. Ils doivent être lancés avec `.env.local` correctement configuré et après sauvegarde adaptée.
 
