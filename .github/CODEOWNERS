@@ -1,0 +1,6 @@
+* @JVRLC
+
+/.github/ @JVRLC
+/supabase/migrations/ @JVRLC
+/app/api/ @JVRLC
+/lib/ @JVRLC
