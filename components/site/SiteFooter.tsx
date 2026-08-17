@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CirclePlay, MessageCircle, Send } from "lucide-react";
+import { BookOpen, Code2, MessageCircle } from "lucide-react";
 import { Logo } from "./Logo";
 export function SiteFooter() {
   return (
@@ -23,26 +23,21 @@ export function SiteFooter() {
         <div>
           <h3 className="text-sm font-semibold text-ink">Xassida Search</h3>
           <nav className="mt-4 flex gap-2">
-            <a
+            <Link
               className="grid size-9 place-items-center rounded-lg border border-line text-muted"
-              href="#"
+              href="/communaute"
               aria-label="Communauté"
             >
               <MessageCircle size={16} />
-            </a>
+            </Link>
             <a
               className="grid size-9 place-items-center rounded-lg border border-line text-muted"
-              href="#"
-              aria-label="Vidéos"
+              href="https://github.com/MouridLab/xassida-search"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Code source sur GitHub"
             >
-              <CirclePlay size={16} />
-            </a>
-            <a
-              className="grid size-9 place-items-center rounded-lg border border-line text-muted"
-              href="#"
-              aria-label="Telegram"
-            >
-              <Send size={16} />
+              <Code2 size={16} />
             </a>
             <span className="grid size-9 place-items-center text-brand">
               <BookOpen size={17} />
