@@ -2,7 +2,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, CircleUserRound, Library, Menu, Moon, Search, Sun, X } from "lucide-react";
+import {
+  BookOpen,
+  CircleUserRound,
+  Library,
+  Menu,
+  Moon,
+  Search,
+  Sun,
+  Users,
+  X,
+} from "lucide-react";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +21,7 @@ const links = [
   ["Œuvres", "/khassidas", Library],
   ["Bibliothèque", "/bibliotheque", BookOpen],
   ["Questionner", "/recherche-ia", Search],
+  ["Communauté", "/communaute", Users],
 ] as const;
 
 export function SiteHeader() {
