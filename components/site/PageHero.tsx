@@ -1,11 +1,17 @@
+import Image from "next/image";
+
 export function PageHero({
   eyebrow,
   title,
   description,
+  image,
+  imageAlt,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  image?: string;
+  imageAlt?: string;
 }) {
   return (
     <header className="border-b border-line bg-surface">
@@ -16,9 +22,26 @@ export function PageHero({
             {title}
           </h1>
         </div>
-        <p className="max-w-md border-t border-line pt-5 text-sm leading-7 text-muted sm:text-base sm:leading-8">
-          {description}
-        </p>
+        {image ? (
+          <figure className="relative min-h-[210px] overflow-hidden border-y border-line bg-canvas sm:min-h-[240px]">
+            <Image
+              src={image}
+              alt={imageAlt || ""}
+              fill
+              priority
+              sizes="(max-width: 640px) 100vw, 38vw"
+              className="object-cover transition duration-700 hover:scale-[1.025]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent" />
+            <figcaption className="absolute inset-x-0 bottom-0 p-5 text-sm leading-6 text-white sm:p-6">
+              {description}
+            </figcaption>
+          </figure>
+        ) : (
+          <p className="max-w-md border-t border-line pt-5 text-sm leading-7 text-muted sm:text-base sm:leading-8">
+            {description}
+          </p>
+        )}
       </div>
     </header>
   );

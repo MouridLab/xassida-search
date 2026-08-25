@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   Edit3,
+  Library,
   ImageIcon,
   Languages,
   LogOut,
   Eye,
   XCircle,
   Plus,
+  Trash2,
   UploadCloud,
 } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
@@ -32,6 +34,8 @@ type AdminEdition = {
   validation_status: "review" | "verified" | "disabled";
   khassidas: { title: string; slug: string };
 };
+
+type AdminSection = "catalog" | "create" | "editions" | "review";
 
 async function api(url: string, options: RequestInit = {}) {
   const { data, error } = await browserClient().auth.getSession();
@@ -98,6 +102,7 @@ export function AdminDashboard() {
   const [pending, setPending] = useState("");
   const [role, setRole] = useState("");
   const [editingId, setEditingId] = useState("");
+  const [activeSection, setActiveSection] = useState<AdminSection>("catalog");
   const [coverPreview, setCoverPreview] = useState("");
   const [previewEdition, setPreviewEdition] = useState<AdminEdition | null>(null);
   const [editionPreviewUrl, setEditionPreviewUrl] = useState("");
@@ -322,7 +327,42 @@ export function AdminDashboard() {
     );
   }
 
+  async function deleteWork(work: Khassida) {
+    const confirmed = window.confirm(
+      `Supprimer définitivement « ${work.title} » ?\n\nSes médias, éditions et passages seront également supprimés. Cette action est irréversible.`,
+    );
+    if (!confirmed) return;
+    await submit(
+      `delete-${work.id}`,
+      async () => {
+        const result = await api("/api/admin/khassidas", {
+          method: "DELETE",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ id: work.id, confirmation: work.title }),
+        });
+        if (editingId === work.id) setEditingId("");
+        await load();
+        if (result.cleanup_pending) {
+          throw new Error(
+            "La fiche est supprimée, mais certains fichiers MinIO nécessitent un nettoyage.",
+          );
+        }
+      },
+      "Khassaïde et contenus associés supprimés.",
+    );
+  }
+
   const editing = works.find((work) => work.id === editingId);
+
+  function editWork(id: string) {
+    setEditingId(id);
+    setActiveSection("catalog");
+    requestAnimationFrame(() =>
+      document
+        .getElementById("admin-editor")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
 
   async function signOut() {
     await browserClient().auth.signOut();
@@ -365,7 +405,44 @@ export function AdminDashboard() {
           </div>
         )}
 
-        <div className="grid items-start gap-5 lg:grid-cols-2">
+        <nav
+          aria-label="Sections de l’administration"
+          className="sticky top-3 z-40 mb-8 grid grid-cols-2 gap-2 rounded-2xl border border-line bg-surface/95 p-2 shadow-sm backdrop-blur sm:grid-cols-4"
+        >
+          <SectionButton
+            active={activeSection === "catalog"}
+            onClick={() => setActiveSection("catalog")}
+            icon={Library}
+          >
+            Catalogue
+          </SectionButton>
+          <SectionButton
+            active={activeSection === "create"}
+            onClick={() => setActiveSection("create")}
+            icon={Plus}
+          >
+            Ajouter
+          </SectionButton>
+          <SectionButton
+            active={activeSection === "editions"}
+            onClick={() => setActiveSection("editions")}
+            icon={Languages}
+          >
+            Éditions
+          </SectionButton>
+          <SectionButton
+            active={activeSection === "review"}
+            onClick={() => setActiveSection("review")}
+            icon={CheckCircle2}
+            badge={editions.filter((item) => item.validation_status === "review").length}
+          >
+            Validation
+          </SectionButton>
+        </nav>
+
+        <div
+          className={`grid items-start gap-5 lg:grid-cols-2 ${activeSection === "create" ? "" : "hidden"}`}
+        >
           <AdminCard
             icon={Plus}
             title="Ajouter un khassaïde"
@@ -414,7 +491,9 @@ export function AdminDashboard() {
           </AdminCard>
         </div>
 
-        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <section
+          className={`${activeSection === "editions" ? "" : "hidden"} rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7`}
+        >
           <div className="flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-2xl bg-violet-50 text-violet-700">
               <Languages size={20} />
@@ -476,7 +555,9 @@ export function AdminDashboard() {
           </form>
         </section>
 
-        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <section
+          className={`${activeSection === "review" ? "" : "hidden"} rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7`}
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[.18em] text-violet-700">
@@ -584,7 +665,10 @@ export function AdminDashboard() {
           </div>
         )}
 
-        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <section
+          id="admin-editor"
+          className={`${activeSection === "catalog" && editing ? "" : "hidden"} scroll-mt-28 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7`}
+        >
           <div className="flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-700">
               <Edit3 size={19} />
@@ -688,7 +772,9 @@ export function AdminDashboard() {
           )}
         </section>
 
-        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <section
+          className={`${activeSection === "catalog" ? "" : "hidden"} rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 ${editing ? "mt-8" : ""}`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">
@@ -741,7 +827,7 @@ export function AdminDashboard() {
                     )}
                   </div>
                   <button
-                    onClick={() => setEditingId(work.id)}
+                    onClick={() => editWork(work.id)}
                     className="mt-4 w-full rounded-xl border border-slate-200 py-2 text-xs font-semibold"
                   >
                     Modifier
@@ -753,6 +839,16 @@ export function AdminDashboard() {
                       className={`mt-2 w-full rounded-xl py-2 text-xs font-semibold text-white ${work.is_verified ? "bg-amber-600" : "bg-emerald-800"}`}
                     >
                       {work.is_verified ? "Remettre en brouillon" : "Publier"}
+                    </button>
+                  )}
+                  {role === "admin" && (
+                    <button
+                      disabled={pending === `delete-${work.id}`}
+                      onClick={() => void deleteWork(work)}
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-wait disabled:opacity-60"
+                    >
+                      <Trash2 size={14} />
+                      {pending === `delete-${work.id}` ? "Suppression…" : "Supprimer"}
                     </button>
                   )}
                 </article>
@@ -785,6 +881,42 @@ function stringOrUndefined(value: FormDataEntryValue | null) {
 function numberOrUndefined(value: FormDataEntryValue | null) {
   const result = Number(value);
   return value && Number.isInteger(result) && result > 0 ? result : undefined;
+}
+function SectionButton({
+  active,
+  onClick,
+  icon: Icon,
+  badge,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: typeof Plus;
+  badge?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-current={active ? "page" : undefined}
+      onClick={onClick}
+      className={`relative flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition sm:text-sm ${
+        active ? "bg-emerald-800 text-white shadow-sm" : "text-muted hover:bg-canvas hover:text-ink"
+      }`}
+    >
+      <Icon size={17} />
+      {children}
+      {!!badge && (
+        <span
+          className={`grid min-w-5 place-items-center rounded-full px-1.5 py-0.5 text-[10px] ${
+            active ? "bg-white text-emerald-900" : "bg-amber-100 text-amber-800"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
+    </button>
+  );
 }
 function AdminCard({
   icon: Icon,

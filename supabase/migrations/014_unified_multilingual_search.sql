@@ -21,9 +21,21 @@ as $$
   ));
 $$;
 
+-- PostgreSQL classe array_to_string comme STABLE, ce qui l'interdit directement
+-- dans un index d'expression. Cette sérialisation de text[] est déterministe.
+create or replace function public.immutable_array_to_search_text(value text[])
+returns text
+language sql
+immutable
+parallel safe
+set search_path = public
+as $$
+  select array_to_string(coalesce(value, '{}'), ' ');
+$$;
+
 create index if not exists khassidas_search_text_trgm_idx
   on public.khassidas using gin (
-    public.normalize_public_search(coalesce(title, '') || ' ' || coalesce(arabic_title, '') || ' ' || coalesce(transcription, '') || ' ' || array_to_string(aliases, ' ') || ' ' || array_to_string(themes, ' ')) extensions.gin_trgm_ops
+    public.normalize_public_search(coalesce(title, '') || ' ' || coalesce(arabic_title, '') || ' ' || coalesce(transcription, '') || ' ' || public.immutable_array_to_search_text(aliases) || ' ' || public.immutable_array_to_search_text(themes)) extensions.gin_trgm_ops
   ) where is_verified;
 create index if not exists chunks_translation_trgm_idx
   on public.khassida_chunks using gin (public.normalize_public_search(french_translation) extensions.gin_trgm_ops)
@@ -33,7 +45,7 @@ create index if not exists chunks_commentary_trgm_idx
   where validation_status = 'verified';
 create index if not exists library_search_text_trgm_idx
   on public.library_items using gin (
-    public.normalize_public_search(coalesce(title, '') || ' ' || coalesce(subtitle, '') || ' ' || coalesce(author, '') || ' ' || coalesce(description, '') || ' ' || array_to_string(themes, ' ')) extensions.gin_trgm_ops
+    public.normalize_public_search(coalesce(title, '') || ' ' || coalesce(subtitle, '') || ' ' || coalesce(author, '') || ' ' || coalesce(description, '') || ' ' || public.immutable_array_to_search_text(themes)) extensions.gin_trgm_ops
   ) where is_verified;
 
 create or replace function public.unified_public_search(

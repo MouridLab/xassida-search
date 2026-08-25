@@ -1,16 +1,18 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BookHeart,
-  GraduationCap,
-  Heart,
+  BookOpenCheck,
+  Compass,
+  Feather,
+  Flower2,
+  HandHeart,
+  HeartHandshake,
   History,
   Landmark,
-  MapPin,
   MoonStar,
-  ShieldCheck,
+  ScrollText,
+  Shield,
   Sparkles,
-  Sun,
   X,
 } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
@@ -23,33 +25,32 @@ export const metadata = { title: "Thèmes" };
 const themeStyles = [
   {
     words: ["prière", "invocation", "repentir"],
-    icon: MoonStar,
-    tone: "bg-indigo-50 text-indigo-700",
+    icon: HandHeart,
   },
-  { words: ["touba", "lieu", "ville"], icon: MapPin, tone: "bg-emerald-50 text-emerald-700" },
-  { words: ["protection", "préservation"], icon: ShieldCheck, tone: "bg-sky-50 text-sky-700" },
-  { words: ["prophète", "muhammad", "louange"], icon: Heart, tone: "bg-rose-50 text-rose-700" },
+  { words: ["touba", "lieu", "ville", "mourid", "mouridiyya", "dahira"], icon: Landmark },
+  { words: ["protection", "préservation", "salut"], icon: Shield },
+  { words: ["prophète", "muhammad", "éloge prophétique"], icon: HeartHandshake },
   {
-    words: ["éducation", "enseignement", "savoir"],
-    icon: GraduationCap,
-    tone: "bg-amber-50 text-amber-700",
+    words: ["éducation", "enseignement", "savoir", "discipline", "sagesse"],
+    icon: BookOpenCheck,
   },
   {
-    words: ["spiritualité", "dévotion", "soufisme"],
-    icon: Sparkles,
-    tone: "bg-violet-50 text-violet-700",
+    words: ["spiritualité", "dévotion", "soufisme", "méditation"],
+    icon: Feather,
   },
-  { words: ["islam", "tawhid", "dieu"], icon: Sun, tone: "bg-orange-50 text-orange-700" },
-  { words: ["histoire", "exil", "colonial"], icon: History, tone: "bg-stone-100 text-stone-700" },
-  { words: ["mourid", "mouridiyya", "dahira"], icon: Landmark, tone: "bg-teal-50 text-teal-700" },
+  { words: ["islam", "tawhid", "dieu", "noms divins"], icon: MoonStar },
+  { words: ["histoire", "exil", "colonial"], icon: History },
+  { words: ["guidance", "cheminement", "réforme"], icon: Compass },
+  { words: ["éthique", "humanité"], icon: HandHeart },
+  { words: ["guérison"], icon: Flower2 },
+  { words: ["grâce", "gratitude", "louange"], icon: Sparkles },
 ] as const;
 
 function themeAppearance(theme: string) {
   const normalized = theme.toLocaleLowerCase("fr");
   return (
     themeStyles.find(({ words }) => words.some((word) => normalized.includes(word))) || {
-      icon: BookHeart,
-      tone: "bg-blue-50 text-blue-700",
+      icon: ScrollText,
     }
   );
 }
@@ -90,9 +91,14 @@ export default async function ThemesPage({
                 }`}
               >
                 <span
-                  className={`grid size-11 shrink-0 place-items-center rounded-2xl transition group-hover:scale-105 ${active ? "bg-white/15 text-white" : appearance.tone}`}
+                  className={`relative grid size-12 shrink-0 place-items-center rounded-full border transition duration-300 after:absolute after:-bottom-1 after:size-1.5 after:rotate-45 after:border after:content-[''] group-hover:rotate-[-3deg] group-hover:scale-105 ${
+                    active
+                      ? "border-white/25 bg-white/10 text-white after:border-white/40 after:bg-brand"
+                      : "border-gold/40 bg-gold/10 text-brand after:border-gold/50 after:bg-surface"
+                  }`}
                 >
-                  <Icon size={20} strokeWidth={1.8} />
+                  <span className="absolute inset-1 rounded-full border border-current opacity-15" />
+                  <Icon size={20} strokeWidth={1.55} />
                 </span>
                 <strong className="flex-1 text-sm">{themeLabel}</strong>
                 {active ? (

@@ -25,15 +25,13 @@ describe("production migration dry-run policy", () => {
     expect(command).not.toContain("--include-seed");
   });
 
-  it("accepts only migrations 012 and 013", () => {
+  it("accepts only migration 016", () => {
     expect(
-      isExpectedProductionDryRun(
-        `Would push these migrations:\n012_presigned_uploads_and_edition_audit.sql\n013_harden_pending_uploads_and_rate_limits.sql`,
-      ),
+      isExpectedProductionDryRun(`Would push these migrations:\n016_harden_delete_khassida.sql`),
     ).toBe(true);
     expect(
       isExpectedProductionDryRun(
-        `Would push these migrations:\n011_fix_editorial_validation_trigger.sql\n012_presigned_uploads_and_edition_audit.sql\n013_harden_pending_uploads_and_rate_limits.sql`,
+        `Would push these migrations:\n015_delete_khassida.sql\n016_harden_delete_khassida.sql`,
       ),
     ).toBe(false);
   });
@@ -54,8 +52,8 @@ describe("production migration dry-run policy", () => {
     expect(verify.slice(0, 3)).toEqual(["supabase", "migration", "list"]);
   });
 
-  it("requires both 012 and 013 in remote migration history", () => {
-    expect(hasAppliedProductionMigrations("012 | 012 | 012\n013 | 013 | 013")).toBe(true);
-    expect(hasAppliedProductionMigrations("012 | 012 | 012\n013 |     | 013")).toBe(false);
+  it("requires 016 in remote migration history", () => {
+    expect(hasAppliedProductionMigrations("016 | 016 | 016")).toBe(true);
+    expect(hasAppliedProductionMigrations("016 |     | 016")).toBe(false);
   });
 });

@@ -63,4 +63,12 @@ describe("P1 production contracts", () => {
       "grant execute on function public.consume_rate_limit(text,integer,integer) to anon",
     );
   });
+
+  it("reserves khassida deletion to administrators and service_role", () => {
+    const sql = readFileSync("supabase/migrations/016_harden_delete_khassida.sql", "utf8");
+    expect(sql).toContain("where id = p_actor_id and role = 'admin'");
+    expect(sql).toContain("from anon");
+    expect(sql).toContain("from authenticated");
+    expect(sql).toContain("to service_role");
+  });
 });

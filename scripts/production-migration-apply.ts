@@ -113,13 +113,13 @@ console.log("Running mandatory pre-apply dry-run...");
 const dryRunOutput = run(buildProductionDryRunCommand(databaseUrl));
 if (!isExpectedProductionDryRun(dryRunOutput)) {
   const found = extractMigrationFiles(dryRunOutput);
-  fail(`dry-run must contain exactly 012 and 013; found: ${found.join(", ") || "none"}`);
+  fail(`dry-run must contain exactly 016; found: ${found.join(", ") || "none"}`);
 }
 
 console.log("Migrations approved by dry-run:");
 for (const migration of expectedProductionMigrations) console.log(`- ${migration}`);
 
-const expectedConfirmation = "APPLY 012 013 TO PRODUCTION";
+const expectedConfirmation = "APPLY 016 TO PRODUCTION";
 const readline = createInterface({ input: process.stdin, output: process.stdout });
 const confirmation = await readline.question(`Type exactly "${expectedConfirmation}": `);
 readline.close();
@@ -130,6 +130,6 @@ run(buildProductionApplyCommand(databaseUrl));
 console.log("Verifying remote migration history...");
 const migrationList = run(buildProductionMigrationListCommand(databaseUrl));
 if (!hasAppliedProductionMigrations(migrationList)) {
-  fail("remote migration history does not confirm both 012 and 013");
+  fail("remote migration history does not confirm migration 016");
 }
-console.log("PASS: migrations 012 and 013 are present in remote history.");
+console.log("PASS: migration 016 is present in remote history.");

@@ -105,6 +105,9 @@ describe("unified search contract", () => {
   it("keeps indexed search expressions aligned with the SQL predicates", () => {
     const sql = readFileSync("supabase/migrations/014_unified_multilingual_search.sql", "utf8");
     expect(sql).not.toContain("normalize_public_search(concat_ws");
+    const indexes = sql.match(/create index[\s\S]*?where [^;]+;/gi) ?? [];
+    expect(indexes.join("\n")).toContain("immutable_array_to_search_text");
+    expect(indexes.join("\n")).not.toContain("array_to_string(");
     expect(sql).toContain("coalesce(c.normalized_arabic");
     expect(sql).toContain("coalesce(c.normalized_transcription");
     expect(sql).toContain("chunks_translation_trgm_idx");
