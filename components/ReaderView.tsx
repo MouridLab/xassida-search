@@ -17,12 +17,14 @@ import {
   ExternalLink,
   FolderHeart,
   Headphones,
+  Heart,
   Home,
   Info,
   Library,
   Languages,
   Menu,
   MessageSquare,
+  Mic2,
   Minimize2,
   Maximize2,
   Moon,
@@ -48,6 +50,13 @@ import {
   type ReadingProgress,
 } from "@/lib/reading-progress";
 import { absolutePassageUrl, resolveInitialPassage } from "@/lib/passage-links";
+import {
+  defaultReadingPreferences,
+  readReadingPreferences,
+  saveReadingPreferences,
+  type ReadingPreferences,
+} from "@/lib/reading-preferences";
+import { FavoriteButton } from "@/components/khassidas/FavoriteButton";
 
 type Tab = "lecture" | "audio" | "information";
 type RelatedWork = Pick<Khassida, "slug" | "title" | "arabic_title" | "cover_url"> & {
@@ -58,6 +67,8 @@ const mainLinks = [
   [Home, "Accueil", "/"],
   [FileText, "Khassaïdes", "/khassidas"],
   [Library, "Bibliothèque", "/bibliotheque"],
+  [Mic2, "Kourels", "/kourels"],
+  [Heart, "Mes favoris", "/favoris"],
   [Tags, "Thèmes", "/themes"],
   [FolderHeart, "Collections", "/collections"],
   [Bot, "Recherche IA", "/recherche-ia"],
@@ -98,7 +109,9 @@ export function ReaderView({
     [highlightedPassageId, setHighlightedPassageId] = useState<string | null>(null),
     [copyStatus, setCopyStatus] = useState("Copier le lien"),
     [focusMode, setFocusMode] = useState(false),
-    [playbackRate, setPlaybackRate] = useState(1);
+    [playbackRate, setPlaybackRate] = useState(1),
+    [preferences, setPreferences] = useState<ReadingPreferences>(defaultReadingPreferences),
+    [preferencesReady, setPreferencesReady] = useState(false);
   const audioRef = useRef<HTMLMediaElement>(null);
   const restoredProgressRef = useRef<ReadingProgress | null>(null);
   const chunk = chunks[active];
@@ -125,6 +138,13 @@ export function ReaderView({
   useEffect(() => {
     if (audioRef.current) audioRef.current.playbackRate = playbackRate;
   }, [playbackRate]);
+  useEffect(() => {
+    setPreferences(readReadingPreferences(window.localStorage));
+    setPreferencesReady(true);
+  }, []);
+  useEffect(() => {
+    if (preferencesReady) saveReadingPreferences(window.localStorage, preferences);
+  }, [preferences, preferencesReady]);
   useEffect(() => {
     const saved = readReadingProgress(window.localStorage, work.id);
     restoredProgressRef.current = saved;
@@ -318,6 +338,14 @@ export function ReaderView({
                   active={tab === "information"}
                   onClick={() => setTab("information")}
                 />
+                <FavoriteButton
+                  work={{
+                    id: work.id,
+                    slug: work.slug,
+                    title: work.title,
+                    arabicTitle: work.arabic_title,
+                  }}
+                />
                 <Link
                   href="/recherche-ia"
                   className="flex h-10 items-center justify-center gap-2 border-b border-line px-2 text-xs font-semibold text-muted"
@@ -347,6 +375,8 @@ export function ReaderView({
                 onCopyPassage={copyActivePassageLink}
                 focusMode={focusMode}
                 onToggleFocus={() => setFocusMode((value) => !value)}
+                preferences={preferences}
+                setPreferences={setPreferences}
               />
             ) : tab === "audio" ? (
               <AudioPanel
@@ -615,6 +645,8 @@ function ReaderContent({
   onCopyPassage,
   focusMode,
   onToggleFocus,
+  preferences,
+  setPreferences,
 }: {
   work: Khassida;
   chunks: Chunk[];
@@ -632,9 +664,12 @@ function ReaderContent({
   onCopyPassage: () => void;
   focusMode: boolean;
   onToggleFocus: () => void;
+  preferences: ReadingPreferences;
+  setPreferences: React.Dispatch<React.SetStateAction<ReadingPreferences>>;
 }) {
   const chunk = chunks[active];
   const [pdfFocus, setPdfFocus] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const documents = [
     ...(work.pdf_url
       ? [
@@ -813,11 +848,19 @@ function ReaderContent({
               <button className="grid size-8 place-items-center border-l border-line">
                 <BookMarked size={13} />
               </button>
-              <button className="grid size-8 place-items-center border-l border-line">
+              <button
+                type="button"
+                onClick={() => setSettingsOpen((value) => !value)}
+                aria-expanded={settingsOpen}
+                className="grid size-8 place-items-center border-l border-line"
+              >
                 <Settings size={13} />
               </button>
             </div>
           </header>
+        )}
+        {settingsOpen && !selectedEdition && chunks.length > 0 && (
+          <ReadingSettings preferences={preferences} setPreferences={setPreferences} />
         )}
         {selectedEdition ? (
           <div
@@ -884,6 +927,7 @@ function ReaderContent({
                 highlighted={item.id === highlightedPassageId}
                 onCopy={index === 0 ? onCopyPassage : undefined}
                 copyStatus={copyStatus}
+                preferences={preferences}
               />
             ))}
             <nav
@@ -931,6 +975,89 @@ function ReaderContent({
     </div>
   );
 }
+function ReadingSettings({
+  preferences,
+  setPreferences,
+}: {
+  preferences: ReadingPreferences;
+  setPreferences: React.Dispatch<React.SetStateAction<ReadingPreferences>>;
+}) {
+  return (
+    <section className="border-b border-line bg-canvas/60 px-4 py-5 sm:px-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="folio-label">Confort de lecture</span>
+          <h3 className="mt-1 text-sm font-semibold">Affichage des passages</h3>
+        </div>
+        <Settings size={17} className="text-brand" />
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <PreferenceToggle
+          label="Transcription"
+          active={preferences.showTranscription}
+          onClick={() =>
+            setPreferences((value) => ({
+              ...value,
+              showTranscription: !value.showTranscription,
+            }))
+          }
+        />
+        <PreferenceToggle
+          label="Traduction"
+          active={preferences.showTranslation}
+          onClick={() =>
+            setPreferences((value) => ({ ...value, showTranslation: !value.showTranslation }))
+          }
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setPreferences((value) => ({
+              ...value,
+              lineHeight: value.lineHeight === "compact" ? "comfortable" : "compact",
+            }))
+          }
+          className="flex min-h-11 items-center justify-between border border-line bg-surface px-3 text-xs font-semibold"
+        >
+          Interligne
+          <span className="text-brand">
+            {preferences.lineHeight === "compact" ? "Compact" : "Confortable"}
+          </span>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function PreferenceToggle({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className="flex min-h-11 items-center justify-between border border-line bg-surface px-3 text-xs font-semibold"
+    >
+      {label}
+      <span
+        className={cn(
+          "rounded-full px-2 py-1 text-[9px] uppercase",
+          active ? "bg-brand text-white" : "bg-line text-muted",
+        )}
+      >
+        {active ? "Affichée" : "Masquée"}
+      </span>
+    </button>
+  );
+}
+
 function VerseCard({
   chunk,
   number,
@@ -939,6 +1066,7 @@ function VerseCard({
   highlighted,
   onCopy,
   copyStatus,
+  preferences,
 }: {
   chunk: Chunk;
   number: number;
@@ -947,6 +1075,7 @@ function VerseCard({
   highlighted: boolean;
   onCopy?: () => void;
   copyStatus: string;
+  preferences: ReadingPreferences;
 }) {
   return (
     <article
@@ -966,17 +1095,20 @@ function VerseCard({
           style={{
             fontSize: `clamp(${fontSize}px, calc(${fontSize}px + 0.7vw), ${fontSize + 10}px)`,
           }}
-          className="mx-auto max-w-[46rem] px-7 text-center font-arabic leading-[1.95] text-ink"
+          className={cn(
+            "mx-auto max-w-[46rem] px-7 text-center font-arabic text-ink",
+            preferences.lineHeight === "compact" ? "leading-[1.55]" : "leading-[1.95]",
+          )}
         >
           {chunk.arabic_text}
         </p>
       )}
-      {chunk.transcription && (
+      {preferences.showTranscription && chunk.transcription && (
         <p className="mx-auto mt-10 max-w-[42rem] border-t border-line pt-7 text-center text-[15px] italic leading-7 text-ink/75 sm:text-base sm:leading-8">
           {chunk.transcription}
         </p>
       )}
-      {chunk.french_translation && (
+      {preferences.showTranslation && chunk.french_translation && (
         <p className="mx-auto mt-7 max-w-[42rem] text-center text-[18px] leading-[1.75] text-ink/90 sm:text-[19px]">
           « {chunk.french_translation} »
         </p>

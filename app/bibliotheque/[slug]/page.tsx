@@ -121,6 +121,24 @@ export default async function LibraryItemPage({ params }: { params: Promise<{ sl
                   />
                 </section>
               )}
+              {hostedDocument && item.media_mime_type?.startsWith("audio/") && (
+                <section className="mb-12 border-y border-line bg-surface px-4 py-7 sm:px-6">
+                  <span className="folio-label">
+                    <Headphones size={14} /> Prestation audio
+                  </span>
+                  <audio controls preload="metadata" src={hostedDocument} className="mt-5 w-full" />
+                </section>
+              )}
+              {hostedDocument && item.media_mime_type?.startsWith("video/") && (
+                <section className="mb-12 overflow-hidden border-y border-line bg-black">
+                  <video
+                    controls
+                    preload="metadata"
+                    src={hostedDocument}
+                    className="aspect-video w-full"
+                  />
+                </section>
+              )}
               {item.item_type === "audio" && item.resource_url && (
                 <div className="mb-12 border-y border-line py-6">
                   <div className="flex items-center gap-3">
