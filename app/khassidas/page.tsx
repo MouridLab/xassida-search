@@ -10,6 +10,8 @@ export default async function KhassidasPage() {
         eyebrow="Œuvres poétiques"
         title="Les khassaïdes"
         description="Parcourez exclusivement les œuvres poétiques de Cheikh Ahmadou Bamba, organisées par titre et par thème."
+        image="/images/open-manuscript.png"
+        imageAlt="Manuscrit ouvert, symbole de lecture et de transmission des khassaïdes"
       />
       <section className="mx-auto max-w-[1400px] px-5 py-12 lg:px-8">
         <CatalogExplorer works={works} stats={stats} />
