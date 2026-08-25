@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowRight, FileText, Headphones } from "lucide-react";
 import type { Khassida } from "@/types/database";
 import { cn } from "@/lib/utils";
+import { FavoriteButton } from "./FavoriteButton";
 
 export type WorkStats = { verses?: number; pages?: number; hasAudio?: boolean; hasPdf?: boolean };
 
@@ -94,6 +95,15 @@ export function WorkCard({
             <Headphones size={17} />
           </Link>
         )}
+        <FavoriteButton
+          compact
+          work={{
+            id: work.id,
+            slug: work.slug,
+            title: work.title,
+            arabicTitle: work.arabic_title,
+          }}
+        />
       </div>
     </article>
   );

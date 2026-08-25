@@ -8,7 +8,9 @@ import { SiteHeader } from "./SiteHeader";
 const browserRoots = [
   "/bibliotheque",
   "/collections",
+  "/favoris",
   "/khassidas",
+  "/kourels",
   "/recherche-ia",
   "/search",
   "/themes",

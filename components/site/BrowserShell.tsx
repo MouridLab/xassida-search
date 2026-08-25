@@ -12,8 +12,10 @@ import {
   ChevronRight,
   Compass,
   Home,
+  Heart,
   Library,
   Menu,
+  Mic2,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -29,11 +31,13 @@ import { Logo } from "./Logo";
 const primaryLinks = [
   ["Explorer", "/khassidas", Compass],
   ["Bibliothèque", "/bibliotheque", Library],
+  ["Kourels", "/kourels", Mic2],
   ["Thèmes", "/themes", BookMarked],
   ["Recherche IA", "/recherche-ia", Bot],
 ] as const;
 
 const secondaryLinks = [
+  ["Mes favoris", "/favoris", Heart],
   ["Collections", "/collections", Sparkles],
   ["Communauté", "/communaute", Users],
 ] as const;
@@ -43,6 +47,8 @@ function currentSection(pathname: string) {
   if (pathname.startsWith("/khassidas")) return "Khassaïdes";
   if (pathname.startsWith("/bibliotheque/")) return "Document";
   if (pathname.startsWith("/bibliotheque")) return "Bibliothèque";
+  if (pathname.startsWith("/kourels")) return "Prestations des kourels";
+  if (pathname.startsWith("/favoris")) return "Mes favoris";
   if (pathname.startsWith("/recherche-ia")) return "Questionner le corpus";
   if (pathname.startsWith("/search")) return "Résultats de recherche";
   if (pathname.startsWith("/themes")) return "Thèmes";
@@ -181,7 +187,7 @@ export function BrowserShell({ children }: { children: React.ReactNode }) {
 
       <div
         className={cn(
-            "grid min-h-[calc(100vh-104px)]",
+          "grid min-h-[calc(100vh-104px)]",
           sidebarCollapsed
             ? "lg:grid-cols-[76px_minmax(0,1fr)]"
             : "lg:grid-cols-[240px_minmax(0,1fr)]",
@@ -288,7 +294,7 @@ export function BrowserShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-4 border-t border-line bg-surface/95 px-2 backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-5 border-t border-line bg-surface/95 px-2 backdrop-blur-xl lg:hidden">
         {primaryLinks.map(([label, href, Icon]) => (
           <Link
             key={href}
