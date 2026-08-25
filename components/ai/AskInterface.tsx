@@ -5,10 +5,11 @@ import Link from "next/link";
 import {
   ArrowUp,
   BookOpen,
-  Check,
   Copy,
   ExternalLink,
   FileText,
+  Library,
+  MessageSquareText,
   Search,
   Sparkles,
   X,
@@ -94,8 +95,8 @@ export function AskInterface({ works = [] }: { works?: CorpusWork[] }) {
   }
 
   return (
-    <main className="border-t border-line bg-surface">
-      <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-[1600px] lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(500px,1fr)_400px]">
+    <main className="bg-canvas">
+      <div className="mx-auto grid min-h-[calc(100vh-144px)] max-w-[1510px] overflow-hidden border-line bg-surface lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(500px,1fr)_390px] xl:border-x">
         <CorpusPanel
           works={visibleWorks}
           total={works.length}
@@ -105,20 +106,29 @@ export function AskInterface({ works = [] }: { works?: CorpusWork[] }) {
 
         <section className="flex min-w-0 flex-col border-line lg:border-l xl:border-r">
           <header className="border-b border-line px-5 py-6 sm:px-8">
-            <span className="folio-label">Assistant documentaire</span>
-            <h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-ink">
-              Questionner le corpus
-            </h1>
+            <div className="flex items-center gap-3">
+              <Sparkles size={28} className="text-gold" />
+              <div>
+                <h1 className="font-serif text-2xl font-semibold text-ink">
+                  Assistant documentaire
+                </h1>
+                <p className="mt-1 text-xs text-muted">
+                  Posez une question, obtenez une réponse sourcée.
+                </p>
+              </div>
+            </div>
           </header>
 
           <div className="flex-1 space-y-12 px-5 py-8 sm:px-8 lg:px-10">
             {!messages.length && (
-              <div className="mx-auto max-w-2xl py-10 lg:py-20">
-                <Sparkles size={24} className="text-gold" />
-                <h2 className="mt-5 font-serif text-3xl font-semibold leading-tight text-ink sm:text-4xl">
-                  Posez une question aux œuvres et remontez jusqu’aux passages.
+              <div className="mx-auto my-auto max-w-xl py-10 text-center lg:py-20">
+                <span className="mx-auto grid size-14 place-items-center rounded-full bg-brand/10 text-brand">
+                  <MessageSquareText size={25} />
+                </span>
+                <h2 className="mt-6 font-serif text-3xl font-semibold leading-tight text-ink">
+                  Questionnez les œuvres
                 </h2>
-                <p className="mt-5 max-w-xl text-sm leading-7 text-muted">
+                <p className="mt-4 text-sm leading-7 text-muted">
                   L’assistant répond à partir du corpus validé. Chaque réponse conserve ses sources
                   afin que vous puissiez les lire dans leur contexte.
                 </p>
@@ -132,14 +142,14 @@ export function AskInterface({ works = [] }: { works?: CorpusWork[] }) {
                 key={`${message.question}-${index}`}
                 className="mx-auto max-w-3xl"
               >
-                <div className="ml-auto max-w-[88%] border border-line bg-paper px-5 py-4 text-sm leading-6 text-ink">
+                <div className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm bg-brand/10 px-5 py-4 text-sm leading-6 text-ink">
                   {message.question}
                 </div>
-                <div className="mt-8 flex items-center gap-3 border-b border-line pb-4">
+                <div className="mt-8 flex items-center gap-3">
                   <Sparkles size={18} className="text-gold" />
                   <h2 className="font-serif text-lg font-semibold text-ink">Réponse</h2>
                 </div>
-                <p className="mt-5 whitespace-pre-wrap text-base leading-8 text-ink">
+                <p className="mt-5 rounded-xl border border-line bg-paper p-5 whitespace-pre-wrap text-base leading-8 text-ink shadow-sm">
                   {message.answer}
                 </p>
 
@@ -196,9 +206,9 @@ export function AskInterface({ works = [] }: { works?: CorpusWork[] }) {
             )}
           </div>
 
-          <div className="sticky bottom-0 border-t border-line bg-surface/95 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
+          <div className="sticky bottom-0 bg-surface/95 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
             <form onSubmit={ask} className="mx-auto max-w-3xl">
-              <div className="flex items-end border border-line bg-paper focus-within:border-brand">
+              <div className="flex items-end rounded-xl border border-brand/40 bg-paper shadow-sm focus-within:border-brand">
                 <textarea
                   value={question}
                   onChange={(event) => setQuestion(event.target.value)}
@@ -208,7 +218,7 @@ export function AskInterface({ works = [] }: { works?: CorpusWork[] }) {
                 />
                 <button
                   disabled={loading || question.trim().length < 5}
-                  className="m-2 grid size-11 shrink-0 place-items-center bg-brand text-white transition hover:bg-brand/90 disabled:opacity-40"
+                  className="m-2 grid size-11 shrink-0 place-items-center rounded-lg bg-brand text-white transition hover:bg-brand/90 disabled:opacity-40"
                   aria-label="Envoyer"
                 >
                   <ArrowUp size={18} />
@@ -252,10 +262,14 @@ function CorpusPanel({
   onFilter: (value: string) => void;
 }) {
   return (
-    <aside className="hidden max-h-[calc(100vh-72px)] overflow-y-auto px-5 py-8 lg:block">
-      <h2 className="font-serif text-lg font-semibold text-ink">Corpus interrogé</h2>
-      <p className="mt-2 text-xs text-brand">{total} œuvres disponibles</p>
-      <label className="mt-5 flex items-center gap-2 border border-line px-3 py-2.5 text-muted">
+    <aside className="hidden max-h-[calc(100vh-144px)] overflow-y-auto bg-paper/50 px-5 py-8 lg:block">
+      <h2 className="flex items-center gap-2 font-serif text-lg font-semibold text-ink">
+        <Library size={19} className="text-gold" /> Corpus documentaire
+      </h2>
+      <p className="mt-3 inline-flex rounded-full bg-brand/10 px-3 py-1.5 text-[11px] font-semibold text-brand">
+        {total} œuvres disponibles
+      </p>
+      <label className="mt-5 flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5 text-muted">
         <Search size={15} />
         <span className="sr-only">Filtrer les œuvres</span>
         <input
@@ -265,17 +279,18 @@ function CorpusPanel({
           className="min-w-0 flex-1 bg-transparent text-xs text-ink outline-none"
         />
       </label>
-      <p className="folio-label mt-8">Khassaïdes</p>
-      <div className="mt-3 border border-line">
+      <div className="mt-4 flex gap-2 text-[10px]">
+        <span className="rounded-full bg-brand px-3 py-1.5 text-white">Tout</span>
+        <span className="rounded-full border border-line px-3 py-1.5">Khassaïdes</span>
+      </div>
+      <div className="mt-5 space-y-2">
         {works.map((work) => (
           <Link
             href={`/khassidas/${encodeURIComponent(work.slug)}`}
             key={work.id}
-            className="group flex gap-3 border-b border-line px-3 py-4 last:border-b-0 hover:bg-paper"
+            className="group flex gap-3 rounded-lg border border-transparent px-3 py-3 hover:border-line hover:bg-surface"
           >
-            <span className="mt-0.5 grid size-5 shrink-0 place-items-center bg-brand text-white">
-              <Check size={13} />
-            </span>
+            <BookOpen size={18} className="mt-0.5 shrink-0 text-gold" />
             <span className="min-w-0">
               <span className="block truncate font-serif text-sm font-semibold text-ink group-hover:text-brand">
                 {work.title}
@@ -289,7 +304,7 @@ function CorpusPanel({
         ))}
         {!works.length && <p className="px-3 py-5 text-xs text-muted">Aucune œuvre trouvée.</p>}
       </div>
-      <div className="mt-8 border border-line p-4">
+      <div className="mt-8 rounded-xl border border-line bg-surface p-4">
         <p className="flex items-center gap-2 font-serif text-sm font-semibold text-ink">
           <Sparkles size={15} className="text-gold" /> À propos
         </p>
@@ -308,13 +323,24 @@ function SourcePanel({ source, onClose }: { source: Source | null; onClose: () =
 
   return (
     <aside
-      className={`fixed inset-0 z-50 overflow-y-auto bg-surface px-5 py-7 xl:static xl:z-auto xl:block xl:max-h-[calc(100vh-72px)] xl:px-7 ${source ? "block" : "hidden"}`}
+      className={`fixed inset-0 z-50 overflow-y-auto bg-paper/50 px-5 py-7 xl:static xl:z-auto xl:block xl:max-h-[calc(100vh-144px)] xl:px-6 ${source ? "block" : "hidden"}`}
       aria-label="Source sélectionnée"
     >
+      {!source && (
+        <div className="flex h-full min-h-[420px] flex-col items-center justify-center text-center">
+          <span className="grid size-14 place-items-center rounded-full border border-line bg-surface text-gold">
+            <BookOpen size={24} />
+          </span>
+          <h2 className="mt-5 font-serif text-lg font-semibold text-ink">Lecteur de source</h2>
+          <p className="mt-2 max-w-56 text-xs leading-6 text-muted">
+            Sélectionnez un passage cité pour afficher ici le texte, sa traduction et sa référence.
+          </p>
+        </div>
+      )}
       {source && (
         <>
           <div className="flex items-center justify-between border-b border-line pb-5">
-            <h2 className="font-serif text-lg font-semibold text-ink">Source sélectionnée</h2>
+            <h2 className="font-serif text-lg font-semibold text-ink">Lecteur de source</h2>
             <button
               onClick={onClose}
               className="flex items-center gap-2 text-xs text-muted hover:text-ink"
@@ -322,7 +348,7 @@ function SourcePanel({ source, onClose }: { source: Source | null; onClose: () =
               Fermer <X size={17} />
             </button>
           </div>
-          <div className="py-7">
+          <div className="my-5 rounded-xl border border-line bg-surface p-5 shadow-sm">
             <div className="flex gap-3">
               <FileText size={25} className="shrink-0 text-gold" />
               <div>
@@ -334,7 +360,7 @@ function SourcePanel({ source, onClose }: { source: Source | null; onClose: () =
             </div>
             <Link
               href={askSourceHref(source)}
-              className="mt-6 inline-flex items-center gap-2 border border-gold/50 px-4 py-3 text-xs font-semibold text-brand hover:border-brand"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg border border-gold/50 px-4 py-3 text-xs font-semibold text-brand hover:border-brand"
             >
               Ouvrir dans le lecteur <ExternalLink size={14} />
             </Link>
@@ -342,7 +368,11 @@ function SourcePanel({ source, onClose }: { source: Source | null; onClose: () =
 
           {source.arabic_text && (
             <SourceSection title="Texte arabe">
-              <p dir="rtl" lang="ar" className="font-arabic text-2xl leading-[2.2] text-ink">
+              <p
+                dir="rtl"
+                lang="ar"
+                className="rounded-xl border border-line bg-surface p-5 font-arabic text-2xl leading-[2.2] text-ink"
+              >
                 {source.arabic_text}
               </p>
             </SourceSection>
@@ -364,7 +394,7 @@ function SourcePanel({ source, onClose }: { source: Source | null; onClose: () =
           )}
           <Link
             href={askSourceHref(source)}
-            className="mt-7 inline-flex items-center gap-2 border border-brand/30 px-4 py-3 text-sm font-semibold text-brand hover:bg-paper"
+            className="mt-7 inline-flex items-center gap-2 rounded-lg border border-brand/30 px-4 py-3 text-sm font-semibold text-brand hover:bg-surface"
           >
             <BookOpen size={17} /> Voir le passage complet
           </Link>
