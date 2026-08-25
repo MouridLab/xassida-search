@@ -10,3 +10,7 @@ export function hasStaffAccess(role: string | null | undefined): role is StaffRo
 export function hasValidationAccess(role: string | null | undefined) {
   return Boolean(role && validationRoles.includes(role as (typeof validationRoles)[number]));
 }
+
+export function hasAdminAccess(role: string | null | undefined) {
+  return role === "admin";
+}

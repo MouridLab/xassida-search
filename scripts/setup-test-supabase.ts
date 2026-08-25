@@ -3,7 +3,7 @@ import { basename, join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { spawnSync } from "node:child_process";
 
-const expectedMigrations = Array.from({ length: 13 }, (_, index) =>
+const expectedMigrations = Array.from({ length: 16 }, (_, index) =>
   `${index + 1}`.padStart(3, "0"),
 );
 const projectRefPattern = /^[a-z0-9]{15,32}$/;
@@ -44,7 +44,7 @@ function verifyLocalMigrations(): void {
     versions.some((version, index) => version !== expectedMigrations[index])
   ) {
     fail(
-      `expected exactly migrations 001 through 013; found: ${files.map((file) => basename(file)).join(", ")}`,
+      `expected exactly migrations 001 through 016; found: ${files.map((file) => basename(file)).join(", ")}`,
     );
   }
 }
@@ -88,7 +88,7 @@ function verifyRemoteMigrationList(output: string): void {
     remoteVersions.some((version, index) => version !== expectedMigrations[index])
   ) {
     fail(
-      `remote migration history is not exactly 001 through 013 (found: ${remoteVersions.join(", ") || "none"})`,
+      `remote migration history is not exactly 001 through 016 (found: ${remoteVersions.join(", ") || "none"})`,
     );
   }
 }
@@ -97,7 +97,7 @@ async function main(): Promise<void> {
   verifyLocalMigrations();
 
   if (process.argv.includes("--check-only")) {
-    console.log("Local safety check passed: migrations 001 through 013 are present.");
+    console.log("Local safety check passed: migrations 001 through 016 are present.");
     return;
   }
 
@@ -123,7 +123,7 @@ async function main(): Promise<void> {
   const readline = createInterface({ input: process.stdin, output: process.stdout });
   const expectedConfirmation = `INITIALIZE TEST ${projectRef}`;
   const confirmation = await readline.question(
-    `Type exactly "${expectedConfirmation}" to link, dry-run, and apply migrations 001-013: `,
+    `Type exactly "${expectedConfirmation}" to link, dry-run, and apply migrations 001-016: `,
   );
   if (confirmation !== expectedConfirmation) fail("explicit confirmation not received");
 
@@ -136,9 +136,9 @@ async function main(): Promise<void> {
   run(["db", "push", "--linked", "--include-all", "--dry-run"]);
 
   const pushConfirmation = await readline.question(
-    `Type exactly "APPLY 001-013 TO TEST ${projectRef}" to execute db push: `,
+    `Type exactly "APPLY 001-016 TO TEST ${projectRef}" to execute db push: `,
   );
-  if (pushConfirmation !== `APPLY 001-013 TO TEST ${projectRef}`) {
+  if (pushConfirmation !== `APPLY 001-016 TO TEST ${projectRef}`) {
     fail("migration confirmation not received");
   }
   readline.close();
@@ -151,7 +151,7 @@ async function main(): Promise<void> {
   });
   console.log(migrationList.trim());
   verifyRemoteMigrationList(migrationList);
-  console.log("PASS: remote migration history is exactly 001 through 013.");
+  console.log("PASS: remote migration history is exactly 001 through 016.");
 }
 
 await main();

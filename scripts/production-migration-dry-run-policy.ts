@@ -2,10 +2,7 @@ export function buildProductionDryRunCommand(databaseUrl: string): readonly stri
   return ["supabase", "db", "push", "--db-url", databaseUrl, "--dry-run"] as const;
 }
 
-export const expectedProductionMigrations = [
-  "012_presigned_uploads_and_edition_audit.sql",
-  "013_harden_pending_uploads_and_rate_limits.sql",
-] as const;
+export const expectedProductionMigrations = ["016_harden_delete_khassida.sql"] as const;
 
 export function extractMigrationFiles(output: string): string[] {
   return [...new Set(output.match(/\b\d{3}_[a-z0-9_]+\.sql\b/gi) ?? [])].sort();
@@ -29,7 +26,7 @@ export function buildProductionMigrationListCommand(databaseUrl: string): readon
 
 export function hasAppliedProductionMigrations(output: string): boolean {
   const normalized = output.replace(/\u001b\[[0-9;]*m/g, "");
-  return ["012", "013"].every((version) => {
+  return ["016"].every((version) => {
     const row = normalized
       .split("\n")
       .map((line) => line.split("|").map((cell) => cell.trim()))

@@ -159,9 +159,9 @@ bun run supabase:prod:apply
 ```
 
 Elle vérifie la cible et le dernier backup par SHA-256, affiche le warning
-`RESTORE VERIFIED: NO`, refait un dry-run, exige exactement les migrations 012 et
-013, puis demande la confirmation exacte `APPLY 012 013 TO PRODUCTION`. Après le
-push, elle exige que `migration list` confirme les deux versions. Elle n'utilise ni
+`RESTORE VERIFIED: NO`, refait un dry-run, exige exactement la migration 016,
+puis demande la confirmation exacte `APPLY 016 TO PRODUCTION`. Après le
+push, elle exige que `migration list` confirme la version. Elle n'utilise ni
 reset, ni repair, ni seed.
 
 ```sh
